@@ -24,6 +24,38 @@ Willkommen zur Projektarbeit 2024/25! Dieses Projekt ist inspiriert von *The Bin
 - **Cinemachine**: Für Kamerabewegung und Perspektivenwechsel.
 - **Dungeon-Assets**: Objekte zur Raumerstellung.
 
+## Projektstruktur
+```markdown
+Assets
+├── AssetsDungeon
+├── Materials
+│   └── ProjectileColor
+├── Prefabs
+│   ├── Projectile
+│   └── Room
+├── Scenes
+│   └── SampleScene
+└── Scripts
+    ├── Camera
+    │   └── CameraController
+    ├── Controller
+    │   ├── FirstPersonPlayerController
+    │   └── TopDownPlayerController
+    ├── Dungeon
+    │   ├── DungeonGenerator
+    │   ├── OpenDoor
+    │   ├── RoomBehaviour
+    │   └── WallCollision
+    ├── Manager
+    │   ├── CameraManager
+    │   ├── EventManager
+    │   ├── GameInputManager
+    │   └── ObjectPoolManager
+    └── Shooting
+        ├── PlayerShooting
+        └── Projectile
+```
+
 ## Anleitung
 
 | Aktion               | Taste                 |
