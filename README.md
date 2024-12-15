@@ -6,7 +6,7 @@ Willkommen zur Projektarbeit 2024/25! Dieses Projekt ist inspiriert von *The Bin
 - Haitham El Euch
 - Thorben Meiswinkel
 - Arman Niaruhi
-- Peter Kletschka
+- Peter Karl Kletschka
 - Kai Schnieber
 
 ## Features
