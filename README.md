@@ -16,10 +16,6 @@ Willkommen zur Projektarbeit 2024/25! Dieses Projekt ist inspiriert von *The Bin
 - Öffnen und Schließen aller Türen.
 - Schießen mit Projektilen.
 
->### Aktuelle Einschränkungen!
-> **Projektile**:
->  - Momentan können Projektile sich unerwartet drehen. Dies ist ein bekannter Fehler und wird in zukünftigen Updates behoben.
-
 ## Verwendete Assets und Pakete
 - **Cinemachine**: Für Kamerabewegung und Perspektivenwechsel.
 - **Dungeon-Assets**: Objekte zur Raumerstellung.
@@ -61,7 +57,8 @@ Assets
 | Aktion               | Taste                 |
 |-----------------------|-----------------------|
 | Bewegung             | `W`, `A`, `S`, `D`   |
-| Schießen             | `Spacebar`           |
+| Schießen (First-Person) | `Spacebar`        |
+| Schießen (Top-Down)  | Pfeiltasten (`↑`, `↓`, `←`, `→`) |
 | Ansicht wechseln     | `Tab`                |
 | Türen öffnen         | Linksklick (`LMB`)   |
 | Türen schließen      | Rechtsklick (`RMB`)  |
