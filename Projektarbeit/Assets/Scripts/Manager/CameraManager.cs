@@ -30,6 +30,15 @@ public class CameraManager : MonoBehaviour
     /// The script controlling player movement in the first-person view.
     /// </summary>
     [SerializeField] private FirstPersonPlayerController firstPersonPlayerController;
+    
+    
+    // TODO:
+    [SerializeField] private Transform shootPoint;
+    [SerializeField] private TopDownShooting topDownShooting;
+    [SerializeField] private PlayerShooting firstPersonShooting;
+    private Vector3 topDownShootPointOffset = Vector3.zero;
+    private Vector3 firstPersonShootPointOffset = new Vector3(0, 0, 1);
+    
 
     /// <summary>
     /// Initializes the starting camera view to the top-down perspective.
@@ -71,6 +80,12 @@ public class CameraManager : MonoBehaviour
         // Enable the top-down movement script and disable the first-person script
         topDownPlayerController.enabled = true;
         firstPersonPlayerController.enabled = false;
+        
+        // TODO:
+        topDownShooting.enabled = true;
+        firstPersonShooting.enabled = false;
+
+        shootPoint.localPosition = topDownShootPointOffset;
     }
 
     /// <summary>
@@ -86,5 +101,11 @@ public class CameraManager : MonoBehaviour
         // Enable the first-person movement script and disable the top-down script
         topDownPlayerController.enabled = false;
         firstPersonPlayerController.enabled = true;
+        
+        // TODO:
+        topDownShooting.enabled = false;
+        firstPersonShooting.enabled = true;
+
+        shootPoint.localPosition = firstPersonShootPointOffset;
     }
 }
