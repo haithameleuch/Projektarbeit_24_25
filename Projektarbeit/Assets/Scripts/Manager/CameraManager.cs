@@ -31,15 +31,31 @@ public class CameraManager : MonoBehaviour
     /// </summary>
     [SerializeField] private FirstPersonPlayerController firstPersonPlayerController;
     
-    
-    // TODO:
-    [SerializeField] private Transform shootPoint;
+    /// <summary>
+    /// The shooting script used for the top-down view.
+    /// </summary>
     [SerializeField] private TopDownShooting topDownShooting;
+    
+    /// <summary>
+    /// The shooting script used for the first-person view.
+    /// </summary>
     [SerializeField] private PlayerShooting firstPersonShooting;
+    
+    /// <summary>
+    /// The transform representing the shooting point for projectiles.
+    /// </summary>
+    [SerializeField] private Transform shootPoint;
+    
+    /// <summary>
+    /// The offset of the shooting point in the top-down view.
+    /// </summary>
     private Vector3 topDownShootPointOffset = Vector3.zero;
+    
+    /// <summary>
+    /// The offset of the shooting point in the first-person view.
+    /// </summary>
     private Vector3 firstPersonShootPointOffset = new Vector3(0, 0, 1);
     
-
     /// <summary>
     /// Initializes the starting camera view to the top-down perspective.
     /// </summary>
@@ -77,14 +93,13 @@ public class CameraManager : MonoBehaviour
         topDownCamera.Priority = 10;
         firstPersonCamera.Priority = 5;
 
-        // Enable the top-down movement script and disable the first-person script
+        // Enable the top-down movement and shooting scripts, disable the first-person ones
         topDownPlayerController.enabled = true;
         firstPersonPlayerController.enabled = false;
-        
-        // TODO:
         topDownShooting.enabled = true;
         firstPersonShooting.enabled = false;
 
+        // Adjust the shooting point position to match the top-down view
         shootPoint.localPosition = topDownShootPointOffset;
     }
 
@@ -98,14 +113,13 @@ public class CameraManager : MonoBehaviour
         topDownCamera.Priority = 5;
         firstPersonCamera.Priority = 10;
 
-        // Enable the first-person movement script and disable the top-down script
+        // Enable the first-person movement and shooting scripts, disable the top-down ones
         topDownPlayerController.enabled = false;
         firstPersonPlayerController.enabled = true;
-        
-        // TODO:
         topDownShooting.enabled = false;
         firstPersonShooting.enabled = true;
 
+        // Adjust the shooting point position to match the first-person view
         shootPoint.localPosition = firstPersonShootPointOffset;
     }
 }
