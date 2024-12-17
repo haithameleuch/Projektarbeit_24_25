@@ -802,6 +802,9 @@ MonoBehaviour:
   switchKey: 9
   topDownPlayerController: {fileID: 1561343256}
   firstPersonPlayerController: {fileID: 1561343255}
+  shootPoint: {fileID: 25442184}
+  topDownShooting: {fileID: 1561343258}
+  firstPersonShooting: {fileID: 1561343257}
 --- !u!1 &1561343253
 GameObject:
   m_ObjectHideFlags: 0
@@ -813,6 +816,7 @@ GameObject:
   - component: {fileID: 1561343254}
   - component: {fileID: 1561343256}
   - component: {fileID: 1561343255}
+  - component: {fileID: 1561343258}
   - component: {fileID: 1561343257}
   m_Layer: 0
   m_Name: Player
@@ -835,8 +839,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2134808722}
-  - {fileID: 724523105}
   - {fileID: 25442184}
+  - {fileID: 724523105}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1561343255
@@ -883,6 +887,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPoolManager: {fileID: 690537487}
   shootPoint: {fileID: 25442184}
+--- !u!114 &1561343258
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1561343253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ea01d624f304d43ba8f46cf87dfbeb38, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  objectPool: {fileID: 690537487}
+  shootPoint: {fileID: 25442184}
+  spawnDistance: 1
 --- !u!1 &1788650379
 GameObject:
   m_ObjectHideFlags: 0
