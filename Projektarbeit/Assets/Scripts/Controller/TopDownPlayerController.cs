@@ -83,5 +83,20 @@ public class TopDownPlayerController : MonoBehaviour
         {
             transform.position += moveDir * moveDistance;
         }
+        CheckForObject();
+    }
+
+    private void CheckForObject()
+    {
+        float pickupRadius = 1.0f;
+        RaycastHit[] hits = Physics.SphereCastAll(transform.position, pickupRadius, Vector3.up, 0f);
+        foreach (RaycastHit hit in hits)
+        {
+            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            if (interactable is not null)
+            {
+                interactable.Interact(gameObject);
+            }
+        }
     }
 }
