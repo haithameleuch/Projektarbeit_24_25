@@ -317,7 +317,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 59.8
+  field of view: 60.000004
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -343,8 +343,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 12, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -576,11 +576,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59f629245c72408394ddcb708d3cb9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 2, y: 1}
+  size: {x: 1, y: 1}
   startPos: 0
   rooms:
   - {fileID: 7196524108051718529, guid: a0b7d0413ea9571ffa33d6c4be176e3f, type: 3}
-  - {fileID: 7196524108051718529, guid: 0e6072afc893246eaab74b063d5fd2ff, type: 3}
   offset: {x: 18, y: 10}
 --- !u!4 &546174994
 Transform:
@@ -875,15 +874,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   topDownCamera: {fileID: 2102602726}
   firstPersonCamera: {fileID: 724523106}
-  CanvCamera: {fileID: 170397430}
+  canvCamera: {fileID: 170397430}
   switchKey: 9
-  canvasSwitchKey: 9
+  canvSwitchKey: 103
   topDownPlayerController: {fileID: 1561343256}
   firstPersonPlayerController: {fileID: 1561343255}
   topDownShooting: {fileID: 1561343258}
   firstPersonShooting: {fileID: 1561343257}
   shootPoint: {fileID: 25442184}
-  player: {fileID: 0}
 --- !u!1 &1561343253
 GameObject:
   m_ObjectHideFlags: 0

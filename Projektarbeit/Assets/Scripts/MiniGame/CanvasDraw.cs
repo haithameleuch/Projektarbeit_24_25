@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using TMPro;
+using Unity.Barracuda;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,102 +14,92 @@ using UnityEngine.UI;
 /// </summary>
 public class CanvasDraw : MonoBehaviour
 {
-    /// <summary>
-    /// Reference to the camera in the scene, used for raycasting.
-    /// </summary>
-    private GameObject CanvCamera;
+    // AI Model-related variables
+    private Model _runtimeModel;
+    private IWorker _engine;
 
     /// <summary>
-    /// Width of the canvas in pixels.
+    /// Stores the predicted value and the probabilities of different digits.
     /// </summary>
+    [Serializable]
+    public struct Prediction
+    {
+        public int predictedValue;
+        public float[] predicted;
+
+        public void SetPrediction(Tensor t)
+        {
+            predicted = t.AsFloats();
+            Softmax(predicted);
+            predictedValue = Array.IndexOf(predicted, predicted.Max());
+            UnityEngine.Debug.Log($"Predicted: {predictedValue}");
+        }
+
+        private void Softmax(float[] logits)
+        {
+            float maxLogit = logits.Max();
+            float sumExp = 0f;
+
+            for (int i = 0; i < logits.Length; i++)
+            {
+                logits[i] = Mathf.Exp(logits[i] - maxLogit);
+                sumExp += logits[i];
+            }
+
+            for (int i = 0; i < logits.Length; i++)
+            {
+                logits[i] /= sumExp;
+            }
+        }
+    }
+
+    public Prediction prediction;
+
+    // Drawing-related variables
+    private GameObject CanvCamera;
+    private Color brushColor = Color.black;
+    private bool pressedLastFrame = false;
+    private int lastX,
+        lastY = 0;
+    private int xPixel,
+        yPixel = 0;
+    private float xMult,
+        yMult;
+    private Color[] colorMap;
+    public Texture2D generatedTexture;
+
+    // Public settings for the canvas size and brush
     [SerializeField]
     public int totalXPixels = 200;
 
-    /// <summary>
-    /// Height of the canvas in pixels.
-    /// </summary>
     [SerializeField]
     public int totalYPixels = 200;
 
-    /// <summary>
-    /// Size of the brush in pixels.
-    /// </summary>
     [SerializeField]
     public int brushSize = 10;
 
-    /// <summary>
-    /// Determines whether drawing is enabled or disabled.
-    /// </summary>
-    public static bool draw = true;
+    [SerializeField]
+    public TextMeshPro predictionText;
 
-    /// <summary>
-    /// Color of the brush used for drawing.
-    /// </summary>
-    private Color brushColor = Color.black;
-
-    /// <summary>
-    /// Flag to indicate whether interpolation is applied for smoother lines.
-    /// </summary>
+    [SerializeField]
+    private NNModel modelAsset;
+    public static bool draw = false;
     public bool useInterpolation = true;
-
-    /// <summary>
-    /// Reference to the top-left corner of the canvas for positioning.
-    /// </summary>
     public Transform topLeftCorner;
-
-    /// <summary>
-    /// Reference to the bottom-right corner of the canvas for positioning.
-    /// </summary>
     public Transform bottomRightCorner;
-
-    /// <summary>
-    /// Pointer position indicator for visualizing the brush on the canvas.
-    /// </summary>
     public Transform point;
-
-    /// <summary>
-    /// Material that will display the generated texture.
-    /// </summary>
     public Material material;
-
-    /// <summary>
-    /// The generated texture for the canvas (where drawing happens).
-    /// </summary>
-    public Texture2D generatedTexture;
-
-    /// <summary>
-    /// Color array representing the color values of each pixel on the canvas.
-    /// </summary>
-    private Color[] colorMap;
-
-    /// <summary>
-    /// X and Y coordinates of the cursor on the canvas.
-    /// </summary>
-    private int xPixel,
-        yPixel = 0;
-
-    /// <summary>
-    /// Flag to check if the mouse button was pressed in the previous frame.
-    /// </summary>
-    private bool pressedLastFrame = false;
-
-    /// <summary>
-    /// Previous X and Y coordinates of the cursor to compare for interpolation.
-    /// </summary>
-    private int lastX,
-        lastY = 0;
-
-    /// <summary>
-    /// Precomputed multipliers for scaling X and Y coordinates based on canvas size.
-    /// </summary>
-    private float xMult,
-        yMult;
 
     /// <summary>
     /// Initializes the canvas, texture, and the drawing environment at the start.
     /// </summary>
     private void Start()
     {
+        // Initialize AI model
+        _runtimeModel = ModelLoader.Load(modelAsset);
+        _engine = WorkerFactory.CreateWorker(_runtimeModel, WorkerFactory.Device.GPU);
+        prediction = new Prediction();
+
         // Initialize colorMap with the canvas's width and height
         colorMap = new Color[totalXPixels * totalYPixels];
 
@@ -156,6 +148,10 @@ public class CanvasDraw : MonoBehaviour
             }
         }
     }
+
+    // =======================================
+    // Drawing Section - Handles canvas and brush functionality
+    // =======================================
 
     /// <summary>
     /// Calculates the pixel position on the texture based on mouse position and applies the brush stroke.
@@ -252,14 +248,6 @@ public class CanvasDraw : MonoBehaviour
     }
 
     /// <summary>
-    /// Placeholder method to store the drawn image. Currently, it only logs to the console.
-    /// </summary>
-    void storeImage()
-    {
-        UnityEngine.Debug.Log("stored!");
-    }
-
-    /// <summary>
     /// Draws a brush stroke at specified pixel coordinates.
     /// </summary>
     void DrawBrush(int xPix, int yPix)
@@ -280,25 +268,6 @@ public class CanvasDraw : MonoBehaviour
                 }
             }
         }
-    }
-
-    // Debug method to print the color map to the console
-    void PrintColorMap()
-    {
-        string colorMapString = "Color Map: \n";
-
-        for (int y = 0; y < totalYPixels; y++)
-        {
-            for (int x = 0; x < totalXPixels; x++)
-            {
-                Color color = colorMap[y * totalYPixels + x];
-                colorMapString +=
-                    $"({x},{y}): R={color.r}, G={color.g}, B={color.b}, A={color.a} | ";
-            }
-            colorMapString += "\n";
-        }
-
-        UnityEngine.Debug.Log(colorMapString); // Output color map for debugging
     }
 
     /// <summary>
@@ -338,34 +307,79 @@ public class CanvasDraw : MonoBehaviour
         SetTexture();
     }
 
+
+
+    // =======================================
+    // AI Section - Handles prediction using Barracuda model
+    // =======================================
+
     /// <summary>
-    /// Saves the current canvas texture as a PNG image.
+    /// Placeholder method to store the drawn image. Currently, it only logs to the console.
     /// </summary>
-    void SaveTextureAsPNG(Texture2D texture, string fileName)
+    void storeImage()
     {
-        if (texture == null)
+        Predict(generatedTexture);
+    }
+
+    public void Predict(Texture2D image)
+    {
+        image = ResizeTexture(image, 28, 28);
+        int height = 28,
+            width = 28,
+            channels = 1;
+
+        Tensor tensorText = new Tensor(image, channels);
+        float[] zeroData = new float[height * width * channels];
+        Tensor inputTensor = new Tensor(new int[] { 1, height, width, channels }, zeroData);
+
+        for (int y = 0; y < height; y++)
         {
-            UnityEngine.Debug.LogError("Texture is null. Cannot save as PNG.");
-            return;
+            for (int x = 0; x < width; x++)
+            {
+                float grayscale = 1.0f - tensorText[0, y, width - x - 1, 0];
+                inputTensor[0, y, x, 0] = grayscale;
+            }
         }
 
-        byte[] pngBytes = texture.EncodeToPNG(); // Encode the texture as PNG
-        if (pngBytes == null)
+        Tensor outputTensor = _engine.Execute(inputTensor).PeekOutput();
+        prediction.SetPrediction(outputTensor);
+
+        // Log the predicted digit and full probabilities for each digit
+        predictionText.text = "Probabilities of different digits:\n";
+        string probabilitiesText = "";
+        for (int i = 0; i < prediction.predicted.Length; i++)
         {
-            UnityEngine.Debug.LogError("Failed to encode texture to PNG format.");
-            return;
+            probabilitiesText += $"Digit {i}: {prediction.predicted[i]:0.000}\n";
         }
 
-        string filePath = Path.Combine(Application.persistentDataPath, fileName); // Set save path
+        // Append predicted value at the end in green color
+        string predictedValueText = $"Predicted: <color=green>{prediction.predictedValue}</color>";
 
-        try
-        {
-            File.WriteAllBytes(filePath, pngBytes); // Save the PNG bytes to the specified path
-            UnityEngine.Debug.Log($"Image successfully saved to {filePath}");
-        }
-        catch (Exception ex)
-        {
-            UnityEngine.Debug.LogError($"Failed to save image to {filePath}. Error: {ex.Message}");
-        }
+        // Combine both probabilities and predicted value
+        predictionText.text =
+            "Probabilities of different digits:\n" + probabilitiesText + "\n" + predictedValueText;
+
+        tensorText.Dispose();
+        inputTensor.Dispose();
+    }
+
+    /// <summary>
+    /// Resizes the input texture to the desired width and height using bilinear interpolation.
+    /// </summary>
+    private Texture2D ResizeTexture(Texture2D texture2D, int newWidth, int newHeight)
+    {
+        RenderTexture rt = new RenderTexture(newWidth, newHeight, 24);
+        rt.filterMode = FilterMode.Bilinear;
+        RenderTexture.active = rt;
+
+        Graphics.Blit(texture2D, rt);
+        Texture2D result = new Texture2D(newWidth, newHeight, TextureFormat.RGB24, false);
+        result.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
+        result.Apply();
+
+        RenderTexture.active = null;
+        rt.Release();
+
+        return result;
     }
 }
