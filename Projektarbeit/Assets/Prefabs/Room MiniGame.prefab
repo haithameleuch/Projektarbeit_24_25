@@ -1216,8 +1216,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1.7287068}
-  m_Center: {x: 0, y: 0, z: -0.36435327}
+  m_Size: {x: 2.6176116, y: 1, z: 4.7583857}
+  m_Center: {x: 0.042726874, y: 0, z: -1.8791925}
 --- !u!114 &5130920308049677344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1230,20 +1230,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7facd82ff6b487349b9d609364d4d154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prediction:
+    predictedValue: 0
+    predicted: []
+  generatedTexture: {fileID: 0}
   totalXPixels: 200
-  predictionText: {fileID: 834843457514098311}
   totalYPixels: 200
   brushSize: 10
+  predictionText: {fileID: 834843457514098311}
   modelAsset: {fileID: 5022602860645237092, guid: 1c3e246f67acc9178b7944623cefee37, type: 3}
   useInterpolation: 1
   topLeftCorner: {fileID: 8021698323711689083}
   bottomRightCorner: {fileID: 916226636197419150}
   point: {fileID: 5156852697803068719}
   material: {fileID: 2100000, guid: d963498b3fdda51db83758f6763dcf74, type: 2}
-  generatedTexture: {fileID: 0}
-  prediction:
-    predictedValue: 0
-    predicted: []
 --- !u!114 &3531628281242771502
 MonoBehaviour:
   m_ObjectHideFlags: 0

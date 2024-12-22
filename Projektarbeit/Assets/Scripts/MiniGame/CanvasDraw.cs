@@ -307,8 +307,6 @@ public class CanvasDraw : MonoBehaviour
         SetTexture();
     }
 
-
-
     // =======================================
     // AI Section - Handles prediction using Barracuda model
     // =======================================
