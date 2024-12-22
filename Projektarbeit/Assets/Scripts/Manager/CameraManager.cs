@@ -112,10 +112,6 @@ public class CameraManager : MonoBehaviour
                 SetTopDownView();
             }
         }
-        else if (Input.GetKeyDown(canvSwitchKey))
-        {
-            SetCanvView();
-        }
     }
 
     /// <summary>
@@ -191,5 +187,27 @@ public class CameraManager : MonoBehaviour
                 renderer.enabled = visible;
             }
         }
+    }
+
+    /// <summary>
+    /// Called when the script instance is being enabled.
+    /// Subscribes to the OnActivateCanvasView event to ensure the camera switches to Canvas View
+    /// whenever the event is triggered.
+    /// </summary>
+    private void OnEnable()
+    {
+        // Subscribe to the Canvas View activation event
+        EventManager.OnActivateCanvasView += SetCanvView;
+    }
+
+    /// <summary>
+    /// Called when the script instance is being disabled.
+    /// Unsubscribes from the OnActivateCanvasView event to prevent potential memory leaks
+    /// or unexpected behavior if the event is triggered while the script is inactive.
+    /// </summary>
+    private void OnDisable()
+    {
+        // Unsubscribe from the event to prevent memory leaks
+        EventManager.OnActivateCanvasView -= SetCanvView;
     }
 }
