@@ -4,6 +4,7 @@ using UnityEngine;
 /// <summary>
 /// Generates a dungeon using a maze algorithm to create interconnected rooms with walls and doors.
 /// Each room is represented by a cell in a grid and can connect to its neighbors based on the maze layout.
+/// It handles the placement of rooms and spawners.
 /// </summary>
 public class DungeonGenerator : MonoBehaviour
 {
@@ -45,9 +46,15 @@ public class DungeonGenerator : MonoBehaviour
     /// </summary>
     [SerializeField] private Vector2 offset;
 
+    /// <summary>
+    /// Array of item prefabs to be spawned in the dungeon rooms.
+    /// </summary>
     [Header("Item Settings")]
     [SerializeField] private GameObject[] items;
 
+    /// <summary>
+    /// List of spawners used to populate dungeon rooms.
+    /// </summary>
     private List<ISpawner> _spawners;
 
     /// <summary>
@@ -67,6 +74,7 @@ public class DungeonGenerator : MonoBehaviour
 
     /// <summary>
     /// Initializes the dungeon generation process by setting up the grid and generating the maze.
+    /// Initializes also the spawner setup.
     /// </summary>
     private void Start()
     {
@@ -83,6 +91,7 @@ public class DungeonGenerator : MonoBehaviour
     /// <summary>
     /// Instantiates room prefabs in the dungeon based on the generated maze structure.
     /// Each room is positioned in the grid and updated to reflect its door connections.
+    /// Utilizes spawners to populate rooms.
     /// </summary>
     private void GenerateDungeon()
     {
@@ -105,6 +114,8 @@ public class DungeonGenerator : MonoBehaviour
                     newRoom.name += $" {i}-{j}";
 
                     bool isStartRoom = (i == 0 && j == 0);
+                    
+                    // Use all spawners to populate the room
                     foreach (var spawner in _spawners)
                     {
                         spawner.SpawnInRoom(newRoom, isStartRoom);
