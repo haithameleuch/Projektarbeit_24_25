@@ -26,10 +26,12 @@ public class ItemSpawner : ISpawner
             int randomIndex = Random.Range(0, availablePositions.Count);
             Vector3 position = availablePositions[randomIndex];
             availablePositions.RemoveAt(randomIndex);
+            
+            Quaternion randomRotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
 
             Object.Instantiate(_items[Random.Range(0, _items.Length)],
                 position,
-                Quaternion.identity,
+                randomRotation,
                 room.transform
             );
         }
