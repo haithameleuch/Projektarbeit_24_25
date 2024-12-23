@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 /// <summary>
 /// Generates a dungeon using a maze algorithm to create interconnected rooms with walls and doors.
@@ -28,6 +27,7 @@ public class DungeonGenerator : MonoBehaviour
     /// <summary>
     /// Dimensions of the dungeon grid (width x height).
     /// </summary>
+    [Header("Dungeon Settings")]
     [SerializeField] private Vector2 size;
 
     /// <summary>
@@ -44,6 +44,11 @@ public class DungeonGenerator : MonoBehaviour
     /// Offset distance between rooms in world space.
     /// </summary>
     [SerializeField] private Vector2 offset;
+
+    [Header("Item Settings")]
+    [SerializeField] private GameObject[] items;
+
+    private List<ISpawner> _spawners;
 
     /// <summary>
     /// Collection of cells representing the dungeon grid.
@@ -66,6 +71,12 @@ public class DungeonGenerator : MonoBehaviour
     private void Start()
     {
         _maxCells = (int)(size.x * size.y);
+
+        _spawners = new List<ISpawner>
+        {
+            new ItemSpawner(items, offset)
+        };
+        
         MazeGenerator();
     }
 
@@ -92,6 +103,12 @@ public class DungeonGenerator : MonoBehaviour
 
                     newRoom.UpdateRoom(currentCell.Status);
                     newRoom.name += $" {i}-{j}";
+
+                    bool isStartRoom = (i == 0 && j == 0);
+                    foreach (var spawner in _spawners)
+                    {
+                        spawner.SpawnInRoom(newRoom, isStartRoom);
+                    }
                 }
             }
         }
