@@ -29,22 +29,26 @@ public class DungeonGenerator : MonoBehaviour
     /// Dimensions of the dungeon grid (width x height).
     /// </summary>
     [Header("Dungeon Settings")]
-    [SerializeField] private Vector2 size;
+    [SerializeField]
+    private Vector2 size;
 
     /// <summary>
     /// The starting cell index for the maze generation algorithm.
     /// </summary>
-    [SerializeField] private int startPos;
+    [SerializeField]
+    private int startPos;
 
     /// <summary>
     /// Array of room prefabs used to populate the dungeon.
     /// </summary>
-    [SerializeField] private GameObject[] rooms;
+    [SerializeField]
+    private GameObject[] rooms;
 
     /// <summary>
     /// Offset distance between rooms in world space.
     /// </summary>
-    [SerializeField] private Vector2 offset;
+    [SerializeField]
+    private Vector2 offset;
 
     /// <summary>
     /// Array of item prefabs to be spawned in the dungeon rooms.
@@ -104,11 +108,12 @@ public class DungeonGenerator : MonoBehaviour
                 {
                     int randomRoom = Random.Range(0, rooms.Length);
                     var newRoom = Instantiate(
-                        rooms[randomRoom],
-                        new Vector3(i * offset.x, 0, -j * offset.y),
-                        Quaternion.identity,
-                        transform
-                    ).GetComponent<RoomBehaviour>();
+                            rooms[randomRoom],
+                            new Vector3(i * offset.x, 0, -j * offset.y),
+                            Quaternion.identity,
+                            transform
+                        )
+                        .GetComponent<RoomBehaviour>();
 
                     newRoom.UpdateRoom(currentCell.Status);
                     newRoom.name += $" {i}-{j}";
@@ -156,7 +161,8 @@ public class DungeonGenerator : MonoBehaviour
             if (neighbors.Count == 0)
             {
                 // Backtrack if no unvisited neighbors are available
-                if (path.Count == 0) break;
+                if (path.Count == 0)
+                    break;
                 currentCell = path.Pop();
             }
             else

@@ -9,22 +9,26 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// <summary>
     /// Reference to the input handling system for player movement and look controls.
     /// </summary>
-    [SerializeField] private GameInputManager gameInput;
+    [SerializeField]
+    private GameInputManager gameInput;
 
     /// <summary>
     /// Speed of the player's movement.
     /// </summary>
-    [SerializeField] private float moveSpeed = 7f;
+    [SerializeField]
+    private float moveSpeed = 7f;
 
     /// <summary>
     /// Sensitivity of the mouse input for player rotation.
     /// </summary>
-    [SerializeField] private float mouseSensitivity = 0.2f;
+    [SerializeField]
+    private float mouseSensitivity = 0.2f;
 
     /// <summary>
     /// Smoothness factor for interpolating the player's rotation.
     /// </summary>
-    [SerializeField] private float rotationSmoothness = 0.3f;
+    [SerializeField]
+    private float rotationSmoothness = 0.3f;
 
     /// <summary>
     /// Current Y-axis rotation of the player.
@@ -58,6 +62,7 @@ public class FirstPersonPlayerController : MonoBehaviour
 
         // Apply mouse-based rotation.
         HandleRotation();
+        Drawing();
     }
 
     /// <summary>
@@ -66,18 +71,21 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// <param name="moveDir">The direction vector for movement.</param>
     private void HandleMovement(Vector3 moveDir)
     {
-        float moveDistance = moveSpeed * Time.deltaTime;    // Maximum distance the player can move this frame.
-        float playerRadius = 0.95f;                         // Radius of the player's capsule for collision detection.
-        float playerHeight = 2f;                            // Height of the player's capsule for collision detection.
+        float moveDistance = moveSpeed * Time.deltaTime; // Maximum distance the player can move this frame.
+        float playerRadius = 0.95f; // Radius of the player's capsule for collision detection.
+        float playerHeight = 2f; // Height of the player's capsule for collision detection.
 
         // Check for collisions in the movement direction using CapsuleCast.
-        if (Physics.CapsuleCast(
+        if (
+            Physics.CapsuleCast(
                 transform.position,
                 transform.position + Vector3.up * playerHeight,
                 playerRadius,
                 moveDir,
                 out RaycastHit hit,
-                moveDistance))
+                moveDistance
+            )
+        )
         {
             // If a collision is detected, calculate the slide direction along the wall.
             if (hit.collider)
@@ -85,13 +93,16 @@ public class FirstPersonPlayerController : MonoBehaviour
                 Vector3 slideDir = Vector3.ProjectOnPlane(moveDir, hit.normal);
 
                 // Perform a secondary check to prevent sliding at sharp corners.
-                if (Physics.CapsuleCast(
+                if (
+                    Physics.CapsuleCast(
                         transform.position,
                         transform.position + Vector3.up * playerHeight,
                         playerRadius,
                         slideDir,
                         out RaycastHit edgeHit,
-                        moveDistance))
+                        moveDistance
+                    )
+                )
                 {
                     slideDir = Vector3.zero; // Stop movement at sharp corners.
                 }
@@ -121,5 +132,32 @@ public class FirstPersonPlayerController : MonoBehaviour
         // Smoothly interpolate to the target rotation using Slerp.
         _currentRotation = Quaternion.Slerp(_currentRotation, targetRotation, rotationSmoothness);
         transform.rotation = _currentRotation;
+    }
+
+    /// <summary>
+    /// Detects and interacts with any nearby interactable objects within a specified radius.
+    /// </summary>
+    private void Drawing()
+    {
+        // Define the radius within which we check for interactable objects
+        float pickupRadius = 2f;
+
+        // Perform a SphereCast to detect all objects within the pickup radius, cast in the upward direction (Vector3.up)
+        // The 0f range ensures we're only checking for objects at the current position
+        RaycastHit[] hits = Physics.SphereCastAll(transform.position, pickupRadius, Vector3.up, 0f);
+
+        // Loop through all detected hits to check if any objects are interactable
+        foreach (RaycastHit hit in hits)
+        {
+            // Attempt to get the IInteractable component from the object that was hit
+            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+
+            // If the object implements the IInteractable interface, interact with it
+            if (interactable is not null)
+            {
+                // Call the Interact method on the interactable object, passing this gameObject as the interacting object
+                interactable.Interact(gameObject);
+            }
+        }
     }
 }
