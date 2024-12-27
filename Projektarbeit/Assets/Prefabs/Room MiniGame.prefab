@@ -1230,10 +1230,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7facd82ff6b487349b9d609364d4d154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prediction:
-    predictedValue: 0
-    predicted: []
   generatedTexture: {fileID: 0}
+  inputTexture: {fileID: 2800000, guid: 3d7b53ba58d7f8bbba4a0a77c5e38609, type: 3}
   totalXPixels: 200
   totalYPixels: 200
   brushSize: 10
