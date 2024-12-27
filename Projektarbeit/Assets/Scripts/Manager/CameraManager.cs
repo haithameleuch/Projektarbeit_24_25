@@ -117,6 +117,7 @@ public class CameraManager : MonoBehaviour
 
         topDownCamera.Priority = 10;
         firstPersonCamera.Priority = 5;
+        canvCamera.Priority = 5;
 
         topDownPlayerController.enabled = true;
         firstPersonPlayerController.enabled = false;
@@ -136,6 +137,7 @@ public class CameraManager : MonoBehaviour
 
         topDownCamera.Priority = 5;
         firstPersonCamera.Priority = 10;
+        canvCamera.Priority = 5;
 
         topDownPlayerController.enabled = false;
         firstPersonPlayerController.enabled = true;

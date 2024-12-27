@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
-using Unity.Sentis;
+using Unity.Sentis; // https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/index.html
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,9 +19,6 @@ public class CanvasDraw : MonoBehaviour
 
     // This small model works just as fast on the CPU as well as the GPU:
     static Unity.Sentis.BackendType backendType = Unity.Sentis.BackendType.CPU;
-
-    // width and height of the image:
-    const int imageWidth = 28;
 
     // input tensor
     Tensor<float> outputTensor = null;
@@ -39,15 +36,18 @@ public class CanvasDraw : MonoBehaviour
     private Color[] colorMap;
     public Texture2D generatedTexture;
 
+    // width and height of the image:
+    const int imageWidth = 28;
+
     // Public settings for the canvas size and brush
     [SerializeField]
-    public int totalXPixels = 28;
+    public int totalXPixels = 200;
 
     [SerializeField]
-    public int totalYPixels = 28;
+    public int totalYPixels = 200;
 
     [SerializeField]
-    public int brushSize = 2;
+    public int brushSize = 10;
 
     [SerializeField]
     public TextMeshPro predictionText;
@@ -55,11 +55,14 @@ public class CanvasDraw : MonoBehaviour
     [SerializeField]
     private ModelAsset modelAsset;
     Model model;
+
     public static bool draw = false;
     public bool useInterpolation = true;
     public Transform topLeftCorner;
     public Transform bottomRightCorner;
     public Transform point;
+
+    // Draw Texture Material(Canvas Color, e.g. White)
     public Material material;
 
     /// <summary>
@@ -290,11 +293,11 @@ public class CanvasDraw : MonoBehaviour
     public void Predict(Texture2D image)
     {
         // Preprocess the image to resize it for prediction
-        Texture2D resizedTexture = Preprocessing(image, 28, 28);
+        Texture2D preprocessedTexture = Preprocessing(image, 28, 28);
 
         // Convert the resized texture into a tensor
         Tensor<float> inputTensor = TextureConverter.ToTensor(
-            resizedTexture,
+            preprocessedTexture,
             width: 28,
             height: 28,
             channels: 1
@@ -303,6 +306,8 @@ public class CanvasDraw : MonoBehaviour
         // Run the neural network engine to make a prediction
         engine.Schedule(inputTensor);
         outputTensor = engine.PeekOutput() as Tensor<float>;
+
+        // Clone is needed, since the output tensor is not readable and it is serialized
         outputTensor = outputTensor.ReadbackAndClone();
 
         // Display the predicted digit probabilities in the UI
