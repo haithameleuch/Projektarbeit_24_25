@@ -576,7 +576,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f59f629245c72408394ddcb708d3cb9a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  size: {x: 3, y: 1}
+  size: {x: 1, y: 1}
   startPos: 0
   rooms:
   - {fileID: 7196524108051718529, guid: a0b7d0413ea9571ffa33d6c4be176e3f, type: 3}
@@ -876,7 +876,6 @@ MonoBehaviour:
   firstPersonCamera: {fileID: 724523106}
   canvCamera: {fileID: 170397430}
   switchKey: 9
-  canvSwitchKey: 103
   topDownPlayerController: {fileID: 1561343256}
   firstPersonPlayerController: {fileID: 1561343255}
   topDownShooting: {fileID: 1561343258}
