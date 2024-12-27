@@ -114,10 +114,10 @@ public class CanvasDraw : MonoBehaviour
                 ResetColor(); // Reset the canvas to white
             }
 
-            // Right-click to store the image (currently an empty functionality placeholder)
+            // Right-click to predict the digit on the image
             if (Input.GetMouseButton(1))
             {
-                storeImage(); // Placeholder method to store the image
+                Predict(generatedTexture); // Call the Predict method
             }
         }
     }
@@ -285,14 +285,6 @@ public class CanvasDraw : MonoBehaviour
     // =======================================
 
     /// <summary>
-    /// Placeholder method to store the drawn image. Currently, it only logs the prediction result to the console.
-    /// </summary>
-    void storeImage()
-    {
-        Predict(generatedTexture); // Call the Predict method when storing the image
-    }
-
-    /// <summary>
     /// Predict the digit using the Texture from Canvas
     /// </summary>
     public void Predict(Texture2D image)
@@ -405,5 +397,25 @@ public class CanvasDraw : MonoBehaviour
         rt.Release();
 
         return result;
+    }
+
+    /// <summary>
+    /// Cleans up any resources when the object is destroyed.
+    /// </summary>
+    private void OnDestroy()
+    {
+        // Dispose of the engine to release resources
+        if (engine != null)
+        {
+            engine.Dispose();
+            engine = null;
+        }
+
+        // Dispose of the output tensor to release resources
+        if (outputTensor != null)
+        {
+            outputTensor.Dispose();
+            outputTensor = null;
+        }
     }
 }
