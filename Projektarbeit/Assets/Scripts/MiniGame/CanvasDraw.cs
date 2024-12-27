@@ -30,9 +30,7 @@ public class CanvasDraw : MonoBehaviour
         public void SetPrediction(Tensor t)
         {
             predicted = t.AsFloats();
-            Softmax(predicted);
             predictedValue = Array.IndexOf(predicted, predicted.Max());
-            UnityEngine.Debug.Log($"Predicted: {predictedValue}");
         }
 
         private void Softmax(float[] logits)
@@ -327,8 +325,7 @@ public class CanvasDraw : MonoBehaviour
             channels = 1;
 
         Tensor tensorText = new Tensor(image, channels);
-        float[] zeroData = new float[height * width * channels];
-        Tensor inputTensor = new Tensor(new int[] { 1, height, width, channels }, zeroData);
+        Tensor inputTensor = new Tensor(tensorText.shape);
 
         for (int y = 0; y < height; y++)
         {

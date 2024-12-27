@@ -32,12 +32,6 @@ public class CameraManager : MonoBehaviour
     private KeyCode switchKey = KeyCode.Tab;
 
     /// <summary>
-    /// The key used to toggle between the painting camera and global camera.
-    /// </summary>
-    [SerializeField]
-    private KeyCode canvSwitchKey = KeyCode.G;
-
-    /// <summary>
     /// The script controlling player movement in the top-down view.
     /// </summary>
     [SerializeField]
