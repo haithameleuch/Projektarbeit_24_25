@@ -4,8 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using TMPro;
-using Unity.Barracuda;
 using Unity.Cinemachine;
+using Unity.Sentis;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,43 +15,16 @@ using UnityEngine.UI;
 public class CanvasDraw : MonoBehaviour
 {
     // AI Model-related variables
-    private Model _runtimeModel;
-    private IWorker _engine;
+    private Worker engine;
 
-    /// <summary>
-    /// Stores the predicted value and the probabilities of different digits.
-    /// </summary>
-    [Serializable]
-    public struct Prediction
-    {
-        public int predictedValue;
-        public float[] predicted;
+    // This small model works just as fast on the CPU as well as the GPU:
+    static Unity.Sentis.BackendType backendType = Unity.Sentis.BackendType.CPU;
 
-        public void SetPrediction(Tensor t)
-        {
-            predicted = t.AsFloats();
-            predictedValue = Array.IndexOf(predicted, predicted.Max());
-        }
+    // width and height of the image:
+    const int imageWidth = 28;
 
-        private void Softmax(float[] logits)
-        {
-            float maxLogit = logits.Max();
-            float sumExp = 0f;
-
-            for (int i = 0; i < logits.Length; i++)
-            {
-                logits[i] = Mathf.Exp(logits[i] - maxLogit);
-                sumExp += logits[i];
-            }
-
-            for (int i = 0; i < logits.Length; i++)
-            {
-                logits[i] /= sumExp;
-            }
-        }
-    }
-
-    public Prediction prediction;
+    // input tensor
+    Tensor<float> outputTensor = null;
 
     // Drawing-related variables
     private GameObject CanvCamera;
@@ -68,19 +41,20 @@ public class CanvasDraw : MonoBehaviour
 
     // Public settings for the canvas size and brush
     [SerializeField]
-    public int totalXPixels = 200;
+    public int totalXPixels = 28;
 
     [SerializeField]
-    public int totalYPixels = 200;
+    public int totalYPixels = 28;
 
     [SerializeField]
-    public int brushSize = 10;
+    public int brushSize = 2;
 
     [SerializeField]
     public TextMeshPro predictionText;
 
     [SerializeField]
-    private NNModel modelAsset;
+    private ModelAsset modelAsset;
+    Model model;
     public static bool draw = false;
     public bool useInterpolation = true;
     public Transform topLeftCorner;
@@ -93,21 +67,22 @@ public class CanvasDraw : MonoBehaviour
     /// </summary>
     private void Start()
     {
-        // Initialize AI model
-        _runtimeModel = ModelLoader.Load(modelAsset);
-        _engine = WorkerFactory.CreateWorker(_runtimeModel, WorkerFactory.Device.GPU);
-        prediction = new Prediction();
+        // Initialize AI model by loading the model asset
+        model = ModelLoader.Load(modelAsset);
 
-        // Initialize colorMap with the canvas's width and height
+        // Create the neural network engine
+        engine = new Worker(model, backendType);
+
+        // Initialize color map based on the canvas dimensions
         colorMap = new Color[totalXPixels * totalYPixels];
 
-        // Create a new texture with specified dimensions
+        // Create a new texture with the specified width and height
         generatedTexture = new Texture2D(totalYPixels, totalXPixels, TextureFormat.RGBA32, false); // RGBA32 format for color
-        ResetColor(); // Reset canvas to white
+        ResetColor(); // Reset the canvas to white
         generatedTexture.filterMode = FilterMode.Point; // Pixelated look
-        material.SetTexture("_BaseMap", generatedTexture); // Assign texture to material
+        material.SetTexture("_BaseMap", generatedTexture); // Assign texture to the material
 
-        // Precompute scaling factors for mouse-to-pixel translation
+        // Precompute scaling factors to translate mouse position to pixel coordinates
         xMult = Math.Abs(totalXPixels / (bottomRightCorner.position.x - topLeftCorner.position.x));
         yMult = Math.Abs(totalYPixels / (bottomRightCorner.position.y - topLeftCorner.position.y));
     }
@@ -119,30 +94,30 @@ public class CanvasDraw : MonoBehaviour
     {
         if (draw == true)
         {
-            // Start drawing when mouse button is pressed
+            // Start drawing when the mouse button is pressed
             if (Input.GetMouseButtonDown(0))
             {
-                pressedLastFrame = false; // Disable interpolation when starting new stroke
+                pressedLastFrame = false; // Disable interpolation when starting a new stroke
             }
 
-            // Draw when mouse button is held
+            // Draw when the mouse button is held down
             if (Input.GetMouseButton(0))
             {
                 CalculatePixel(); // Calculate and apply brush strokes based on mouse position
             }
 
-            // Clear canvas when "C" key is pressed
+            // Clear the canvas when "C" key is pressed
             if (Input.GetKeyDown(KeyCode.C))
             {
                 xPixel = 0;
                 yPixel = 0;
-                ResetColor(); // Reset to white
+                ResetColor(); // Reset the canvas to white
             }
 
-            // Right-click to store the image (currently empty functionality)
+            // Right-click to store the image (currently an empty functionality placeholder)
             if (Input.GetMouseButton(1))
             {
-                storeImage(); // Placeholder for storing image
+                storeImage(); // Placeholder method to store the image
             }
         }
     }
@@ -152,7 +127,7 @@ public class CanvasDraw : MonoBehaviour
     // =======================================
 
     /// <summary>
-    /// Calculates the pixel position on the texture based on mouse position and applies the brush stroke.
+    /// Calculates the pixel position on the texture based on the mouse position and applies the brush stroke.
     /// </summary>
     private void CalculatePixel()
     {
@@ -190,7 +165,7 @@ public class CanvasDraw : MonoBehaviour
         {
             point.position = hit.point; // Move the pointer to the hit point
 
-            // Calculate pixel position based on pointer's position relative to canvas corners
+            // Calculate pixel position based on the pointer's position relative to canvas corners
             xPixel = (int)((point.position.x - topLeftCorner.position.x) * xMult);
             yPixel = (int)((point.position.y - bottomRightCorner.position.y) * yMult);
 
@@ -198,7 +173,7 @@ public class CanvasDraw : MonoBehaviour
             xPixel = Mathf.Clamp(xPixel, 0, totalXPixels - 1);
             yPixel = Mathf.Clamp(yPixel, 0, totalYPixels - 1);
 
-            // Apply brush stroke at the calculated pixel
+            // Apply brush stroke at the calculated pixel position
             ChangePixelsAroundPoint();
         }
         else
@@ -216,7 +191,7 @@ public class CanvasDraw : MonoBehaviour
         // Apply interpolation if enabled and the current pixel differs from the last
         if (useInterpolation && pressedLastFrame && (lastX != xPixel || lastY != yPixel))
         {
-            // Calculate distance between current and previous position
+            // Calculate the distance between the current and previous pixel positions
             int dist = (int)
                 Mathf.Sqrt(
                     (xPixel - lastX) * (xPixel - lastX) + (yPixel - lastY) * (yPixel - lastY)
@@ -232,7 +207,7 @@ public class CanvasDraw : MonoBehaviour
         }
         else
         {
-            // No interpolation, directly apply brush at current pixel
+            // No interpolation, directly apply brush at the current pixel
             DrawBrush(xPixel, yPixel);
         }
 
@@ -255,7 +230,7 @@ public class CanvasDraw : MonoBehaviour
         int maxi = Mathf.Min(totalXPixels - 1, xPix + brushSize - 1);
         int maxj = Mathf.Min(totalYPixels - 1, yPix + brushSize - 1);
 
-        // Loop over the brush area and apply color to each pixel within the brush circle
+        // Loop over the brush area and apply color to each pixel within the brush's radius
         for (int x = i; x <= maxi; x++)
         {
             for (int y = j; y <= maxj; y++)
@@ -285,13 +260,13 @@ public class CanvasDraw : MonoBehaviour
             }
         }
 
-        // Assign rotated color map to the texture and apply it
+        // Assign the rotated color map to the texture and apply it
         generatedTexture.SetPixels(rotatedColorMap);
         generatedTexture.Apply();
     }
 
     /// <summary>
-    /// Resets the entire canvas to white.
+    /// Resets the entire canvas to white color.
     /// </summary>
     void ResetColor()
     {
@@ -301,7 +276,7 @@ public class CanvasDraw : MonoBehaviour
             colorMap[i] = new Color(1f, 1f, 1f, 1f); // White color
         }
 
-        // Apply the new color map to the canvas texture
+        // Apply the updated color map to the canvas texture
         SetTexture();
     }
 
@@ -310,68 +285,122 @@ public class CanvasDraw : MonoBehaviour
     // =======================================
 
     /// <summary>
-    /// Placeholder method to store the drawn image. Currently, it only logs to the console.
+    /// Placeholder method to store the drawn image. Currently, it only logs the prediction result to the console.
     /// </summary>
     void storeImage()
     {
-        Predict(generatedTexture);
+        Predict(generatedTexture); // Call the Predict method when storing the image
     }
 
+    /// <summary>
+    /// Predict the digit using the Texture from Canvas
+    /// </summary>
     public void Predict(Texture2D image)
     {
-        image = ResizeTexture(image, 28, 28);
-        int height = 28,
-            width = 28,
-            channels = 1;
+        // Preprocess the image to resize it for prediction
+        Texture2D resizedTexture = Preprocessing(image, 28, 28);
 
-        Tensor tensorText = new Tensor(image, channels);
-        Tensor inputTensor = new Tensor(tensorText.shape);
+        // Convert the resized texture into a tensor
+        Tensor<float> inputTensor = TextureConverter.ToTensor(
+            resizedTexture,
+            width: 28,
+            height: 28,
+            channels: 1
+        );
 
-        for (int y = 0; y < height; y++)
+        // Run the neural network engine to make a prediction
+        engine.Schedule(inputTensor);
+        outputTensor = engine.PeekOutput() as Tensor<float>;
+        outputTensor = outputTensor.ReadbackAndClone();
+
+        // Display the predicted digit probabilities in the UI
+        predictionText.text = "Probabilities of different digits:\n";
+        string probabilitiesText = "";
+        for (int i = 0; i < 10; i++)
         {
-            for (int x = 0; x < width; x++)
+            probabilitiesText += $"Digit {i}: {outputTensor[i]:0.000}\n";
+        }
+
+        // Append the predicted digit in green color
+        string predictedValueText =
+            $"Predicted: <color=green>{GetMaxValueAndIndex(outputTensor)}</color>";
+
+        // Combine both probabilities and the predicted value
+        predictionText.text =
+            "Probabilities of different digits:\n" + probabilitiesText + "\n" + predictedValueText;
+        inputTensor?.Dispose(); // Clean up the input tensor
+    }
+
+    /// <summary>
+    /// Find the index of the greatest Value of the output
+    /// </summary>
+    public int GetMaxValueAndIndex(Tensor<float> tensor)
+    {
+        // Find the max value and its index
+        float maxValue = float.MinValue;
+        int maxIndex = -1;
+
+        for (int i = 0; i < 10; i++)
+        {
+            if (tensor[i] > maxValue)
             {
-                float grayscale = 1.0f - tensorText[0, y, width - x - 1, 0];
-                inputTensor[0, y, x, 0] = grayscale;
+                maxValue = tensor[i];
+                maxIndex = i;
             }
         }
 
-        Tensor outputTensor = _engine.Execute(inputTensor).PeekOutput();
-        prediction.SetPrediction(outputTensor);
-
-        // Log the predicted digit and full probabilities for each digit
-        predictionText.text = "Probabilities of different digits:\n";
-        string probabilitiesText = "";
-        for (int i = 0; i < prediction.predicted.Length; i++)
-        {
-            probabilitiesText += $"Digit {i}: {prediction.predicted[i]:0.000}\n";
-        }
-
-        // Append predicted value at the end in green color
-        string predictedValueText = $"Predicted: <color=green>{prediction.predictedValue}</color>";
-
-        // Combine both probabilities and predicted value
-        predictionText.text =
-            "Probabilities of different digits:\n" + probabilitiesText + "\n" + predictedValueText;
-
-        tensorText.Dispose();
-        inputTensor.Dispose();
+        // Return the index of the predicted digit
+        return maxIndex;
     }
 
     /// <summary>
     /// Resizes the input texture to the desired width and height using bilinear interpolation.
     /// </summary>
-    private Texture2D ResizeTexture(Texture2D texture2D, int newWidth, int newHeight)
+    private Texture2D Preprocessing(Texture2D texture2D, int newWidth, int newHeight)
     {
+        // Create a render texture with the desired size
         RenderTexture rt = new RenderTexture(newWidth, newHeight, 24);
         rt.filterMode = FilterMode.Bilinear;
         RenderTexture.active = rt;
 
+        // Blit the original texture into the render texture
         Graphics.Blit(texture2D, rt);
+
+        // Read the render texture into a new texture
         Texture2D result = new Texture2D(newWidth, newHeight, TextureFormat.RGB24, false);
         result.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
+
+        // Flip the pixels vertically and horizontally, then invert the colors
+        Color[] pixels = result.GetPixels();
+        Color[] flippedPixels = new Color[pixels.Length];
+        int rowLength = newWidth;
+
+        for (int y = 0; y < newHeight; y++)
+        {
+            for (int x = 0; x < newWidth; x++)
+            {
+                // Calculate the flipped index
+                int flippedIndex = (newWidth - 1 - x) + (newHeight - 1 - y) * rowLength;
+
+                // Invert the color
+                Color originalColor = pixels[x + y * rowLength];
+                Color invertedColor = new Color(
+                    1.0f - originalColor.r,
+                    1.0f - originalColor.g,
+                    1.0f - originalColor.b,
+                    originalColor.a
+                );
+
+                // Set the flipped and inverted pixel
+                flippedPixels[flippedIndex] = invertedColor;
+            }
+        }
+
+        // Apply the modified pixel data to the result texture
+        result.SetPixels(flippedPixels);
         result.Apply();
 
+        // Clean up the render texture
         RenderTexture.active = null;
         rt.Release();
 
