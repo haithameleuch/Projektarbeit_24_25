@@ -506,6 +506,8 @@ MonoBehaviour:
   rooms:
   - {fileID: 7196524108051718529, guid: 0e6072afc893246eaab74b063d5fd2ff, type: 3}
   offset: {x: 18, y: 10}
+  items:
+  - {fileID: 455864372753830893, guid: d130acdbb250da0418909701a876d82e, type: 3}
 --- !u!4 &546174994
 Transform:
   m_ObjectHideFlags: 0
@@ -802,9 +804,9 @@ MonoBehaviour:
   switchKey: 9
   topDownPlayerController: {fileID: 1561343256}
   firstPersonPlayerController: {fileID: 1561343255}
-  shootPoint: {fileID: 25442184}
   topDownShooting: {fileID: 1561343258}
   firstPersonShooting: {fileID: 1561343257}
+  shootPoint: {fileID: 25442184}
 --- !u!1 &1561343253
 GameObject:
   m_ObjectHideFlags: 0
