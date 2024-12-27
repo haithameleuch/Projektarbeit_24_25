@@ -140,7 +140,7 @@ public class FirstPersonPlayerController : MonoBehaviour
     private void Drawing()
     {
         // Define the radius within which we check for interactable objects
-        float pickupRadius = 1f;
+        float pickupRadius = 2f;
 
         // Perform a SphereCast to detect all objects within the pickup radius, cast in the upward direction (Vector3.up)
         // The 0f range ensures we're only checking for objects at the current position

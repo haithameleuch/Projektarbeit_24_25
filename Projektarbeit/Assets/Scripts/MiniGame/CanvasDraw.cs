@@ -295,6 +295,12 @@ public class CanvasDraw : MonoBehaviour
         // Preprocess the image to resize it for prediction
         Texture2D preprocessedTexture = Preprocessing(image, 28, 28);
 
+        if (outputTensor != null)
+        {
+            outputTensor.Dispose();
+            outputTensor = null;
+        }
+
         // Convert the resized texture into a tensor
         Tensor<float> inputTensor = TextureConverter.ToTensor(
             preprocessedTexture,
@@ -305,10 +311,11 @@ public class CanvasDraw : MonoBehaviour
 
         // Run the neural network engine to make a prediction
         engine.Schedule(inputTensor);
-        outputTensor = engine.PeekOutput() as Tensor<float>;
+        Tensor<float> rawOutput = engine.PeekOutput() as Tensor<float>;
+        outputTensor = rawOutput.ReadbackAndClone();
 
-        // Clone is needed, since the output tensor is not readable and it is serialized
-        outputTensor = outputTensor.ReadbackAndClone();
+        rawOutput.Dispose();
+        rawOutput = null;
 
         // Display the predicted digit probabilities in the UI
         predictionText.text = "Probabilities of different digits:\n";
