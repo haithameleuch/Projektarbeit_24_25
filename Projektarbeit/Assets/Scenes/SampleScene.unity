@@ -581,6 +581,8 @@ MonoBehaviour:
   rooms:
   - {fileID: 7196524108051718529, guid: a0b7d0413ea9571ffa33d6c4be176e3f, type: 3}
   offset: {x: 18, y: 10}
+  items:
+  - {fileID: 455864372753830893, guid: d130acdbb250da0418909701a876d82e, type: 3}
 --- !u!4 &546174994
 Transform:
   m_ObjectHideFlags: 0
