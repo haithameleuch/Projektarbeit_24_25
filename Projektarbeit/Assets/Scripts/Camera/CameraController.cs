@@ -9,22 +9,26 @@ public class CameraController : MonoBehaviour
     /// <summary>
     /// Reference to the player's Transform component.
     /// </summary>
-    [SerializeField] private Transform player;
+    [SerializeField]
+    private Transform player;
 
     /// <summary>
     /// The offset from the center of each room on the X and Z axes.
     /// </summary>
-    [SerializeField] private Vector2 roomOffset = new(9f, 5f);
+    [SerializeField]
+    private Vector2 roomOffset = new(9f, 5f);
 
     /// <summary>
     /// The height of the camera above the current room.
     /// </summary>
-    [SerializeField] private float cameraHeight = 12f;
+    [SerializeField]
+    private float cameraHeight = 12f;
 
     /// <summary>
     /// The duration of the camera's smooth transition between rooms.
     /// </summary>
-    [SerializeField] private float transitionDuration = 0.5f;
+    [SerializeField]
+    private float transitionDuration = 0.5f;
 
     /// <summary>
     /// Stores the current room coordinates of the player.
@@ -96,7 +100,11 @@ public class CameraController : MonoBehaviour
         while (time < transitionDuration)
         {
             // Interpolate between the current and target positions.
-            transform.position = Vector3.Lerp(startPosition, targetPosition, time / transitionDuration);
+            transform.position = Vector3.Lerp(
+                startPosition,
+                targetPosition,
+                time / transitionDuration
+            );
             time += Time.deltaTime;
             yield return null;
         }
