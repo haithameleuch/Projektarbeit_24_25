@@ -87,7 +87,7 @@ public class TopDownPlayerController : MonoBehaviour
         }
         CheckForObject();
         // Call Drawing interactable
-        Drawing();
+        //Drawing();
     }
 
     /// <summary>
