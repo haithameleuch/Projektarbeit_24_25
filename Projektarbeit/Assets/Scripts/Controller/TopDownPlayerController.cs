@@ -86,14 +86,12 @@ public class TopDownPlayerController : MonoBehaviour
             transform.position += moveDir * moveDistance;
         }
         CheckForObject();
-        // Call Drawing interactable
-        Drawing();
     }
 
     /// <summary>
     /// Detects and interacts with any nearby interactable objects within a specified radius.
     /// </summary>
-    private void Drawing()
+    private void CheckForObject()
     {
         // Define the radius within which we check for interactable objects
         float pickupRadius = 1f;
@@ -112,20 +110,6 @@ public class TopDownPlayerController : MonoBehaviour
             if (interactable is not null)
             {
                 // Call the Interact method on the interactable object, passing this gameObject as the interacting object
-                interactable.Interact(gameObject);
-            }
-        }
-    }
-
-    private void CheckForObject()
-    {
-        float pickupRadius = 1.0f;
-        RaycastHit[] hits = Physics.SphereCastAll(transform.position, pickupRadius, Vector3.up, 0f);
-        foreach (RaycastHit hit in hits)
-        {
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-            if (interactable is not null)
-            {
                 interactable.Interact(gameObject);
             }
         }
