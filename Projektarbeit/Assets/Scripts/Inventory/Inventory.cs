@@ -3,8 +3,9 @@ using UnityEngine;
 
 public class Inventory : MonoBehaviour
 {
-    public List<Item> items = new List<Item>();
-    public int maxSlots = 16;
+    [SerializeField]
+    private List<Item> items = new List<Item>();
+    private int maxSlots = 16;
 
     public bool AddItem(Item newItem)
     {
@@ -18,7 +19,6 @@ public class Inventory : MonoBehaviour
                 return true;
             }
         }
-
 
         // Check if the inventory is full
         if (items.Count < maxSlots)
@@ -56,5 +56,10 @@ public class Inventory : MonoBehaviour
         {
             Debug.Log($"{item.itemName} - Menge: {item.itemQuantity}");
         }
+    }
+
+    public List<Item> getInventory()
+    {
+        return items; 
     }
 }
