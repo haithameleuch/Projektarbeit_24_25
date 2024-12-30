@@ -20,12 +20,12 @@ public class InventoryUI : MonoBehaviour
     }
 
     public void UpdateUI()
-    {
+    { 
         foreach (Transform child in contentPanel)
         {
             Destroy(child.gameObject);
         }
-        foreach (Item item in inventory.items)
+        foreach (Item item in inventory.getInventory())
         {
             GameObject newSlot = Instantiate(slotPrefab,contentPanel);
             Image icon = newSlot.transform.Find("TopHalf").Find("Icon").GetComponent<Image>();
@@ -35,7 +35,5 @@ public class InventoryUI : MonoBehaviour
             Text textfield = newSlot.transform.Find("TextField").GetComponent<Text>();
             textfield.text = item.itemName;
         }
-    }
-
-    
+    }  
 }

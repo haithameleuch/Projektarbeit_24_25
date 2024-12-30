@@ -62,7 +62,7 @@ public class FirstPersonPlayerController : MonoBehaviour
 
         // Apply mouse-based rotation.
         HandleRotation();
-        Drawing();
+        CheckForObject();
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// <summary>
     /// Detects and interacts with any nearby interactable objects within a specified radius.
     /// </summary>
-    private void Drawing()
+    private void CheckForObject()
     {
         // Define the radius within which we check for interactable objects
         float pickupRadius = 2f;
