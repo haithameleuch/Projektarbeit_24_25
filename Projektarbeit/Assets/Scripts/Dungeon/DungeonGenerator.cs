@@ -92,10 +92,17 @@ public class DungeonGenerator : MonoBehaviour
     /// </summary>
     private Dictionary<Vector2Int, RoomBehaviour> _roomBehaviourMap = new();
     
-    //TODO KOMMENTAR
+    /// <summary>
+    /// Singleton instance of the DungeonGenerator, ensuring there is only one instance in the scene.
+    /// Provides global access to the DungeonGenerator functionality.
+    /// </summary>
     public static DungeonGenerator Instance { get; private set; }
 
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Ensures there is only one instance of the DungeonGenerator in the scene.
+    /// If another instance exists, it will be destroyed.
+    /// Optionally persists the instance across scenes if uncommented.
+    /// </summary>
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -106,6 +113,7 @@ public class DungeonGenerator : MonoBehaviour
 
         Instance = this;
         
+        // Uncomment to persist the DungeonGenerator across scene loads
         // DontDestroyOnLoad(gameObject);
     }
     
@@ -374,7 +382,12 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    //TODO KOMMENTAR
+    /// <summary>
+    /// Retrieves the RoomBehaviour associated with a specific coordinate in the dungeon grid.
+    /// Allows for quick access to room functionality based on its grid position.
+    /// </summary>
+    /// <param name="coordinate">The grid coordinate of the desired room.</param>
+    /// <returns>The RoomBehaviour of the room at the specified coordinate, or null if none exists.</returns>
     public RoomBehaviour GetRoomBehaviour(Vector2Int coordinate)
     {
         if (_roomBehaviourMap.TryGetValue(coordinate, out var roomBehaviour))

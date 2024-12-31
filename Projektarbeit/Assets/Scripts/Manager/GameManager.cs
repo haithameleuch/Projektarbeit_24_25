@@ -1,16 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//TODO KOMMENTAR
+/// <summary>
+/// Manages the overall game state, including tracking visited rooms
+/// and handling room-specific logic when entering a room.
+/// Implements a singleton pattern for global access.
+/// </summary>
 public class GameManager : MonoBehaviour
 {
-    //TODO KOMMENTAR
+    /// <summary>
+    /// Singleton instance of the GameManager, ensuring there is only one instance in the scene.
+    /// Provides global access to game management functionality.
+    /// </summary>
     public static GameManager Instance { get; private set; }
     
-    //TODO KOMMENTAR
+    /// <summary>
+    /// Tracks the coordinates of rooms that have been visited by the player.
+    /// Ensures rooms are not reprocessed unnecessarily.
+    /// </summary>
     private HashSet<Vector2Int> _visitedRooms = new();
     
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Ensures there is only one instance of the GameManager in the scene.
+    /// If another instance exists, it will be destroyed.
+    /// Persists the instance across scenes for consistent game state management.
+    /// </summary>
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -24,19 +38,31 @@ public class GameManager : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Marks a room as visited by adding its coordinates to the visited rooms set.
+    /// Prevents duplicate processing of the same room.
+    /// </summary>
+    /// <param name="roomCoordinate">The grid coordinate of the room to mark as visited.</param>
     public void MarkRoomVisited(Vector2Int roomCoordinate)
     {
         _visitedRooms.Add(roomCoordinate);
     }
     
-    //TODO KOMMENTAR
+    /// <summary>
+    /// Checks if a room at the specified coordinates has already been visited.
+    /// </summary>
+    /// <param name="roomCoordinate">The grid coordinate of the room to check.</param>
+    /// <returns>True if the room has been visited; otherwise, false.</returns>
     public bool IsRoomVisited(Vector2Int roomCoordinate)
     {
         return _visitedRooms.Contains(roomCoordinate);
     }
 
-    //TODO KOMMENTAR
+    /// <summary>
+    /// Handles the logic for entering a room. Marks the room as visited, updates its state,
+    /// and processes its type to trigger specific game logic.
+    /// </summary>
+    /// <param name="roomCoordinate">The grid coordinate of the room being entered.</param>
     public void HandleRoomEntry(Vector2Int roomCoordinate)
     {
         var roomBehaviour = DungeonGenerator.Instance.GetRoomBehaviour(roomCoordinate);
@@ -58,7 +84,11 @@ public class GameManager : MonoBehaviour
         ProcessRoomType(roomBehaviour.RoomData?.roomType);
     }
 
-    //TODO KOMMENTAR
+    /// <summary>
+    /// Processes the logic for a specific room type when the room is entered.
+    /// Handles actions like closing doors, starting battles, or triggering events.
+    /// </summary>
+    /// <param name="roomType">The type of the room being entered.</param>
     private void ProcessRoomType(RoomType? roomType)
     {
         if (!roomType.HasValue)
