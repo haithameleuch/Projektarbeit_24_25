@@ -11,10 +11,6 @@ public class CameraController : MonoBehaviour
     /// </summary>
     [SerializeField]
     private Transform player;
-    
-    //TODO NEU
-    [SerializeField] 
-    private DungeonGenerator dungeonGenerator;
 
     /// <summary>
     /// The offset from the center of each room on the X and Z axes.
@@ -50,7 +46,7 @@ public class CameraController : MonoBehaviour
     private void Start()
     {
         UpdateCameraPosition();
-        MarkRoomAsVisited(_currentRoom); //TODO NEW LINE
+        GameManager.Instance.HandleRoomEntry(_currentRoom);
     }
 
     /// <summary>
@@ -69,7 +65,7 @@ public class CameraController : MonoBehaviour
         {
             _currentRoom = newRoom;
             UpdateCameraPosition();
-            MarkRoomAsVisited(_currentRoom); //TODO NEW LINE
+            GameManager.Instance.HandleRoomEntry(_currentRoom);
         }
     }
 
@@ -117,52 +113,5 @@ public class CameraController : MonoBehaviour
 
         // Ensure the camera ends exactly at the target position.
         transform.position = targetPosition;
-    }
-
-    //TODO NEU
-    private void MarkRoomAsVisited(Vector2Int roomCoordinate)
-    {
-        var roomBehaviour = dungeonGenerator.GetRoomBehaviour(roomCoordinate);
-        if (roomBehaviour == null)
-        {
-            Debug.LogWarning($"Room {roomCoordinate} could not be found!");
-            return;
-        }
-
-        if (roomBehaviour.GetVisited())
-        {
-            Debug.Log($"Room {roomCoordinate} has already been visited!");
-            return;
-        }
-        
-        roomBehaviour.MarkVisited();
-        GameManager.Instance.MarkRoomVisited(roomCoordinate);
-
-        if (roomBehaviour.RoomData == null) return;
-
-        switch (roomBehaviour.RoomData.roomType)
-        {
-            case RoomType.Start:
-                Debug.Log("Enter Start Room");
-                break;
-            case RoomType.Normal:
-                Debug.Log("Enter Normal Room -> doors should close");
-                break;
-            case RoomType.Item:
-                Debug.Log("Enter Item Room -> doors should close");
-                break;
-            case RoomType.MiniGame:
-                Debug.Log("Enter MiniGame Room -> doors should close");
-                break;
-            case RoomType.Enemy:
-                Debug.Log("Enter Enemy Room -> doors should close");
-                break;
-            case RoomType.Boss:
-                Debug.Log("Enter Boss Room -> doors should close");
-                break;
-            default:
-                Debug.Log("Unknown room type");
-                break;
-        }
     }
 }
