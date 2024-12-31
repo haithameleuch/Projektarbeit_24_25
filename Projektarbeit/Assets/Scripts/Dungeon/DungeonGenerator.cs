@@ -140,12 +140,11 @@ public class DungeonGenerator : MonoBehaviour
                         )
                         .GetComponent<RoomBehaviour>();
 
+                    newRoom.SetRoomData(roomData);
                     newRoom.UpdateRoom(currentCell.Status);
                     newRoom.name += $" {i}-{j}";
                     
                     _usageCount[roomData]++;
-                    
-                    // (We remember the RoomBehavior for later access)
                     _roomBehaviourMap[new Vector2Int(i, j)] = newRoom;
 
                     bool isStartRoom = (i == 0 && j == 0);
@@ -356,5 +355,16 @@ public class DungeonGenerator : MonoBehaviour
                 Debug.Log($"Warning! {roomData.minCount}x \"{roomData.roomName}\" required, but only {_usageCount[roomData]}x set!");
             }
         }
+    }
+
+    //TODO KOMMENTAR
+    public RoomBehaviour GetRoomBehaviour(Vector2Int coordinate)
+    {
+        if (_roomBehaviourMap.TryGetValue(coordinate, out var roomBehaviour))
+        {
+            return roomBehaviour;
+        }
+
+        return null;
     }
 }
