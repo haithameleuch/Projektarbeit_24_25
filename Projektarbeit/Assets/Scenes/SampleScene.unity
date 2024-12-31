@@ -803,8 +803,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   size: {x: 7, y: 5}
   startPos: 0
-  rooms:
-  - {fileID: 7196524108051718529, guid: 0e6072afc893246eaab74b063d5fd2ff, type: 3}
+  roomDataArray:
+  - {fileID: 11400000, guid: e8d5941b01bf14e7ab3e9c41b171d3e1, type: 2}
+  - {fileID: 11400000, guid: 98a89f11bd3d94fdb91881b44f170e86, type: 2}
+  - {fileID: 11400000, guid: c50da90f1c6484741afc20714bccd86e, type: 2}
+  - {fileID: 11400000, guid: 7bfa787caf3ee4074a9793d1fbc12740, type: 2}
   offset: {x: 18, y: 10}
   items:
   - {fileID: 455864372753830893, guid: d130acdbb250da0418909701a876d82e, type: 3}
