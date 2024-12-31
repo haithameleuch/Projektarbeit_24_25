@@ -91,7 +91,24 @@ public class DungeonGenerator : MonoBehaviour
     /// Maps grid coordinates to their corresponding room behavior for quick access.
     /// </summary>
     private Dictionary<Vector2Int, RoomBehaviour> _roomBehaviourMap = new();
+    
+    //TODO KOMMENTAR
+    public static DungeonGenerator Instance { get; private set; }
 
+    //TODO: KOMMENTAR
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        
+        // DontDestroyOnLoad(gameObject);
+    }
+    
     /// <summary>
     /// Initializes the dungeon generation process by setting up the grid and generating the maze.
     /// Initializes also the spawner setup.
