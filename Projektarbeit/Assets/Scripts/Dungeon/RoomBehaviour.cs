@@ -16,6 +16,30 @@ public class RoomBehaviour : MonoBehaviour
     /// Array of door GameObjects, aligned with the wall array to represent door positions.
     /// </summary>
     [SerializeField] private GameObject[] doors;
+    
+    //TODO KOMMENTAR
+    [SerializeField] private bool visited;
+    
+    //TODO KOMMENTAR
+    public RoomData RoomData { get; private set; }
+    
+    //TODO KOMMENTAR
+    public bool GetVisited()
+    {
+        return visited;
+    }
+    
+    //TODO KOMMENTAR
+    public void MarkVisited()
+    {
+        visited = true;
+    }
+    
+    //TODO KOMMENTAR
+    public void SetRoomData(RoomData data)
+    {
+        RoomData = data;
+    }
 
     /// <summary>
     /// Updates the room's state by activating doors and deactivating walls based on the given status array.
