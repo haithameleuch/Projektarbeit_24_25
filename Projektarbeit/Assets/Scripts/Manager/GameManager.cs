@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviour
     /// Prevents duplicate processing of the same room.
     /// </summary>
     /// <param name="roomCoordinate">The grid coordinate of the room to mark as visited.</param>
-    public void MarkRoomVisited(Vector2Int roomCoordinate)
+    private void MarkRoomVisited(Vector2Int roomCoordinate)
     {
         _visitedRooms.Add(roomCoordinate);
     }
@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
         
         if (roomBehaviour.GetVisited())
         {
-            Debug.Log($"Room {roomCoordinate} has already been visited!");
+            // Debug.Log($"Room {roomCoordinate} has already been visited!");
             return;
         }
 
@@ -100,22 +100,26 @@ public class GameManager : MonoBehaviour
         switch (roomType.Value)
         {
             case RoomType.Start:
-                Debug.Log("Enter Start Room");
+                // Debug.Log("Enter Start Room");
                 break;
             case RoomType.Normal:
-                Debug.Log("Enter Normal Room -> doors should close");
+                // Debug.Log("Enter Normal Room -> doors should close");
                 break;
             case RoomType.Item:
-                Debug.Log("Enter Item Room -> doors should close");
+                // Debug.Log("Enter Item Room");
+                EventManager.Instance.TriggerCloseDoors(); //TODO Just for testing
                 break;
             case RoomType.MiniGame:
-                Debug.Log("Enter MiniGame Room -> doors should close");
+                // Debug.Log("Enter MiniGame Room -> doors should close");
+                EventManager.Instance.TriggerCloseDoors();
                 break;
             case RoomType.Enemy:
-                Debug.Log("Enter Enemy Room -> doors should close");
+                // Debug.Log("Enter Enemy Room -> doors should close");
+                EventManager.Instance.TriggerCloseDoors();
                 break;
             case RoomType.Boss:
-                Debug.Log("Enter Boss Room -> doors should close");
+                // Debug.Log("Enter Boss Room -> doors should close");
+                EventManager.Instance.TriggerCloseDoors();
                 break;
             default:
                 Debug.Log("Unknown room type");

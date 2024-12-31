@@ -1,4 +1,3 @@
-using Unity.Cinemachine;
 using UnityEngine;
 
 public class DrawingTrigger : MonoBehaviour, IInteractable
@@ -27,7 +26,7 @@ public class DrawingTrigger : MonoBehaviour, IInteractable
             // Trigger the Canvas View event
             if (Input.GetKeyDown(KeyCode.G))
             {
-                EventManager.TriggerCanvasView();
+                EventManager.Instance.TriggerCanvasView();
             }
         }
     }
