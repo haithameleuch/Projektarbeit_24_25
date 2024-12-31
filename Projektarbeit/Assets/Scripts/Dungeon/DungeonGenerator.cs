@@ -25,7 +25,9 @@ public class DungeonGenerator : MonoBehaviour
         /// </summary>
         public bool[] Status = new bool[4];
 
-        //TODO: KOMMENTAR
+        /// <summary>
+        /// Holds the data for the room assigned to this cell.
+        /// </summary>
         public RoomData RoomData;
     }
 
@@ -80,10 +82,14 @@ public class DungeonGenerator : MonoBehaviour
     /// </summary>
     private int _visitedCells;
     
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Keeps track of how many times each room type has been used in the dungeon.
+    /// </summary>
     private Dictionary<RoomData, int> _usageCount = new();
     
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Maps grid coordinates to their corresponding room behavior for quick access.
+    /// </summary>
     private Dictionary<Vector2Int, RoomBehaviour> _roomBehaviourMap = new();
 
     /// <summary>
@@ -98,8 +104,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             new ItemSpawner(items, offset)
         };
-
-        //TODO: KOMMENTAR
+        
         InitializeRoomDataArray(roomDataArray);
         
         MazeGenerator();
@@ -138,10 +143,9 @@ public class DungeonGenerator : MonoBehaviour
                     newRoom.UpdateRoom(currentCell.Status);
                     newRoom.name += $" {i}-{j}";
                     
-                    //TODO: KOMMENTAR
                     _usageCount[roomData]++;
                     
-                    //TODO: KOMMENTAR (We remember the RoomBehavior for later access)
+                    // (We remember the RoomBehavior for later access)
                     _roomBehaviourMap[new Vector2Int(i, j)] = newRoom;
 
                     bool isStartRoom = (i == 0 && j == 0);
@@ -267,7 +271,11 @@ public class DungeonGenerator : MonoBehaviour
         return neighbors;
     }
     
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Initializes the usage count for all room types to zero.
+    /// This ensures all rooms are tracked for usage restrictions during generation.
+    /// </summary>
+    /// <param name="roomDataArr">The array of room data used in dungeon generation.</param>
     private void InitializeRoomDataArray(RoomData[] roomDataArr)
     {
         foreach (var roomData in roomDataArr)
@@ -276,7 +284,12 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
     
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Spawns items in the specified room using all available spawners.
+    /// The start room can optionally exclude certain items or spawners.
+    /// </summary>
+    /// <param name="room">The room where items should be spawned.</param>
+    /// <param name="isStartRoom">Indicates if the room is the starting room.</param>
     private void SpawnItems(RoomBehaviour room, bool isStartRoom)
     {
         // Use all spawners to populate the room
@@ -286,7 +299,10 @@ public class DungeonGenerator : MonoBehaviour
         }
     }
 
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Assigns the starting room data to the initial cell of the dungeon grid.
+    /// Ensures the start room type is set as required for the dungeon generation.
+    /// </summary>
     private void AssignStartRoom()
     {
         RoomData startRoomData = roomDataArray.FirstOrDefault(roomData => roomData.roomType == RoomType.Start);
@@ -296,7 +312,11 @@ public class DungeonGenerator : MonoBehaviour
         _board[startIndex].RoomData = startRoomData;
     }
 
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Retrieves a random room data object that meets the generation constraints.
+    /// Ensures maxCount restrictions are respected, and defaults to normal rooms if no other options are valid.
+    /// </summary>
+    /// <returns>A valid RoomData object for dungeon placement.</returns>
     private RoomData GetRandomRoomData()
     {
         var validRoomDataList = new List<RoomData>();
@@ -304,7 +324,7 @@ public class DungeonGenerator : MonoBehaviour
         {
             int usage = _usageCount[roomData];
 
-            // Check macCount
+            // Skip if room has reached its maximum usage count
             if (roomData.maxCount > 0 && usage >= roomData.maxCount)
             {
                 continue;
@@ -319,11 +339,14 @@ public class DungeonGenerator : MonoBehaviour
             return normal ?? roomDataArray[0];
         }
 
-        // Otherwise use random room
+        // Otherwise, choose a random valid room
         return validRoomDataList[Random.Range(0, validRoomDataList.Count)];
     }
 
-    //TODO: KOMMENTAR
+    /// <summary>
+    /// Ensures all rooms meet their minimum appearance requirements after dungeon generation.
+    /// Logs warnings if any room type is underrepresented.
+    /// </summary>
     private void EnforceMinCounts()
     {
         foreach (RoomData roomData in roomDataArray)
