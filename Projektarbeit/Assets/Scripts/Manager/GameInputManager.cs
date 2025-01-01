@@ -55,7 +55,7 @@ public class GameInputManager : MonoBehaviour
     /// Locks or unlocks the cursor based on the specified state.
     /// </summary>
     /// <param name="locked">If true, the cursor is locked and hidden; if false, the cursor is unlocked and visible.</param>
-    public static void MouseLocked(bool locked)
+    public void MouseLocked(bool locked)
     {
         if (locked)
         {
