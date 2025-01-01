@@ -46,6 +46,7 @@ public class CameraController : MonoBehaviour
     private void Start()
     {
         UpdateCameraPosition();
+        GameManager.Instance.HandleRoomEntry(_currentRoom);
     }
 
     /// <summary>
@@ -56,7 +57,7 @@ public class CameraController : MonoBehaviour
         // Determine the player's current room based on their position and room dimensions.
         Vector2Int newRoom = new Vector2Int(
             Mathf.FloorToInt((player.position.x + roomOffset.x) / (roomOffset.x * 2)),
-            Mathf.FloorToInt((player.position.z + roomOffset.y) / (roomOffset.y * 2))
+            Mathf.FloorToInt((-player.position.z + roomOffset.y) / (roomOffset.y * 2))
         );
 
         // Update the camera position only if the player has entered a new room.
@@ -64,6 +65,7 @@ public class CameraController : MonoBehaviour
         {
             _currentRoom = newRoom;
             UpdateCameraPosition();
+            GameManager.Instance.HandleRoomEntry(_currentRoom);
         }
     }
 
@@ -76,7 +78,7 @@ public class CameraController : MonoBehaviour
         Vector3 targetPosition = new Vector3(
             _currentRoom.x * (roomOffset.x * 2),
             cameraHeight,
-            _currentRoom.y * (roomOffset.y * 2)
+            -(_currentRoom.y * (roomOffset.y * 2))
         );
 
         // Stop any ongoing transition and start a new one.
