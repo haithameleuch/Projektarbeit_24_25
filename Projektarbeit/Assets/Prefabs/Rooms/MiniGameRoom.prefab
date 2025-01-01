@@ -1103,6 +1103,7 @@ MonoBehaviour:
   - {fileID: 537387594465898923}
   - {fileID: 97543823813910785}
   - {fileID: 8754727583848821484}
+  visited: 0
 --- !u!1 &7377372337901014849
 GameObject:
   m_ObjectHideFlags: 0
@@ -1235,6 +1236,7 @@ MonoBehaviour:
   totalYPixels: 200
   brushSize: 10
   predictionText: {fileID: 834843457514098311}
+  randNumberText: {fileID: 0}
   modelAsset: {fileID: 5022602860645237092, guid: 1c3e246f67acc9178b7944623cefee37, type: 3}
   useInterpolation: 1
   topLeftCorner: {fileID: 8021698323711689083}
