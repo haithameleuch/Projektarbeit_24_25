@@ -15,7 +15,7 @@ public class Inventory : MonoBehaviour
             if (item.itemName==newItem.itemName)
             {
                 item.itemQuantity += newItem.itemQuantity;
-                Debug.Log(item.itemQuantity);
+                // Debug.Log(item.itemQuantity);
                 return true;
             }
         }
