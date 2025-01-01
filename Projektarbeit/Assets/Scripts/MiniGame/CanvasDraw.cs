@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -53,6 +54,9 @@ public class CanvasDraw : MonoBehaviour
     public TextMeshPro predictionText;
 
     [SerializeField]
+    public TextMeshPro randNumberText;
+
+    [SerializeField]
     private ModelAsset modelAsset;
     Model model;
 
@@ -65,11 +69,23 @@ public class CanvasDraw : MonoBehaviour
     // Draw Texture Material(Canvas Color, e.g. White)
     public Material material;
 
+    // Generated 4 Digit Number
+    private int keyDigits;
+    private int counterDigits = 4;
+    private string digit1,
+        digit2,
+        digit3,
+        digit4 = "";
+
     /// <summary>
     /// Initializes the canvas, texture, and the drawing environment at the start.
     /// </summary>
     private void Start()
     {
+        // UIManager.Instance.HidePanel();
+        // Generate 4 Digit number randomly
+        GenerateRandomDigit();
+
         // Initialize AI model by loading the model asset
         model = ModelLoader.Load(modelAsset);
 
@@ -95,6 +111,14 @@ public class CanvasDraw : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        /*
+
+        Remark:
+            - Input.GetMouseButtonDown(1): Executes only on the first frame of the mouse button press.
+            - Input.GetMouseButton(1): Executes for every frame the button is held down.
+            
+        */
+
         if (draw == true)
         {
             // Start drawing when the mouse button is pressed
@@ -118,9 +142,10 @@ public class CanvasDraw : MonoBehaviour
             }
 
             // Right-click to predict the digit on the image
-            if (Input.GetMouseButton(1))
+            if (Input.GetMouseButtonDown(1))
             {
-                Predict(generatedTexture); // Call the Predict method
+                int predictedDigit = Predict(generatedTexture); // Call the Predict method
+                UpdateRandomDigit(predictedDigit);
             }
         }
     }
@@ -290,7 +315,7 @@ public class CanvasDraw : MonoBehaviour
     /// <summary>
     /// Predict the digit using the Texture from Canvas
     /// </summary>
-    public void Predict(Texture2D image)
+    public int Predict(Texture2D image)
     {
         // Preprocess the image to resize it for prediction
         Texture2D preprocessedTexture = Preprocessing(image, 28, 28);
@@ -333,6 +358,8 @@ public class CanvasDraw : MonoBehaviour
         predictionText.text =
             "Probabilities of different digits:\n" + probabilitiesText + "\n" + predictedValueText;
         inputTensor?.Dispose(); // Clean up the input tensor
+
+        return GetMaxValueAndIndex(outputTensor);
     }
 
     /// <summary>
@@ -428,6 +455,64 @@ public class CanvasDraw : MonoBehaviour
         {
             outputTensor.Dispose();
             outputTensor = null;
+        }
+    }
+
+    /// <summary>
+    /// Generates a random 4-digit number to be used for unlocking the door.
+    /// </summary>
+    private void GenerateRandomDigit()
+    {
+        // Generate a random 4-digit number (between 1000 and 9999) as the keyDigits
+        keyDigits = UnityEngine.Random.Range(1000, 10000);
+
+        // Display the generated number in the UI
+        randNumberText.text = keyDigits.ToString();
+    }
+
+    /// <summary>
+    /// Updates the random digit display and checks if the correct digits are entered by the player.
+    /// </summary>
+    /// <param name="currDigit">The current digit entered by the player.</param>
+    private void UpdateRandomDigit(int currDigit)
+    {
+        // Check if the door is already open (counterDigits == 0)
+        if (counterDigits == 0)
+        {
+            return; // If the door is already open, no further checks are needed
+        }
+
+        // Check if the first digit is correct (thousands place)
+        if (counterDigits == 4 && (keyDigits / 1000) == currDigit)
+        {
+            digit1 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
+            randNumberText.text = digit1 + (keyDigits % 1000).ToString(); // Update the UI with the correct first digit
+            counterDigits--; // Decrement the counter (next digit to check)
+        }
+        // Check if the second digit is correct (hundreds place)
+        else if (counterDigits == 3 && ((keyDigits % 1000) / 100) == currDigit)
+        {
+            digit2 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
+            randNumberText.text = digit1 + digit2 + (keyDigits % 100).ToString(); // Update the UI with the correct second digit
+            counterDigits--; // Decrement the counter (next digit to check)
+        }
+        // Check if the third digit is correct (tens place)
+        else if (counterDigits == 2 && ((keyDigits % 100) / 10) == currDigit)
+        {
+            digit3 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
+            randNumberText.text = digit1 + digit2 + digit3 + (keyDigits % 10).ToString(); // Update the UI with the correct third digit
+            counterDigits--; // Decrement the counter (next digit to check)
+        }
+        // Check if the fourth digit is correct (ones place)
+        else if (counterDigits == 1 && (keyDigits % 10) == currDigit)
+        {
+            digit4 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
+            randNumberText.text = digit1 + digit2 + digit3 + digit4; // Update the UI with the full correct number
+            string message = "unlocked";
+            string unlockMessage = $"<color=green>{message}</color>"; // Mark the correct digit as green
+            randNumberText.text = unlockMessage;
+            counterDigits--; // Decrement the counter (no more digits to check)
+            EventManager.Instance.TriggerOpenDoors(); // Open all needed doors using Event
         }
     }
 }
