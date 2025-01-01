@@ -114,6 +114,7 @@ public class CameraManager : MonoBehaviour
     private void SetTopDownView()
     {
         SetPlayerVisible(true);
+        GameInputManager.MouseLocked(true);
 
         topDownCamera.Priority = 10;
         firstPersonCamera.Priority = 5;
@@ -134,6 +135,7 @@ public class CameraManager : MonoBehaviour
     private void SetFirstPersonView()
     {
         SetPlayerVisible(true);
+        GameInputManager.MouseLocked(true);
 
         topDownCamera.Priority = 5;
         firstPersonCamera.Priority = 10;
@@ -153,8 +155,7 @@ public class CameraManager : MonoBehaviour
     /// </summary>
     private void SetCanvView()
     {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+        GameInputManager.MouseLocked(false);
 
         topDownCamera.Priority = 5;
         firstPersonCamera.Priority = 5;
