@@ -91,7 +91,32 @@ public class DungeonGenerator : MonoBehaviour
     /// Maps grid coordinates to their corresponding room behavior for quick access.
     /// </summary>
     private Dictionary<Vector2Int, RoomBehaviour> _roomBehaviourMap = new();
+    
+    /// <summary>
+    /// Singleton instance of the DungeonGenerator, ensuring there is only one instance in the scene.
+    /// Provides global access to the DungeonGenerator functionality.
+    /// </summary>
+    public static DungeonGenerator Instance { get; private set; }
 
+    /// <summary>
+    /// Ensures there is only one instance of the DungeonGenerator in the scene.
+    /// If another instance exists, it will be destroyed.
+    /// Optionally persists the instance across scenes if uncommented.
+    /// </summary>
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        
+        // Uncomment to persist the DungeonGenerator across scene loads
+        // DontDestroyOnLoad(gameObject);
+    }
+    
     /// <summary>
     /// Initializes the dungeon generation process by setting up the grid and generating the maze.
     /// Initializes also the spawner setup.
@@ -140,12 +165,11 @@ public class DungeonGenerator : MonoBehaviour
                         )
                         .GetComponent<RoomBehaviour>();
 
+                    newRoom.SetRoomData(roomData);
                     newRoom.UpdateRoom(currentCell.Status);
                     newRoom.name += $" {i}-{j}";
                     
                     _usageCount[roomData]++;
-                    
-                    // (We remember the RoomBehavior for later access)
                     _roomBehaviourMap[new Vector2Int(i, j)] = newRoom;
 
                     bool isStartRoom = (i == 0 && j == 0);
@@ -356,5 +380,21 @@ public class DungeonGenerator : MonoBehaviour
                 Debug.Log($"Warning! {roomData.minCount}x \"{roomData.roomName}\" required, but only {_usageCount[roomData]}x set!");
             }
         }
+    }
+
+    /// <summary>
+    /// Retrieves the RoomBehaviour associated with a specific coordinate in the dungeon grid.
+    /// Allows for quick access to room functionality based on its grid position.
+    /// </summary>
+    /// <param name="coordinate">The grid coordinate of the desired room.</param>
+    /// <returns>The RoomBehaviour of the room at the specified coordinate, or null if none exists.</returns>
+    public RoomBehaviour GetRoomBehaviour(Vector2Int coordinate)
+    {
+        if (_roomBehaviourMap.TryGetValue(coordinate, out var roomBehaviour))
+        {
+            return roomBehaviour;
+        }
+
+        return null;
     }
 }

@@ -7,6 +7,12 @@ using UnityEngine;
 public class EventManager : MonoBehaviour
 {
     /// <summary>
+    /// Singleton instance of the EventManager, ensuring there is only one instance in the scene.
+    /// Provides global access to event management functionality.
+    /// </summary>
+    public static EventManager Instance { get; private set; }
+    
+    /// <summary>
     /// Event triggered to open doors.
     /// Other scripts can subscribe to this event to perform actions when doors need to be opened.
     /// </summary>
@@ -22,6 +28,24 @@ public class EventManager : MonoBehaviour
     /// Event triggered to activate the Canvas View.
     /// </summary>
     public static event Action OnActivateCanvasView;
+    
+    /// <summary>
+    /// Ensures there is only one instance of the EventManager in the scene.
+    /// If another instance exists, it will be destroyed.
+    /// Persists the instance across scenes for consistent event state management.
+    /// </summary>
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        
+        DontDestroyOnLoad(gameObject);
+    }
 
     /// <summary>
     /// Monitors player input to trigger the door-related events.
@@ -44,8 +68,26 @@ public class EventManager : MonoBehaviour
     /// <summary>
     /// Method to manually trigger the Canvas View activation event.
     /// </summary>
-    public static void TriggerCanvasView()
+    public void TriggerCanvasView()
     {
         OnActivateCanvasView?.Invoke();
+    }
+
+    /// <summary>
+    /// Manually triggers the "CloseDoors" event.
+    /// This can be called by other scripts to close doors.
+    /// </summary>
+    public void TriggerCloseDoors()
+    {
+        OnCloseDoors?.Invoke();
+    }
+    
+    /// <summary>
+    /// Manually triggers the "OpenDoors" event.
+    /// This can be called by other scripts to open doors.
+    /// </summary>
+    public void TriggerOpenDoors()
+    {
+        OnOpenDoors?.Invoke();
     }
 }
