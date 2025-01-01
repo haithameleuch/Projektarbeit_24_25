@@ -512,13 +512,7 @@ public class CanvasDraw : MonoBehaviour
             string unlockMessage = $"<color=green>{message}</color>"; // Mark the correct digit as green
             randNumberText.text = unlockMessage;
             counterDigits--; // Decrement the counter (no more digits to check)
+            EventManager.Instance.TriggerOpenDoors(); // Open all needed doors using Event
         }
-    }
-
-    // Coroutine to wait for 3 seconds
-    private IEnumerator WaitForThreeSeconds()
-    {
-        // Wait for 3 seconds
-        yield return new WaitForSeconds(3f);
     }
 }
