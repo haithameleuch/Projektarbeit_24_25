@@ -1,0 +1,40 @@
+#InventoryContainer {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    display: flex;
+}
+
+.item {
+    width: 100px;
+    height: 120px;
+    border-width: 2px;
+    border-style: solid;
+    border-color: white;
+    background-color: #555555;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+}
+
+#ItemIcon {
+    width: 80px;
+    height: 80px;
+    background-color: grey;
+}
+
+#ItemLabel {
+    unity-text-align: center;
+    margin-top: 5px;
+    font-size: 14px;
+    color: white;
+}
+
+.dragging {
+    position: absolute;
+    opacity: 0.8;
+}

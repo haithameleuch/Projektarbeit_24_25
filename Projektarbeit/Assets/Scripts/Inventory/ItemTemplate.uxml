@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements">
+    <ui:VisualElement class="item">
+        <ui:VisualElement name="ItemIcon" style="width: 80px; height: 80px; background-color: grey;" />
+        <ui:Label name="ItemLabel" style="unity-text-align: center; margin-top: 5px;">Item Name</ui:Label>
+    </ui:VisualElement>
+</ui:UXML>
