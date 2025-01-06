@@ -1,4 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" editor-extension-mode="False">
-    <Style src="project://database/Assets/Scripts/Inventory/InventoryStyle.uss?fileID=7433441132597879392&amp;guid=52e68246fed45dc4e9bf43241d3dc042&amp;type=3#InventoryStyle" />
-    <ui:VisualElement name="InventoryContainer" style="flex-direction: row; flex-wrap: wrap; gap: 10px; padding: 10px; background-color: rgba(0, 0, 0, 0.51); width: 100%; height: 100%; padding-top: 20px; padding-right: 20px; padding-bottom: 20px; padding-left: 20px; flex-grow: 1; flex-basis: 20%;" />
-</ui:UXML>
