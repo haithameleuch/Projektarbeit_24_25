@@ -19,4 +19,14 @@ public class CollectibleItem : MonoBehaviour, IInteractable
         }
 
     }
+    
+    public void OnExit(GameObject interactor)
+    {
+        // Only if needed!
+    }
+
+    public bool ShouldRepeat()
+    {
+        return false;
+    }
 }

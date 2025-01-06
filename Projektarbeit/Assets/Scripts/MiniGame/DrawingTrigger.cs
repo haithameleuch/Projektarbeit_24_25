@@ -35,4 +35,14 @@ public class DrawingTrigger : MonoBehaviour, IInteractable
             }
         }
     }
+    
+    public void OnExit(GameObject interactor)
+    {
+        // UIManager.Instance.HidePanel();
+    }
+
+    public bool ShouldRepeat()
+    {
+        return true;
+    }
 }
