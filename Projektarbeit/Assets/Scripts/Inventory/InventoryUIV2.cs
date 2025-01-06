@@ -3,8 +3,10 @@ using UnityEngine.UIElements;
 
 public class InventoryUIV2 : MonoBehaviour
 {
-    public Inventory inventoryManager;
-    public VisualTreeAsset itemTemplate; // UI Vorlage für Items
+    [SerializeField]
+    private Inventory inventoryManager;
+    [SerializeField]
+    private VisualTreeAsset itemTemplate;
     private VisualElement inventoryContainer;
     private VisualElement rootElement;
     private bool isUIVisible = false;
@@ -15,8 +17,6 @@ public class InventoryUIV2 : MonoBehaviour
         rootElement = root;
         rootElement.style.display = DisplayStyle.None;
         inventoryContainer = root.Q<VisualElement>("MainContainer");
-
-        RefreshUI();
     }
 
     public void RefreshUI()
@@ -31,32 +31,6 @@ public class InventoryUIV2 : MonoBehaviour
             itemElement.AddToClassList("TemplateContainer");
             inventoryContainer.Add(itemElement);
         }
-    }
-
-    private void SetupDragAndDrop(VisualElement itemElement, Item item)
-    {
-        itemElement.RegisterCallback<PointerDownEvent>(evt =>
-        {
-            itemElement.AddToClassList("dragging");
-
-            itemElement.RegisterCallback<PointerMoveEvent>(evtMove =>
-            {
-                itemElement.style.left = evtMove.position.x;
-                itemElement.style.top = evtMove.position.y;
-            });
-
-            itemElement.RegisterCallback<PointerUpEvent>(evtUp =>
-            {
-                itemElement.RemoveFromClassList("dragging");
-                itemElement.UnregisterCallback<PointerMoveEvent>(null);
-
-                if (!inventoryContainer.worldBound.Contains(evtUp.position))
-                {
-                    inventoryManager.RemoveItem(item);
-                    RefreshUI();
-                }
-            });
-        });
     }
 
     private void Update()
