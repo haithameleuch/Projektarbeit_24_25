@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
 /// Controls first-person movement and rotation with collision detection.
@@ -39,6 +40,11 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// Current smooth rotation state of the player.
     /// </summary>
     private Quaternion _currentRotation;
+    
+    /// <summary>
+    /// Keeps track of the interactable objects the player is currently interacting with.
+    /// </summary>
+    private List<GameObject> _currentInteractables = new();
 
     /// <summary>
     /// Initializes the starting rotation of the player.
@@ -140,24 +146,18 @@ public class FirstPersonPlayerController : MonoBehaviour
     private void CheckForObject()
     {
         // Define the radius within which we check for interactable objects
-        float pickupRadius = 2f;
+        const float pickupRadius = 2.0f;
 
         // Perform a SphereCast to detect all objects within the pickup radius, cast in the upward direction (Vector3.up)
         // The 0f range ensures we're only checking for objects at the current position
         RaycastHit[] hits = Physics.SphereCastAll(transform.position, pickupRadius, Vector3.up, 0f);
+        List<GameObject> newInteractables = new List<GameObject>();
+        
+        // Use the helper methods to manage interactions
+        InteractionHelper.HandleInteractions(hits, newInteractables, _currentInteractables, gameObject);
+        InteractionHelper.HandleExits(newInteractables, _currentInteractables, gameObject);
 
-        // Loop through all detected hits to check if any objects are interactable
-        foreach (RaycastHit hit in hits)
-        {
-            // Attempt to get the IInteractable component from the object that was hit
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-
-            // If the object implements the IInteractable interface, interact with it
-            if (interactable is not null)
-            {
-                // Call the Interact method on the interactable object, passing this gameObject as the interacting object
-                interactable.Interact(gameObject);
-            }
-        }
+        // Update the list of current interactables to reflect the new state
+        _currentInteractables = newInteractables;
     }
 }
