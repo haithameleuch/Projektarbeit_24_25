@@ -1565,7 +1565,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   inventoryManager: {fileID: 1561343259}
-  itemTemplate: {fileID: 9197481963319205126, guid: 4b4e38403643cf944a0711d4fa1cc6f9, type: 3}
+  itemTemplate: {fileID: 9197481963319205126, guid: ad7231dbe98288346927c08c7e28b912, type: 3}
 --- !u!114 &2117707528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1580,7 +1580,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_PanelSettings: {fileID: 11400000, guid: 913c277022e7c20458c0c69f1819ad34, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 1a068cd03feddb043aa6057ba8eafcc5, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: 0ca73acd79be63849b8bab8e0b49bc29, type: 3}
   m_SortingOrder: 0
   m_WorldSpaceSizeMode: 1
   m_WorldSpaceWidth: 1920

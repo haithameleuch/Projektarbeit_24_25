@@ -14,7 +14,7 @@ public class InventoryUIV2 : MonoBehaviour
         var root = GetComponent<UIDocument>().rootVisualElement;
         rootElement = root;
         rootElement.style.display = DisplayStyle.None;
-        inventoryContainer = root.Q<VisualElement>("InventoryContainer");
+        inventoryContainer = root.Q<VisualElement>("MainContainer");
 
         RefreshUI();
     }
@@ -25,10 +25,10 @@ public class InventoryUIV2 : MonoBehaviour
         foreach (var item in inventoryManager.getInventory())
         {
             var itemElement = itemTemplate.CloneTree();
-            itemElement.Q<Label>("ItemLabel").text = item.itemName;
-            itemElement.Q<VisualElement>("ItemIcon").style.backgroundImage = new StyleBackground(item.itemIcon);
-
-            SetupDragAndDrop(itemElement, item);
+            itemElement.Q<Label>("Name").text = item.itemName;
+            itemElement.Q<VisualElement>("Top").style.backgroundImage = new StyleBackground(item.itemIcon);
+            itemElement.Q<Label>("ItemCount").text = ""+item.itemQuantity;
+            itemElement.AddToClassList("TemplateContainer");
             inventoryContainer.Add(itemElement);
         }
     }
