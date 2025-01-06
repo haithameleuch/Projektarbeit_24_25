@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -22,6 +23,9 @@ public class InventoryUIV2 : MonoBehaviour
 
     private bool isUIVisible = false;
 
+    //Currently selected Item
+
+
     /// <summary>
     /// Initialize the variables root and inventoryContainer for later use (Maybe OnCreate or smth would be better)
     /// </summary>
@@ -31,6 +35,7 @@ public class InventoryUIV2 : MonoBehaviour
         rootElement = root;
         rootElement.style.display = DisplayStyle.None;
         inventoryContainer = root.Q<VisualElement>("MainContainer");
+
     }
 
     /// <summary>
@@ -41,10 +46,10 @@ public class InventoryUIV2 : MonoBehaviour
         inventoryContainer.Clear();
         foreach (var item in inventoryManager.getInventory())
         {
-            var itemElement = itemTemplate.CloneTree();
+            TemplateContainer itemElement = itemTemplate.CloneTree();
             itemElement.Q<Label>("Name").text = item.itemName;
             itemElement.Q<VisualElement>("Top").style.backgroundImage = new StyleBackground(item.itemIcon);
-            itemElement.Q<Label>("ItemCount").text = ""+item.itemQuantity;
+            itemElement.Q<Label>("ItemCount").text = "" + item.itemQuantity;
             itemElement.AddToClassList("TemplateContainer");
             inventoryContainer.Add(itemElement);
         }
@@ -55,10 +60,18 @@ public class InventoryUIV2 : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        // Überprüfen, ob die "E"-Taste gedrückt wurde
+        //Check wether "e" is pressed to toggle the inventory
         if (Input.GetKeyDown(KeyCode.E))
         {
             ToggleUIDocument();
+        }
+        //If the UI is visible check wether "q" is pressed to remove the item the mouse is hovering over
+        if (isUIVisible)
+        {
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                throwItemAway();
+            }
         }
     }
 
@@ -74,7 +87,7 @@ public class InventoryUIV2 : MonoBehaviour
             rootElement.style.display = DisplayStyle.None;
 
             //Lock Cursor in the game view
-            UnityEngine.Cursor.lockState= CursorLockMode.Locked;
+            UnityEngine.Cursor.lockState = CursorLockMode.Locked;
             UnityEngine.Cursor.visible = false;
 
             //Resume time to normal value
@@ -97,5 +110,50 @@ public class InventoryUIV2 : MonoBehaviour
 
         //Save the current state of the UI
         isUIVisible = !isUIVisible;
+    }
+
+    /// <summary>
+    /// This Method will handle the button press "q" to remove an item from the inventory.
+    /// </summary>
+    private void throwItemAway()
+    {
+        //Get mouse location
+        Vector2 mousePosition = Input.mousePosition;
+
+        //Invert the y axis of the mouse-position since the UI is counting from top to bottom
+        mousePosition.y = Screen.height - mousePosition.y;
+
+        //Get the Element under the mouse
+        VisualElement elementUnderMouse = rootElement.panel.Pick(mousePosition);
+    
+
+        if (elementUnderMouse != null)
+        {
+            //If the element under the mouse is the MainContainer of the UI we skip the rest
+            if (elementUnderMouse.name != "MainContainer") {
+                
+                //Get the main component of the slot-prefab
+                var itemPanel = elementUnderMouse.parent;
+
+                //Special-case if the mouse is directly on the slot-prefab (this is like a 4px gap but it happened)
+                if (elementUnderMouse.name == "Slot")
+                {
+                    itemPanel = elementUnderMouse;
+                }
+
+                //Special-case if the mouse is over the number, since the number component is a child of the icon
+                if (elementUnderMouse.name == "ItemCount")
+                {
+                    itemPanel = elementUnderMouse.parent.parent;
+                }
+
+                //Get the name of the item from the name-panel
+                string name = itemPanel.Q<Label>("Name").text;
+
+                inventoryManager.RemoveItem(name, 1);
+
+                RefreshUI();
+            }
+        }
     }
 }
