@@ -1,17 +1,4 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:Template name="SlotPrefab" src="project://database/Assets/Scripts/Inventory/SlotPrefab.uxml?fileID=9197481963319205126&amp;guid=ad7231dbe98288346927c08c7e28b912&amp;type=3#SlotPrefab" />
     <Style src="project://database/Assets/Scripts/Inventory/InventoryStyleV2.uss?fileID=7433441132597879392&amp;guid=d8e14560401745247a2d3ff93084acc7&amp;type=3#InventoryStyleV2" />
-    <ui:VisualElement name="MainContainer" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0.51); flex-direction: row; flex-basis: auto; flex-shrink: 0; justify-content: flex-start; padding-top: 1%; padding-right: 1%; padding-bottom: 1%; padding-left: 1%; flex-wrap: wrap; align-content: flex-start; align-items: flex-start; width: 100%; height: 100%;">
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" style="width: 10%; height: 20%; padding-top: 0.5%; padding-right: 0.5%; padding-bottom: 0.5%; padding-left: 0.5%;" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" style="width: 10%; height: 20%;" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-        <ui:Instance template="SlotPrefab" class="TemplateContainer" />
-    </ui:VisualElement>
+    <ui:VisualElement name="MainContainer" style="flex-grow: 0; background-color: rgba(0, 0, 0, 0.51); flex-direction: row; flex-basis: auto; flex-shrink: 0; justify-content: flex-start; padding-top: 1%; padding-right: 1%; padding-bottom: 1%; padding-left: 1%; flex-wrap: wrap; align-content: flex-start; align-items: flex-start; width: 100%; height: 100%;" />
 </ui:UXML>

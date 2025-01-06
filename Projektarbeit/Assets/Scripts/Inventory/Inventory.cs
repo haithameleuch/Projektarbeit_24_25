@@ -26,6 +26,10 @@ public class Inventory : MonoBehaviour
     /// <returns>The method returns a boolean wether the addition of the item was succesful. This should be used incase something should happen regarding the result of the addition.</returns>
     public bool AddItem(Item newItem)
     {
+        if (newItem.itemQuantity<=0)
+        {
+            return false;
+        }
         // Add Item to stack if the item is already in the Inventory and return true
         foreach (Item item in items)
         {
@@ -49,17 +53,27 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    // Remove item from Inventory
-    public void RemoveItem(Item item)
+    /// <summary>
+    /// Removes a certain amount of an item with a given name from the inventory. //TODO spawn thrown away items
+    /// </summary>
+    /// <param name="name">The name of the item that should be removed.</param>
+    /// <param name="amount">The amount of the item that should be removed</param>
+    public void RemoveItem(string name,int amount)
     {
-        if (items.Contains(item))
+        foreach (Item item in items)
         {
-            items.Remove(item);
-            Debug.Log($"Item {item.itemName} entfernt.");
-        }
-        else
-        {
-            Debug.Log("Item nicht im Inventar gefunden.");
+            //If the item is found reduce it by the specified amount
+            if (item.itemName.Equals(name))
+            {
+                item.itemQuantity -= amount;
+                
+                //If the amount of the item is droped to or below zero remove the item entirely from the inventory
+                if (item.itemQuantity <= 0)
+                {
+                    items.Remove(item);
+                    return;
+                }
+            }
         }
     }
 
