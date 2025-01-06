@@ -1,40 +1,35 @@
 #InventoryContainer {
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px;
+    padding: 20px;
     justify-content: flex-start;
     align-items: flex-start;
     display: flex;
 }
 
 .item {
-    width: 100px;
-    height: 120px;
-    border-width: 2px;
-    border-style: solid;
-    border-color: white;
+    width: 100%;
+    height: 100%;
     background-color: #555555;
     justify-content: center;
     align-items: center;
     display: flex;
     flex-direction: column;
+    margin: 20px;
 }
 
 #ItemIcon {
-    width: 80px;
-    height: 80px;
+    width: 100%;
+    height: 80%;
     background-color: grey;
+    align-self: center;
 }
 
 #ItemLabel {
-    unity-text-align: center;
+    -unity-text-align: middle-center;
     margin-top: 5px;
     font-size: 14px;
     color: white;
-}
-
-.dragging {
-    position: absolute;
-    opacity: 0.8;
+    width:100%;
+    height:20%;
 }
