@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
 /// <summary>
@@ -54,25 +55,22 @@ public class Inventory : MonoBehaviour
     }
 
     /// <summary>
-    /// Removes a certain amount of an item with a given name from the inventory. //TODO spawn thrown away items
+    /// Removes a certain amount of an item  from the inventory. //TODO spawn thrown away items
     /// </summary>
-    /// <param name="name">The name of the item that should be removed.</param>
+    /// <param name="item">The item that should be removed.</param>
     /// <param name="amount">The amount of the item that should be removed</param>
-    public void RemoveItem(string name,int amount)
+    public void RemoveItem(Item toRemove,int amount)
     {
-        foreach (Item item in items)
+        foreach (var item in items)
         {
-            //If the item is found reduce it by the specified amount
-            if (item.itemName.Equals(name))
+            if (item.Equals(toRemove))
             {
                 item.itemQuantity -= amount;
-                
-                //If the amount of the item is droped to or below zero remove the item entirely from the inventory
                 if (item.itemQuantity <= 0)
                 {
-                    items.Remove(item);
-                    return;
+                    items.Remove(item);  
                 }
+                return;
             }
         }
     }
@@ -94,5 +92,22 @@ public class Inventory : MonoBehaviour
     public List<Item> getInventory()
     {
         return items; 
+    }
+
+    /// <summary>
+    /// Method searches for an item in the inventory by the name.
+    /// </summary>
+    /// <param name="itemName">The name of the item you search for.</param>
+    /// <returns>The item from the list.</returns>
+    public Item GetItem(string itemName)
+    {
+        foreach(var item in items)
+        {
+            if (item.itemName.Equals(itemName))
+            {
+                return item;
+            }
+        }
+        return null;
     }
 }
