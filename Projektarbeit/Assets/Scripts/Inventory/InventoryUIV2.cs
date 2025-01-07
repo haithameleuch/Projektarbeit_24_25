@@ -60,17 +60,21 @@ public class InventoryUIV2 : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        //Check wether "e" is pressed to toggle the inventory
-        if (Input.GetKeyDown(KeyCode.E))
+        //Check wether "i" is pressed to toggle the inventory
+        if (Input.GetKeyDown(KeyCode.I))
         {
             ToggleUIDocument();
         }
-        //If the UI is visible check wether "q" is pressed to remove the item the mouse is hovering over
+        //If the UI is visible check which button is pressed to interact with the item the mouse is hovering over
         if (isUIVisible)
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 throwItemAway();
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                useItem();
             }
         }
     }
@@ -117,6 +121,27 @@ public class InventoryUIV2 : MonoBehaviour
     /// </summary>
     private void throwItemAway()
     {
+        Item toRemove = getItemUnderMouse();
+        if (toRemove != null)
+        {
+            inventoryManager.RemoveItem(toRemove, 1);
+            RefreshUI();
+        }    
+    }
+
+    private void useItem()
+    {
+        Item toUse = getItemUnderMouse();
+        if (toUse != null)
+        {
+            //TODO code to use Item
+            inventoryManager.RemoveItem(toUse, 1);
+            RefreshUI();
+        }
+    }
+
+    private Item getItemUnderMouse()
+    {
         //Get mouse location
         Vector2 mousePosition = Input.mousePosition;
 
@@ -125,13 +150,14 @@ public class InventoryUIV2 : MonoBehaviour
 
         //Get the Element under the mouse
         VisualElement elementUnderMouse = rootElement.panel.Pick(mousePosition);
-    
+
 
         if (elementUnderMouse != null)
         {
             //If the element under the mouse is the MainContainer of the UI we skip the rest
-            if (elementUnderMouse.name != "MainContainer") {
-                
+            if (elementUnderMouse.name != "MainContainer")
+            {
+
                 //Get the main component of the slot-prefab
                 var itemPanel = elementUnderMouse.parent;
 
@@ -150,10 +176,10 @@ public class InventoryUIV2 : MonoBehaviour
                 //Get the name of the item from the name-panel
                 string name = itemPanel.Q<Label>("Name").text;
 
-                inventoryManager.RemoveItem(name, 1);
+                return inventoryManager.GetItem(name);
 
-                RefreshUI();
             }
         }
+        return null;
     }
 }
