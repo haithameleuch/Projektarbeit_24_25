@@ -5,6 +5,7 @@ public class Health : MonoBehaviour
 {
     public float _maxHealth;
     public float _currentHealth;
+    private bool getDamage;
 
     // Update is called once per frame
     void Update()
