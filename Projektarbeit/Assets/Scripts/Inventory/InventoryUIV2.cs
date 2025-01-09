@@ -122,7 +122,7 @@ public class InventoryUIV2 : MonoBehaviour
     private void throwItemAway()
     {
         Item toRemove = getItemUnderMouse();
-        if (toRemove != null)
+        if (!toRemove.itemName.Equals(""))
         {
             inventoryManager.RemoveItem(toRemove, 1);
             RefreshUI();
@@ -132,7 +132,7 @@ public class InventoryUIV2 : MonoBehaviour
     private void useItem()
     {
         Item toUse = getItemUnderMouse();
-        if (toUse != null)
+        if (!toUse.itemName.Equals(""))
         {
             //TODO code to use Item
             inventoryManager.RemoveItem(toUse, 1);
@@ -180,6 +180,6 @@ public class InventoryUIV2 : MonoBehaviour
 
             }
         }
-        return null;
+        return new Item("", null, 0);
     }
 }

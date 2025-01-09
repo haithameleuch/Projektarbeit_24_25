@@ -108,6 +108,6 @@ public class Inventory : MonoBehaviour
                 return item;
             }
         }
-        return null;
+        return new Item("",null,0);
     }
 }
