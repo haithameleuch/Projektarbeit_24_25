@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/Scripts/Inventory/InventoryStyleV2.uss?fileID=7433441132597879392&amp;guid=d8e14560401745247a2d3ff93084acc7&amp;type=3#InventoryStyleV2" />
+    <ui:VisualElement name="Slot" class="Slot">
+        <ui:VisualElement name="Top" style="flex-grow: 0; flex-shrink: 0; width: 100%; height: 80%; justify-content: flex-end; background-image: url(&quot;project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=4154780841294389669&amp;guid=93a3adf3f3f5a7246905a238c7b93edf&amp;type=3#arrow-down&quot;); font-size: 20px;">
+            <ui:Label text="20" name="ItemCount" style="font-size: 25px; margin-top: 0; margin-right: 0; margin-bottom: 0; margin-left: 0; padding-top: 0; padding-right: 0; padding-bottom: 0; padding-left: 0; width: 10%; height: 10%; align-self: center; justify-content: flex-end; color: rgb(0, 0, 0); -unity-font-style: bold;" />
+        </ui:VisualElement>
+        <ui:Label text="ItemName" name="Name" style="width: 100%; height: 20%; -unity-text-align: middle-center; font-size: 30px; -unity-font-style: bold;" />
+    </ui:VisualElement>
+</ui:UXML>
