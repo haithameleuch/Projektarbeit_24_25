@@ -7,24 +7,15 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
     {
         Health health = interactor.GetComponent<Health>();
         canMove = false;
-        Debug.Log("This is an interaction with: " + interactor);
 
         if(health != null)
         {
             float currentHealth = health._currentHealth;
-            if(interactor.name == "Player")
+            if(interactor.name.Equals("Player"))
             {
                 health._currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, currentHealth);
                 UIManager.Instance.ShowPanel(interactor.name + ": " + health._currentHealth + "/" + health._maxHealth);
             }
-
-            else if(interactor.name == "Projectile(Clone)")
-            {
-                Health self_health = GetComponent<Health>();
-                self_health._currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, currentHealth);
-                UIManager.Instance.ShowPanel(interactor.name + ": " + health._currentHealth + "/" + health._maxHealth);
-            }
-            
         }
     }
 
