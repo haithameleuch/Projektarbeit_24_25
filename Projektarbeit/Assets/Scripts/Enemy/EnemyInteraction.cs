@@ -32,4 +32,14 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
     }
 
     public bool CanMove() { return canMove; }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.name.Equals("Projectile(Clone)"))
+        {
+            Health enemyHealth = GetComponent<Health>();
+            enemyHealth._currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, enemyHealth._currentHealth);
+            UIManager.Instance.ShowPanel(gameObject.name + ": " + enemyHealth._currentHealth + "/" + enemyHealth._maxHealth);
+        }
+    }
 }
