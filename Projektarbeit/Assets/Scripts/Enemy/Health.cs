@@ -19,5 +19,10 @@ public class Health : MonoBehaviour
         {
             _currentHealth = HealthManager.healPercentage(13, _currentHealth, _maxHealth);
         }
+
+        if (GetComponent<EnemyInteraction>() != null && GetComponent<Health>()._currentHealth <= 0.0f)
+        {
+            Destroy(gameObject);
+        }
     }
 }
