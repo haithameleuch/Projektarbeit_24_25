@@ -148,9 +148,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 003e7d8460c2b29489f7918ec2494548, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  prefab: {fileID: 6229247520373792897, guid: 3ad7a1cffb2556547a8b7e60fd320431, type: 3}
-  corner: {fileID: 16038835297913163, guid: 7c7baabdbc078cb4098d5880fc72c0f3, type: 3}
-  pointsPrefab: {fileID: 0}
+  wallsPrefab: {fileID: 6229247520373792897, guid: 3ad7a1cffb2556547a8b7e60fd320431, type: 3}
+  pillar: {fileID: 16038835297913163, guid: 7c7baabdbc078cb4098d5880fc72c0f3, type: 3}
+  pointsPrefab: {fileID: 99933266080904588, guid: d8e36b7913a20e94e824b49555129f96, type: 3}
   floorPrefab: {fileID: 9100508158649072905, guid: e348e7143b6247b488737e4be26fb038, type: 3}
   width: 50
   height: 50

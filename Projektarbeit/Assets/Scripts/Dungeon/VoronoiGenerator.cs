@@ -4,12 +4,16 @@ using System.Linq;
 
 public class VoronoiGenerator : MonoBehaviour
 {
+    // Prefab used for the walls of the dungeon
     [SerializeField]
-    public GameObject prefab;
+    public GameObject wallsPrefab;
+    // Prefab used for the pillars on the vertexes
     [SerializeField]
-    public GameObject corner;
+    public GameObject pillar;
+    // Prefab used for things placed on the Voronoi-Sites (currently unused)
     [SerializeField]
     public GameObject pointsPrefab;
+    // Prefab for the floor of the dungeon
     [SerializeField]
     public GameObject floorPrefab;
     //Width and height of the dungeon
@@ -27,29 +31,29 @@ public class VoronoiGenerator : MonoBehaviour
         points.Add(new Point(width * 2, -height));
         points.Add(new Point(width / 2, height * 2));
 
-        // Berechne Delaunay-Triangulation
+        // Calculate the Delaunay-Triangulation
         List<Triangle> triangles = BowyerWatson(points);
 
-        // Add circumcenters of every triangle to a list
+        // Add circumcenters of every triangle, which are the voronoi points, to a list
         List<Point> circlePoints = new List<Point>();
         foreach (var triangle in triangles)
         {
             circlePoints.Add(triangle.GetCircumcenter());
         }
 
-        // Set red markers to indicate the given rectangle
-        Instantiate(corner, new Vector3(0, 0, 0), Quaternion.identity, transform);
-        Instantiate(corner, new Vector3(width, 0, 0), Quaternion.identity, transform);
-        Instantiate(corner, new Vector3(width, 0, height), Quaternion.identity, transform);
-        Instantiate(corner, new Vector3(0, 0, height), Quaternion.identity, transform);
+        // Place Pillars on the edges to hide wall-clipping
+        Instantiate(pillar, new Vector3(0, 0, 0), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(width, 0, 0), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(width, 0, height), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(0, 0, height), Quaternion.identity, transform);
 
         // Set green markers to indicate the given voronoi sites
-        //foreach (var point in points)
-        //{
-        //    Instantiate(pointsPrefab, new Vector3(point.X, 0, point.Y), Quaternion.identity, transform);
-        //}
+        foreach (var point in points)
+        {
+            Instantiate(pointsPrefab, new Vector3(point.X, 0, point.Y), Quaternion.identity, transform);
+        }
 
-        // create edges of the voronoi diagramm using a gray cube that gets rescaled
+        // Create edges of the voronoi diagramm using the wallPrefab
         List<Edge> voronoiEdges = ComputeVoronoiDiagram(triangles);
         foreach (var edge in voronoiEdges)
         {
@@ -57,7 +61,8 @@ public class VoronoiGenerator : MonoBehaviour
             Point end = edge.B;
 
             bool isSwitched = false;
-
+            
+            // If the edge is completly vertical (so the slope is infinity) swap x and y coordinates to avoid division by 0
             if (start.X == end.X)
             {
                 isSwitched = true;
@@ -85,6 +90,7 @@ public class VoronoiGenerator : MonoBehaviour
                 continue;
             }
 
+            // Crop edges
             if (isOut(start))
             {
                 if (start.X < 0)
@@ -124,12 +130,14 @@ public class VoronoiGenerator : MonoBehaviour
                     end = pX_H;
                 }
             }
+
             // Remove not meaningful intersecting edges
             if (start.X == end.X)
             {
                 continue;
             }
 
+            // Revert the x and y coordinates if the switch was necessary
             if (isSwitched)
             {
                 float tmp = start.X;
@@ -139,23 +147,37 @@ public class VoronoiGenerator : MonoBehaviour
                 end.X = end.Y;
                 end.Y = tmp;
             }
-            // Create Pillar
-            Instantiate(corner, new Vector3(start.X, 0, start.Y), Quaternion.identity, transform);
-            Instantiate(corner, new Vector3(end.X, 0, end.Y), Quaternion.identity, transform);
-            // Create cube
-            CreateScaledCube(new Vector3(start.X, 0, start.Y), new Vector3(end.X, 0, end.Y), 1.0f, 1.0f);
-        }
-        GameObject floor = Instantiate(floorPrefab, new Vector3(0,0,0), Quaternion.identity, transform);
-        floor.transform.position = new Vector3(width/2,0,height/2);
-        floor.transform.localScale = new Vector3(25.0f,1f, 25f);
 
-        CreateScaledCube(new Vector3(0, 0, 0), new Vector3(width, 0, 0), 1f, 1f);
-        CreateScaledCube(new Vector3(width, 0, 0), new Vector3(width, 0, height), 1f, 1f);
-        CreateScaledCube(new Vector3(width, 0, height), new Vector3(0, 0, height), 1f, 1f);
-        CreateScaledCube(new Vector3(0, 0, height), new Vector3(0, 0, 0), 1f, 1f);
+            // Create Pillars on the start and end of each wall (results in double placement)
+            Instantiate(pillar, new Vector3(start.X, 0, start.Y), Quaternion.identity, transform);
+            Instantiate(pillar, new Vector3(end.X, 0, end.Y), Quaternion.identity, transform);
+
+            // Create Walls
+            CreateWall(new Vector3(start.X, 0, start.Y), new Vector3(end.X, 0, end.Y));
+        }
+
+        // Place the floor of the dungeon
+        for (int j = 0; j < height/2; j++)
+        {
+            for (int i = 0; i < width / 2; i++)
+            {
+                GameObject floor = Instantiate(floorPrefab, new Vector3((i * 2) + 1, 0, (j * 2) + 1), Quaternion.identity, transform);
+            }
+        }
+        
+        // Create outside walls of the dungeon
+        CreateWall(new Vector3(0, 0, 0), new Vector3(width, 0, 0));
+        CreateWall(new Vector3(width, 0, 0), new Vector3(width, 0, height));
+        CreateWall(new Vector3(width, 0, height), new Vector3(0, 0, height));
+        CreateWall(new Vector3(0, 0, height), new Vector3(0, 0, 0));
 
     }
 
+    /// <summary>
+    /// Checks wether a point is within a rectangle bounded by (0,0) and (width,height)
+    /// </summary>
+    /// <param name="p">The point which should get checked</param>
+    /// <returns>True if point is outside/False if inside</returns>
     bool isOut(Point p)
     {
         if ((p.X < 0 || p.X > width) || (p.Y < 0 || p.Y > height))
@@ -165,21 +187,41 @@ public class VoronoiGenerator : MonoBehaviour
         else return false;
     }
 
-    void CreateScaledCube(Vector3 start, Vector3 end, float width, float height)
+    void CreateWall(Vector3 start, Vector3 end)
     {
-        // Erstelle den Würfel
-        GameObject cube = Instantiate(prefab, transform);
+        int widthOfPrefab = 2;
+        int numberOfSegments = (int)Vector3.Distance(start, end)/widthOfPrefab;
+        
+        if (numberOfSegments < 1)
+        {
+            numberOfSegments = 1;
+        }
+        float scaleOfSegment = (Vector3.Distance(start, end) / widthOfPrefab) / numberOfSegments;
+        Vector3 segmentStep = (end - start) / numberOfSegments;
 
-        // Setze die Position in die Mitte zwischen den Punkten
+        for (int i = 0; i < numberOfSegments; i++)
+        {
+            CreateWallSegment(start + (i * segmentStep), start + ((i + 1)* segmentStep),scaleOfSegment);
+        }
+    }
+
+    /// <summary>
+    /// Create a wall from the prefab and scale and rotate it between two points
+    /// </summary>
+    /// <param name="start">The beginning of the wall</param>
+    /// <param name="end">The end of the wall</param>
+    void CreateWallSegment(Vector3 start, Vector3 end, float scale)
+    {
+        // Instantiate the wall as child
+        GameObject cube = Instantiate(wallsPrefab,transform);
+
+        // Position the location of the prefab to the middle between start and end
         cube.transform.position = (start + end) / 2;
 
-        // Berechne die Distanz zwischen den Punkten
-        float distance = Vector3.Distance(start, end)/2;
+        // Scale the wall accordingly
+        cube.transform.localScale = new Vector3(scale, 1f, 1f);
 
-        // Setze die Skalierung des Würfels
-        cube.transform.localScale = new Vector3(distance, height, width); // Passt die Skalierung nur auf der X-Achse an
-
-        // Rotiert den Würfel, sodass er sich zwischen den beiden Punkten ausrichtet
+        // Rotate the wall correctly
         cube.transform.rotation = Quaternion.FromToRotation(Vector3.right, end - start);
     }
 
