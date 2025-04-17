@@ -87,7 +87,7 @@ public class CameraManager : MonoBehaviour
             playerRenderers = player.GetComponentsInChildren<Renderer>();
         }
 
-        SetTopDownView();
+        SetFirstPersonView();
     }
 
     /// <summary>
@@ -97,14 +97,17 @@ public class CameraManager : MonoBehaviour
     {
         if (Input.GetKeyDown(switchKey))
         {
-            if (topDownCamera.Priority > firstPersonCamera.Priority)
+            SetFirstPersonView();
+            
+            // THE CAMERA VIEW CAN BE CHANGED (ONLY FOR DEBUG!)
+            /*if (topDownCamera.Priority > firstPersonCamera.Priority)
             {
                 SetFirstPersonView();
             }
             else
             {
                 SetTopDownView();
-            }
+            }*/
         }
     }
 
@@ -133,12 +136,13 @@ public class CameraManager : MonoBehaviour
     /// </summary>
     private void SetFirstPersonView()
     {
-        SetPlayerVisible(true);
+        GameInputManager.Instance.MouseLocked(true);
 
         topDownCamera.Priority = 5;
         firstPersonCamera.Priority = 10;
         canvCamera.Priority = 5;
 
+        SetPlayerVisible(true);
         topDownPlayerController.enabled = false;
         firstPersonPlayerController.enabled = true;
         topDownShooting.enabled = false;
@@ -153,8 +157,7 @@ public class CameraManager : MonoBehaviour
     /// </summary>
     private void SetCanvView()
     {
-        Cursor.visible = true;
-        Cursor.lockState = CursorLockMode.None;
+        GameInputManager.Instance.MouseLocked(false);
 
         topDownCamera.Priority = 5;
         firstPersonCamera.Priority = 5;
