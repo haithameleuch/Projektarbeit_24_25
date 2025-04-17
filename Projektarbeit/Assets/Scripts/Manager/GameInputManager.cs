@@ -7,15 +7,35 @@ using UnityEngine;
 public class GameInputManager : MonoBehaviour
 {
     /// <summary>
+    /// Singleton instance of the GameInputManager, ensuring there is only one instance in the scene.
+    /// Provides global access to game input management functionality.
+    /// </summary>
+    public static GameInputManager Instance { get; private set; }
+    
+    /// <summary>
     /// Instance of the input action map for handling player controls.
     /// </summary>
     private InputSystem_Actions _inputSystemActions;
 
     /// <summary>
+    /// Ensures there is only one instance of the GameManager in the scene.
+    /// If another instance exists, it will be destroyed.
+    /// Persists the instance across scenes for consistent game state management.
+    /// 
     /// Initializes input actions and locks the cursor when the script awakens.
     /// </summary>
     private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        
+        DontDestroyOnLoad(gameObject);
+        
         // Initialize and enable the input action map
         _inputSystemActions = new InputSystem_Actions();
         _inputSystemActions.Player.Enable();
