@@ -1162,9 +1162,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gameInput: {fileID: 1907382330}
+  cameraTransform: {fileID: 724523105}
   moveSpeed: 7
   mouseSensitivity: 0.2
   rotationSmoothness: 0.3
+  allowPitchRotation: 1
 --- !u!114 &1561343256
 MonoBehaviour:
   m_ObjectHideFlags: 0
