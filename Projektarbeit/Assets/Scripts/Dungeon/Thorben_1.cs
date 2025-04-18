@@ -1,35 +1,252 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Thorben_1 : MonoBehaviour
 {
     [SerializeField]
     float size = 40;
+    [SerializeField]
+    int numPoints = 5;
+    [SerializeField]
+    GameObject pillar;
+    [SerializeField]
+    GameObject wall;
+    [SerializeField]
+    GameObject floor;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        List<Point> points = new List<Point>
-        {
-            new Point(10f, 10f),
-            new Point(30f, 5f),
-            new Point(10f, 30f),
-            new Point(30f, 30f)
-        };
-        
+        //List<Point> points = new List<Point>
+        //{
+        //    new Point(10f, 10f),
+        //    new Point(30f, 5f),
+        //    new Point(10f, 30f),
+        //    new Point(30f, 30f)
+        //};
+        List<Point> points = generatePoints(numPoints);
+
         List<Triangle> triangulation = BowyerWatson(points);
-        Debug.Log("Anzahl der Dreiecke: " + triangulation.Count);
-        foreach (Triangle triangle in triangulation)
+        List<Edge> voronoi = generateVoronoi(triangulation);
+        buildDungeon();
+        buildVoronoi(voronoi);
+        placePillars(triangulation);
+    }
+
+    // TODO nicht komplett zufällig
+    public List<Point> generatePoints(int count)
+    {
+        System.Random random = new System.Random();
+        List<Point> points= new List<Point>();
+        for (int i = 0; i < count; i++)
         {
-            triangle.printTriangle();
+            float randX = (float)random.NextDouble() * size;
+            float randY = (float)random.NextDouble() * size;
+            points.Add(new Point(randX, randY));
+        }
+        return points;
+    }
+
+    /// <summary>
+    /// Builds the dungeon walls and the dungeon floor
+    /// </summary>
+    public void buildDungeon()
+    {
+        // Place the floor of the dungeon
+        for (int j = 0; j < size / 2; j++)
+        {
+            for (int i = 0; i < size / 2; i++)
+            {
+                GameObject floorObj = Instantiate(floor, new Vector3((i * 2) + 1, 0, (j * 2) + 1), Quaternion.identity, transform);
+            }
+        }
+        // Create outside walls of the dungeon
+        CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0));
+        CreateWall(new Vector3(size, 0, 0), new Vector3(size, 0, size));
+        CreateWall(new Vector3(size, 0, size), new Vector3(0, 0, size));
+        CreateWall(new Vector3(0, 0, size), new Vector3(0, 0, 0));
+    }
+
+    /// <summary>
+    /// Places all Pillars at the intersection points of edges
+    /// </summary>
+    /// <param name="delaunay">The delaunay triangulation to get the circle centers</param>
+    public void placePillars(List<Triangle> delaunay)
+    {
+        // Place Pillars on the edges to hide wall-clipping
+        Instantiate(pillar, new Vector3(0, 0, 0), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(size, 0, 0), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(size, 0, size), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(0, 0, size), Quaternion.identity, transform);
+        foreach (Triangle triangle in delaunay)
+        {
+            Point center = triangle.getCircumcircle().center;
+            Instantiate(pillar, new Vector3(center.x, 0, center.y), Quaternion.identity, transform);
         }
     }
 
-
-    public void generateVoronoi(List<Triangle> triangulation)
+    /// <summary>
+    /// Builds only the segmented Walls for the voronoi-edges
+    /// </summary>
+    /// <param name="voronoi">The list of voronoi edges</param>
+    public void buildVoronoi(List<Edge> voronoi)
     {
+        foreach (Edge e in voronoi)
+        {
+            CreateWall(new Vector3(e.A.x,0,e.A.y),new Vector3(e.B.x,0,e.B.y));
+        }
+    }
 
+    void CreateWall(Vector3 start, Vector3 end)
+    {
+        int widthOfPrefab = 2;
+        int numberOfSegments = (int)Vector3.Distance(start, end) / widthOfPrefab;
+
+        if (numberOfSegments < 1)
+        {
+            numberOfSegments = 1;
+        }
+        float scaleOfSegment = (Vector3.Distance(start, end) / widthOfPrefab) / numberOfSegments;
+        Vector3 segmentStep = (end - start) / numberOfSegments;
+
+        for (int i = 0; i < numberOfSegments; i++)
+        {
+            CreateWallSegment(start + (i * segmentStep), start + ((i + 1) * segmentStep), scaleOfSegment);
+        }
+    }
+
+    /// <summary>
+    /// Create a wall from the prefab and scale and rotate it between two points
+    /// </summary>
+    /// <param name="start">The beginning of the wall</param>
+    /// <param name="end">The end of the wall</param>
+    void CreateWallSegment(Vector3 start, Vector3 end, float scale)
+    {
+        // Instantiate the wall as child
+        GameObject cube = Instantiate(wall, transform);
+
+        // Position the location of the prefab to the middle between start and end
+        cube.transform.position = (start + end) / 2;
+
+        // Scale the wall accordingly
+        cube.transform.localScale = new Vector3(scale, 1f, 1f);
+
+        // Rotate the wall correctly
+        cube.transform.rotation = Quaternion.FromToRotation(Vector3.right, end - start);
+    }
+
+    /// <summary>
+    /// This Method generates the Voronoi-Diagram by drawing the bisectors of every triangle, joining matching edges and extending the border ones
+    /// </summary>
+    /// <param name="triangulation">A valid Delaunay-Triangulation</param>
+    /// <returns>The List of Voronoi Edges</returns>
+    public List<Edge> generateVoronoi(List<Triangle> triangulation)
+    {
+        List<Edge> bisectors = new List<Edge>();
+        List<int> toRemove = new List<int>();
+        List<Edge> voronoi = new List<Edge>();
+
+        foreach (Triangle triangle in triangulation)
+        {
+            // Generate three edges from every circumcenter to the edge of the triangle
+            Point center = triangle.getCircumcircle().center;
+            foreach (Edge edge in triangle.edges)
+            {
+                bisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
+            }
+        }
+
+        int edgeCount = bisectors.Count;
+
+        for (int i = 0; i < edgeCount-1; i++)
+        {
+            for (int j = i+1; j < edgeCount; j++)
+            {
+                if (Point.equals(bisectors[i].B, bisectors[j].B))
+                {
+                    Edge longEdge = new Edge(bisectors[i].A, bisectors[j].A);
+                    voronoi.Add(longEdge);
+                    toRemove.Add(i);
+                    toRemove.Add(j);
+                }
+            }
+        }
+
+        int offset = 0;
+
+        foreach (int count in toRemove)
+        {
+            
+            bisectors.RemoveAt(count-offset);
+            offset++;
+        }
+
+        foreach (Edge edge in bisectors)
+        {   
+            float diffX = edge.B.x - edge.A.x;
+            float diffY = edge.B.y - edge.A.y;
+            float m = 0;
+            if (diffX !=0)
+            {
+                m = diffY / diffX;
+            }
+            float b = edge.A.y - (m * edge.A.x);
+            List<Point> intersections = new List<Point>();
+            
+            if (diffX == 0)
+            {
+                Point intN = new Point(edge.B.x,size);
+                intersections.Add(intN);
+                Point intS = new Point(edge.B.x, 0);
+                intersections.Add(intS);
+            }
+            else
+            {
+                if (m==0)
+                {
+                    Point intE = new Point(size,edge.B.y);
+                    intersections.Add(intE);
+                    Point intW = new Point(0,edge.B.y);
+                    intersections.Add(intW);
+                }
+                else
+                {
+                    Point intE = new Point(size, m*size+b);
+                    intersections.Add(intE);
+                    Point intW = new Point(0, b);
+                    intersections.Add(intW);
+                    Point intN = new Point((size-b)/m, size);
+                    intersections.Add(intN);
+                    Point intS = new Point((0 - b) / m, 0);
+                    intersections.Add(intS);
+                }
+            }
+            Point inter = checkPoints(intersections,edge.B);
+            Edge longEdge = new Edge(edge.A, inter);
+            voronoi.Add(longEdge);
+        }
+
+        return voronoi;
+    }
+
+    public Point checkPoints(List<Point> points, Point reference)
+    {
+        Point result= new Point(0,0);
+        float minDistance = 10000;
+        foreach (Point p in points)
+        {
+            float distx = reference.x - p.x;
+            float disty = reference.y - p.y;
+            float distance = Mathf.Sqrt((distx*distx)+(disty*disty));
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                result = p;
+            }
+        }
+        return result;
     }
 
     /// <summary>
@@ -49,10 +266,6 @@ public class Thorben_1 : MonoBehaviour
         // Add each point after point
         foreach (var point in points)
         {
-            foreach (Triangle triangle in triangulation)
-            {
-                triangle.printTriangle();
-            }
             // List of invalid triangles in the triangulation
             List<Triangle> badTriangles = new List<Triangle>();
             
@@ -113,6 +326,8 @@ public class Thorben_1 : MonoBehaviour
 
         return triangulation;
     }
+
+    // Helper-Classes
 
     public class Triangle
     {
@@ -233,7 +448,7 @@ public class Thorben_1 : MonoBehaviour
         /// <param name="e_1">First edge</param>
         /// <param name="e_2">Second edge</param>
         /// <returns>The intersection point of e_1 and e_2</returns>
-        static Point getIntersection(Edge e_1, Edge e_2)
+        public static Point getIntersection(Edge e_1, Edge e_2)
         {
             bool isVert_1 = false;
             bool isVert_2 = false;
@@ -303,8 +518,6 @@ public class Thorben_1 : MonoBehaviour
         }
     }
 
-    // Helper-Classes (maybe structs useful)
-
     public class Point
     {
         public float x, y;
@@ -325,6 +538,15 @@ public class Thorben_1 : MonoBehaviour
             {
                 return false; 
             }
+        }
+
+        public static float getDistance(Point p_1, Point p_2)
+        {
+            return Mathf.Sqrt(((p_1.x-p_2.x) * (p_1.x - p_2.x)) + ((p_1.y - p_2.y) * (p_1.y - p_2.y)));
+        }
+        public void printPoint()
+        {
+            Debug.Log("("+this.x+";"+this.y+")");
         }
     }
 
