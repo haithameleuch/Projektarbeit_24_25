@@ -320,6 +320,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   size: 40
+  numPoints: 5
+  pillar: {fileID: 16038835297913163, guid: 7c7baabdbc078cb4098d5880fc72c0f3, type: 3}
+  wall: {fileID: 6229247520373792897, guid: 3ad7a1cffb2556547a8b7e60fd320431, type: 3}
+  floor: {fileID: 9100508158649072905, guid: e348e7143b6247b488737e4be26fb038, type: 3}
 --- !u!4 &1621557367
 Transform:
   m_ObjectHideFlags: 0
