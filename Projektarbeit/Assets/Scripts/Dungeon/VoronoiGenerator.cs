@@ -26,11 +26,6 @@ public class VoronoiGenerator : MonoBehaviour
     {
         List<Point> points = GenerateRandomPoints(5, width, height);
 
-        // Add three points to make sure the voronoi diagramm reaches to the edges of the rectangle
-        points.Add(new Point(-width, -height));
-        points.Add(new Point(width * 2, -height));
-        points.Add(new Point(width / 2, height * 2));
-
         // Calculate the Delaunay-Triangulation
         List<Triangle> triangles = BowyerWatson(points);
 
@@ -59,94 +54,6 @@ public class VoronoiGenerator : MonoBehaviour
         {
             Point start = edge.A;
             Point end = edge.B;
-
-            bool isSwitched = false;
-            
-            // If the edge is completly vertical (so the slope is infinity) swap x and y coordinates to avoid division by 0
-            if (start.X == end.X)
-            {
-                isSwitched = true;
-                float tmp = start.X;
-                start.X = start.Y;
-                start.Y = tmp;
-                tmp = end.X;
-                end.X = end.Y;
-                end.Y = tmp;
-            }
-            // Calculate line equation
-            float m = (end.Y - start.Y) / (end.X - start.X);
-            float b = start.Y - m * start.X;
-
-            // Intersections
-            Point p0_Y = new Point(0, b);
-            Point pW_Y = new Point(width, (m * width) + b);
-
-            Point pX_0 = new Point((-b / m), 0);
-            Point pX_H = new Point((height - b) / m, height);
-
-            // Sort out everything that does not intersect the rectangle
-            if (isOut(p0_Y) && isOut(pW_Y) && isOut(pX_0) && isOut(pX_H))
-            {
-                continue;
-            }
-
-            // Crop edges
-            if (isOut(start))
-            {
-                if (start.X < 0)
-                {
-                    start = p0_Y;
-                }
-                if (start.X > width)
-                {
-                    start = pW_Y;
-                }
-                if (start.Y < 0)
-                {
-                    start = pX_0;
-                }
-                if (start.Y > height)
-                {
-                    start = pX_H;
-                }
-            }
-
-            if (isOut(end))
-            {
-                if (end.X < 0)
-                {
-                    end = p0_Y;
-                }
-                if (end.X > width)
-                {
-                    end = pW_Y;
-                }
-                if (end.Y < 0)
-                {
-                    end = pX_0;
-                }
-                if (end.Y > height)
-                {
-                    end = pX_H;
-                }
-            }
-
-            // Remove not meaningful intersecting edges
-            if (start.X == end.X)
-            {
-                continue;
-            }
-
-            // Revert the x and y coordinates if the switch was necessary
-            if (isSwitched)
-            {
-                float tmp = start.X;
-                start.X = start.Y;
-                start.Y = tmp;
-                tmp = end.X;
-                end.X = end.Y;
-                end.Y = tmp;
-            }
 
             // Create Pillars on the start and end of each wall (results in double placement)
             Instantiate(pillar, new Vector3(start.X, 0, start.Y), Quaternion.identity, transform);
@@ -293,11 +200,28 @@ public class VoronoiGenerator : MonoBehaviour
             }
         }
 
-        foreach (var entry in edgeToCircumcenters.Values)
+        foreach (var entry in edgeToCircumcenters)
         {
-            if (entry.Count == 2)
+            List<Point> centers = entry.Value;
+            Edge delaunayEdge = entry.Key;
+            if (centers.Count == 2)
             {
-                voronoiEdges.Add(new Edge(entry[0], entry[1]));
+                // Normale Kante zwischen zwei Voronoi-Zellen
+                voronoiEdges.Add(new Edge(centers[0], centers[1]));
+            }
+            else if (centers.Count == 1)
+            {
+                // Unendliche Kante: erweitern entlang des Normalenvektors
+                Point circumcenter = centers[0];
+                Vector2 a = new Vector2(delaunayEdge.A.X, delaunayEdge.A.Y);
+                Vector2 b = new Vector2(delaunayEdge.B.X, delaunayEdge.B.Y);
+                Vector2 edgeDir = (b - a).normalized;
+                Vector2 normal = new Vector2(-edgeDir.y, edgeDir.x); // 90° Rotation
+
+                Vector2 cc = new Vector2(circumcenter.X, circumcenter.Y);
+                Vector2 far = cc + normal * 1000f; // "Unendlich weit" hinaus (oder ggf. Dungeon-Grenze)
+
+                voronoiEdges.Add(new Edge(circumcenter, new Point(far.x, far.y)));
             }
         }
 
