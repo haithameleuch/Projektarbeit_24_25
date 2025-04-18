@@ -10,18 +10,23 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// <summary>
     /// Reference to the input handling system for player movement and look controls.
     /// </summary>
+    [Header("References")]
     [SerializeField]
     private GameInputManager gameInput;
+
+    [SerializeField] private Transform cameraTransform;
 
     /// <summary>
     /// Speed of the player's movement.
     /// </summary>
+    [Header("Movement Settings")]
     [SerializeField]
     private float moveSpeed = 7f;
 
     /// <summary>
     /// Sensitivity of the mouse input for player rotation.
     /// </summary>
+    [Header("Look Settings")]
     [SerializeField]
     private float mouseSensitivity = 0.2f;
 
@@ -31,6 +36,14 @@ public class FirstPersonPlayerController : MonoBehaviour
     [SerializeField]
     private float rotationSmoothness = 0.3f;
 
+    [SerializeField] 
+    private bool allowPitchRotation = true;
+
+    /// <summary>
+    /// Current X-axis rotation of the player.
+    /// </summary>
+    private float _rotationX;
+    
     /// <summary>
     /// Current Y-axis rotation of the player.
     /// </summary>
@@ -40,6 +53,11 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// Current smooth rotation state of the player.
     /// </summary>
     private Quaternion _currentRotation;
+    
+    /// <summary>
+    /// Current Camera rotation state.
+    /// </summary>
+    private Quaternion _currentCameraRotation;
     
     /// <summary>
     /// Keeps track of the interactable objects the player is currently interacting with.
@@ -52,6 +70,7 @@ public class FirstPersonPlayerController : MonoBehaviour
     private void Start()
     {
         _currentRotation = transform.rotation;
+        _currentCameraRotation = cameraTransform.localRotation;
     }
 
     /// <summary>
@@ -132,12 +151,26 @@ public class FirstPersonPlayerController : MonoBehaviour
         Vector2 lookDelta = gameInput.GetLookDelta();
         _rotationY += lookDelta.x * mouseSensitivity;
 
-        // Calculate the target rotation based on mouse input.
-        Quaternion targetRotation = Quaternion.Euler(0f, _rotationY, 0f);
+        // Calculate the target Yaw rotation based on mouse input.
+        Quaternion targetYaw = Quaternion.Euler(0f, _rotationY, 0f);
 
-        // Smoothly interpolate to the target rotation using Slerp.
-        _currentRotation = Quaternion.Slerp(_currentRotation, targetRotation, rotationSmoothness);
+        // Smoothly interpolate to the targetYaw rotation using Slerp.
+        _currentRotation = Quaternion.Slerp(_currentRotation, targetYaw, rotationSmoothness);
         transform.rotation = _currentRotation;
+
+        if (allowPitchRotation)
+        {
+            // Get the mouse look input.
+            _rotationX -= lookDelta.y * mouseSensitivity;
+            _rotationX = Mathf.Clamp(_rotationX, -90f, 90f);
+            
+            // Calculate the target Pitch rotation based on mouse input.
+            Quaternion targetPitch = Quaternion.Euler(_rotationX, 0f, 0f);
+            
+            // Smoothly interpolate to the targetPitch rotation using Slerp.
+            _currentCameraRotation = Quaternion.Slerp(_currentCameraRotation, targetPitch, rotationSmoothness);
+            cameraTransform.localRotation = _currentCameraRotation;
+        }
     }
 
     /// <summary>
