@@ -1,24 +1,40 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class Thorben_1 : MonoBehaviour
 {
     [SerializeField]
-    float size = 40;
+    private float size = 40;
     [SerializeField]
-    int numPoints = 5;
+    private int numPoints = 5;
     [SerializeField]
-    GameObject pillar;
+    private GameObject pillar;
     [SerializeField]
-    GameObject wall;
+    private GameObject wall;
     [SerializeField]
-    GameObject floor;
+    private GameObject floor;
+    
+    // ONLY FOR DEBUGGING
+    [Header("GIZMOS DEBUGGING")]
+    [SerializeField] private bool showPoints = true;
+    [SerializeField] private bool showCenters = true;
+    [SerializeField] private bool showTriangles = true;
+    [SerializeField] private bool showVoronoi = true;
+    [SerializeField] private bool showBisectors = true;
+    
+    private List<Point> _debugPoints;
+    private List<Triangle> _debugTriangles;
+    private List<Edge> _debugVoronoi;
+    private List<Point> _debugCenters;
+    private List<Edge> _debugBisectors;
+    // ONLY FOR DEBUGGING
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
+        #region THORBEN VERSION
+        /*
         //List<Point> points = new List<Point>
         //{
         //    new Point(10f, 10f),
@@ -32,10 +48,37 @@ public class Thorben_1 : MonoBehaviour
         List<Edge> voronoi = generateVoronoi(triangulation);
         buildDungeon();
         buildVoronoi(voronoi);
-        placePillars(triangulation);
+        placePillars(triangulation);*/
+        #endregion THORBEN VERSION
+        
+        #region DEBUG VERSION
+        /*_debugPoints = new List<Point>
+        {
+            new Point(10f, 10f),
+            new Point(30f, 5f),
+            new Point(10f, 30f),
+            new Point(30f, 30f)
+        };*/
+        
+        //_debugPoints = generatePoints(numPoints);
+        _debugPoints = generatePoints2(numPoints, 6.0f, size);
+
+        _debugTriangles = BowyerWatson(_debugPoints);
+        _debugVoronoi = generateVoronoi(_debugTriangles);
+        
+        _debugCenters = new List<Point>();
+        foreach (Triangle triangle in _debugTriangles)
+        {
+            _debugCenters.Add(triangle.getCircumcircle().center);
+        }
+        
+        buildDungeon();
+        buildVoronoi(_debugVoronoi);
+        placePillars(_debugTriangles);
+        #endregion DEBUG VERSION
     }
 
-    // TODO nicht komplett zufällig
+    // TODO nicht komplett zufaellig
     public List<Point> generatePoints(int count)
     {
         System.Random random = new System.Random();
@@ -46,6 +89,41 @@ public class Thorben_1 : MonoBehaviour
             float randY = (float)random.NextDouble() * size;
             points.Add(new Point(randX, randY));
         }
+        return points;
+    }
+
+    public List<Point> generatePoints2(int count, float radius, float size)
+    {
+        List<Point> points = new List<Point>();
+        System.Random random = new System.Random();
+        int maxAttempts = 1000;
+
+        while (points.Count < count && maxAttempts > 0)
+        {
+            float margin = 2f;
+            float x = margin + (float)random.NextDouble() * (size - 2 * margin);
+            float y = margin + (float)random.NextDouble() * (size - 2 * margin);
+            Point newPoint = new Point(x, y);
+
+            bool isValid = true;
+
+            foreach (Point existing in points)
+            {
+                if (Point.getDistance(existing, newPoint) < radius)
+                {
+                    isValid = false;
+                    break;
+                }
+            }
+            
+            if (isValid)
+            {
+                points.Add(newPoint);
+            }
+            
+            maxAttempts--;
+        }
+        
         return points;
     }
 
@@ -147,6 +225,10 @@ public class Thorben_1 : MonoBehaviour
         List<Edge> bisectors = new List<Edge>();
         List<int> toRemove = new List<int>();
         List<Edge> voronoi = new List<Edge>();
+        
+        // ONLY FOR DEBUGGING
+        _debugBisectors = new List<Edge>();
+        // ONLY FOR DEBUGGING
 
         foreach (Triangle triangle in triangulation)
         {
@@ -155,6 +237,10 @@ public class Thorben_1 : MonoBehaviour
             foreach (Edge edge in triangle.edges)
             {
                 bisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
+                
+                // ONLY FOR DEBUGGING
+                _debugBisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
+                // ONLY FOR DEBUGGING
             }
         }
 
@@ -588,4 +674,73 @@ public class Thorben_1 : MonoBehaviour
             this.radius = radius;
         }
     }
+
+    #region ONLY FOR DEBUGGING
+    private void OnDrawGizmos()
+    {
+        // RANDOM POINTS (GREEN)
+        if (_debugPoints == null) return;
+
+        if (showPoints)
+        {
+            Gizmos.color = Color.green;
+        
+            foreach (Point p in _debugPoints)
+            {
+                Vector3 pos = new Vector3(p.x, 0.5f, p.y);
+                Gizmos.DrawCube(pos, Vector3.one);
+            }
+        }
+        
+        // CENTER (WHITE)
+        if (showCenters && _debugCenters != null)
+        {
+            Gizmos.color = Color.white;
+            foreach (Point center in _debugCenters)
+            {
+                Vector3 pos = new Vector3(center.x, 0.5f, center.y);
+                Gizmos.DrawSphere(pos, 0.5f);
+            }
+        }
+        
+        // DELAUNAY TRIANGULATION (BLUE)
+        if (showTriangles && _debugTriangles != null)
+        {
+            Gizmos.color = Color.blue;
+            foreach (Triangle triangle in _debugTriangles)
+            {
+                DrawLine(triangle.points[0], triangle.points[1]);
+                DrawLine(triangle.points[1], triangle.points[2]);
+                DrawLine(triangle.points[2], triangle.points[0]);
+            }
+        }
+
+        // VORONOI TRIANGULATION (YELLOW)
+        if (showVoronoi && _debugVoronoi != null)
+        {
+            Gizmos.color = Color.yellow;
+            foreach (Edge edge in _debugVoronoi)
+            {
+                DrawLine(edge.A, edge.B);
+            }
+        }
+        
+        // BISEKTOREN
+        if (showBisectors && _debugBisectors != null)
+        {
+            Gizmos.color = Color.magenta;
+            foreach (Edge edge in _debugBisectors)
+            {
+                DrawLine(edge.A, edge.B);
+            }
+        }
+    }
+    
+    private void DrawLine(Point a, Point b)
+    {
+        Vector3 start = new Vector3(a.x, 0.5f, a.y);
+        Vector3 end = new Vector3(b.x, 0.5f, b.y);
+        Gizmos.DrawLine(start, end);
+    }
+    #endregion ONLY FOR DEBUGGING
 }
