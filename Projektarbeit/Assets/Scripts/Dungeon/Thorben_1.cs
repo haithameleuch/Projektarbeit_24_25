@@ -22,12 +22,16 @@ public class Thorben_1 : MonoBehaviour
     [SerializeField] private bool showTriangles = true;
     [SerializeField] private bool showVoronoi = true;
     [SerializeField] private bool showBisectors = true;
+    [SerializeField] private bool showVoronoiIntersections = true;
+    [SerializeField] private bool showSuperTriangle = true;
     
     private List<Point> _debugPoints;
     private List<Triangle> _debugTriangles;
     private List<Edge> _debugVoronoi;
     private List<Point> _debugCenters;
     private List<Edge> _debugBisectors;
+    private List<Point> _debugVoronoiIntersections;
+    private Triangle _debugSuperTriangle;
     // ONLY FOR DEBUGGING
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -228,6 +232,7 @@ public class Thorben_1 : MonoBehaviour
         
         // ONLY FOR DEBUGGING
         _debugBisectors = new List<Edge>();
+        _debugVoronoiIntersections = new List<Point>();
         // ONLY FOR DEBUGGING
 
         foreach (Triangle triangle in triangulation)
@@ -312,6 +317,10 @@ public class Thorben_1 : MonoBehaviour
             Point inter = checkPoints(intersections,edge.B);
             Edge longEdge = new Edge(edge.A, inter);
             voronoi.Add(longEdge);
+            
+            // ONLY FOR DEBUGGING
+            _debugVoronoiIntersections.Add(inter);
+            // ONLY FOR DEBUGGING
         }
 
         return voronoi;
@@ -348,6 +357,10 @@ public class Thorben_1 : MonoBehaviour
         // A triangle that is big enough so all points fall within its bound
         Triangle superTriangle = new Triangle(new Point(-size,-size/2), new Point(size/2,size*2.5f), new Point(2*size,-size/2));
         triangulation.Add(superTriangle);
+        
+        // ONLY FOR DEBUGGING
+        _debugSuperTriangle = superTriangle;
+        // ONLY FOR DEBUGGING
 
         // Add each point after point
         foreach (var point in points)
@@ -725,7 +738,7 @@ public class Thorben_1 : MonoBehaviour
             }
         }
         
-        // BISEKTOREN
+        // BISEKTOREN (MAGENTA)
         if (showBisectors && _debugBisectors != null)
         {
             Gizmos.color = Color.magenta;
@@ -733,6 +746,26 @@ public class Thorben_1 : MonoBehaviour
             {
                 DrawLine(edge.A, edge.B);
             }
+        }
+
+        // INTERSECTIONS (GRAY)
+        if (showVoronoiIntersections && _debugVoronoiIntersections != null)
+        {
+            Gizmos.color = Color.gray;
+            foreach (Point point in _debugVoronoiIntersections)
+            {
+                Vector3 pos = new Vector3(point.x, 0.5f, point.y);
+                Gizmos.DrawSphere(pos, 0.5f);
+            }
+        }
+        
+        // SUPERTRIANGLE (BLACK)
+        if (showSuperTriangle && _debugSuperTriangle != null)
+        {
+            Gizmos.color = Color.black;
+            DrawLine(_debugSuperTriangle.points[0], _debugSuperTriangle.points[1]);
+            DrawLine(_debugSuperTriangle.points[1], _debugSuperTriangle.points[2]);
+            DrawLine(_debugSuperTriangle.points[2], _debugSuperTriangle.points[0]);
         }
     }
     
