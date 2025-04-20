@@ -64,8 +64,8 @@ public class Thorben_1 : MonoBehaviour
             new Point(30f, 30f)
         };*/
         
-        //_debugPoints = generatePoints(numPoints);
-        _debugPoints = generatePoints2(numPoints, 6.0f, size);
+        _debugPoints = generatePoints(numPoints);
+        //_debugPoints = generatePoints2(numPoints, 6.0f, size);
 
         _debugTriangles = BowyerWatson(_debugPoints);
         _debugVoronoi = generateVoronoi(_debugTriangles);
@@ -87,11 +87,25 @@ public class Thorben_1 : MonoBehaviour
     {
         System.Random random = new System.Random();
         List<Point> points= new List<Point>();
-        for (int i = 0; i < count; i++)
+
+        int root = (int)Math.Sqrt(count);
+        float offsetX = 0;
+        float offsetY = 0;
+        float ratio = (size / root);
+
+        for (int i = 0; i <root ; i++)
         {
-            float randX = (float)random.NextDouble() * size;
-            float randY = (float)random.NextDouble() * size;
-            points.Add(new Point(randX, randY));
+            for (int j=0;j< root;j++ ) {
+                
+                float randX = (float)random.NextDouble() * ratio+offsetX;
+                float randY = (float)random.NextDouble() * ratio+offsetY;
+
+                points.Add(new Point(randX, randY));
+
+                offsetX += ratio;
+            }
+            offsetX = 0;
+            offsetY += ratio;
         }
         return points;
     }
@@ -266,64 +280,69 @@ public class Thorben_1 : MonoBehaviour
         }
 
         int offset = 0;
+        toRemove.Sort();
 
         foreach (int count in toRemove)
         {
-            
-            bisectors.RemoveAt(count-offset);
+
+            bisectors.RemoveAt(count - offset);
             offset++;
         }
 
-        foreach (Edge edge in bisectors)
-        {   
-            float diffX = edge.B.x - edge.A.x;
-            float diffY = edge.B.y - edge.A.y;
-            float m = 0;
-            if (diffX !=0)
+        foreach (Edge e in bisectors)
+        {
+            foreach (Triangle tri in triangulation)
             {
-                m = diffY / diffX;
-            }
-            float b = edge.A.y - (m * edge.A.x);
-            List<Point> intersections = new List<Point>();
-            
-            if (diffX == 0)
-            {
-                Point intN = new Point(edge.B.x,size);
-                intersections.Add(intN);
-                Point intS = new Point(edge.B.x, 0);
-                intersections.Add(intS);
-            }
-            else
-            {
-                if (m==0)
-                {
-                    Point intE = new Point(size,edge.B.y);
-                    intersections.Add(intE);
-                    Point intW = new Point(0,edge.B.y);
-                    intersections.Add(intW);
-                }
-                else
-                {
-                    Point intE = new Point(size, m*size+b);
-                    intersections.Add(intE);
-                    Point intW = new Point(0, b);
-                    intersections.Add(intW);
-                    Point intN = new Point((size-b)/m, size);
-                    intersections.Add(intN);
-                    Point intS = new Point((0 - b) / m, 0);
-                    intersections.Add(intS);
-                }
-            }
-            Point inter = checkPoints(intersections,edge.B);
-            Edge longEdge = new Edge(edge.A, inter);
-            voronoi.Add(longEdge);
-            
-            // ONLY FOR DEBUGGING
-            _debugVoronoiIntersections.Add(inter);
-            // ONLY FOR DEBUGGING
-        }
+                Edge bisector_1 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[0].A.x + tri.edges[0].B.x) / 2), ((tri.edges[0].A.y + tri.edges[0].B.y) / 2)));
+                Edge bisector_2 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[1].A.x + tri.edges[1].B.x) / 2), ((tri.edges[1].A.y + tri.edges[1].B.y) / 2)));
+                Edge bisector_3 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[2].A.x + tri.edges[2].B.x) / 2), ((tri.edges[2].A.y + tri.edges[2].B.y) / 2)));
 
+                if (Edge.equals(e, bisector_1) || Edge.equals(e, bisector_2) || Edge.equals(e, bisector_3))
+                {
+                    float diffX = e.B.x - e.A.x;
+                    float diffY = e.B.y - e.A.y;
+
+                    Vector2 dir = new Vector2(diffX, diffY);
+                    dir.Normalize();
+                    Vector2 shortend = new Vector2(dir[0] * 0.01f, dir[1] * 0.01f);
+
+                    
+                    if (!PointOutTriangle(new Point(e.B.x + shortend[0], e.B.y + shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
+                    {
+                        Edge newEdge = new Edge(e.A, new Point(e.B.x - (shortend[0] * 100000), e.B.y - (shortend[1] * 100000)));
+                        voronoi.Add(newEdge);
+                    }
+                    else if(!PointOutTriangle(new Point(e.B.x - shortend[0], e.B.y - shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
+                    {
+                        Edge newEdge = new Edge(e.A, new Point(e.B.x + (shortend[0] * 100000), e.B.y + (shortend[1] * 100000)));
+                        voronoi.Add(newEdge);
+                    }
+                }
+            }
+        }
         return voronoi;
+    }
+
+
+    public float sign(Point p1, Point p2, Point p3)
+    {
+        return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+    }
+
+    public bool PointOutTriangle(Point pt, Point v1, Point v2, Point v3)
+    {
+        float d1, d2, d3;
+        bool has_neg, has_pos;
+
+        d1 = sign(pt, v1, v2);
+        d2 = sign(pt, v2, v3);
+        d3 = sign(pt, v3, v1);
+
+        has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+        has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+
+        Debug.Log("Result: "+ !(has_neg && has_pos));
+        return (has_neg && has_pos);
     }
 
     public Point checkPoints(List<Point> points, Point reference)
