@@ -283,25 +283,26 @@ public class Thorben_1 : MonoBehaviour
                     Vector2 dir = new Vector2(diffX, diffY);
                     dir.Normalize();
                     Vector2 shortend = new Vector2(dir[0] * 0.01f, dir[1] * 0.01f);
-
                     
                     if (!PointOutTriangle(new Point(e.B.x + shortend[0], e.B.y + shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
                     {
-                        Edge newEdge = new Edge(e.A, new Point(e.B.x - (shortend[0] * 100000), e.B.y - (shortend[1] * 100000)));
+                        Point inter = FindIntersectionWithMapBoundary(e, size);
+                        Edge newEdge = new Edge(e.A, inter);
                         voronoi.Add(newEdge);
                     }
-                    else if(!PointOutTriangle(new Point(e.B.x - shortend[0], e.B.y - shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
+                    else if (!PointOutTriangle(new Point(e.B.x - shortend[0], e.B.y - shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
                     {
-                        Edge newEdge = new Edge(e.A, new Point(e.B.x + (shortend[0] * 100000), e.B.y + (shortend[1] * 100000)));
+                        Point inter = FindIntersectionWithMapBoundary(e, size);
+                        Edge newEdge = new Edge(e.A, inter);
                         voronoi.Add(newEdge);
                     }
+
                 }
             }
         }
         return voronoi;
     }
-
-
+    
     public float sign(Point p1, Point p2, Point p3)
     {
         return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
@@ -339,6 +340,46 @@ public class Thorben_1 : MonoBehaviour
             }
         }
         return result;
+    }
+    
+    public Point FindIntersectionWithMapBoundary(Edge edge, float size)
+    {
+        float dx = edge.B.x - edge.A.x;
+        float dy = edge.B.y - edge.A.y;
+
+        float m = 0;
+        float b = 0;
+
+        bool vertical = Mathf.Abs(dx) < 1e-5f;
+        bool horizontal = Mathf.Abs(dy) < 1e-5f;
+
+        List<Point> candidates = new List<Point>();
+
+        if (vertical)
+        {
+            candidates.Add(new Point(edge.B.x, 0));
+            candidates.Add(new Point(edge.B.x, size));
+        }
+        else if (horizontal)
+        {
+            candidates.Add(new Point(0, edge.B.y));
+            candidates.Add(new Point(size, edge.B.y));
+        }
+        else
+        {
+            m = dy / dx;
+            b = edge.B.y - m * edge.B.x;
+
+            candidates.Add(new Point(0, b));                    // left
+            candidates.Add(new Point(size, m * size + b));      // right
+            candidates.Add(new Point((0 - b) / m, 0));          // bottom
+            candidates.Add(new Point((size - b) / m, size));    // top
+        }
+
+        // Only valid points in Range [0, size]
+        candidates.RemoveAll(p => p.x < 0 || p.x > size || p.y < 0 || p.y > size);
+
+        return checkPoints(candidates, edge.B);
     }
 
     /// <summary>
@@ -424,7 +465,6 @@ public class Thorben_1 : MonoBehaviour
     }
 
     // Helper-Classes
-
     public class Triangle
     {
         public List<Edge> edges;
