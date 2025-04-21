@@ -3,11 +3,12 @@ using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Serialization;
+using System.Collections.Generic;
 
 /// <summary>
 /// Manages the drawing canvas, and texture processing.
 /// </summary>
-public class CanvasDrawDigits : MonoBehaviour
+public class CanvasDraw : MonoBehaviour
 {
     // Drawing-related variables
     private GameObject _canvasCamera;
@@ -45,7 +46,7 @@ public class CanvasDrawDigits : MonoBehaviour
     public Transform bottomRightCorner;
     public Transform point;
 
-    [FormerlySerializedAs("classifier")] [SerializeField] private ClassifierDigits classifierDigits;
+    [FormerlySerializedAs("classifierDigits")] [SerializeField] private Classifier classifier;
 
     // Draw Texture Material(Canvas Color, e.g. White)
     public Material material;
@@ -122,9 +123,10 @@ public class CanvasDrawDigits : MonoBehaviour
             {
                 // Preprocess the image to resize it for prediction
                 Texture2D preprocessedTexture = Preprocessing(generatedTexture, 28, 28);
-                (int predictedDigit, string text) = classifierDigits.Predict(preprocessedTexture); // Call the Predict method
+                (int predictedDigit, string text) = classifier.Predict(preprocessedTexture); // Call the Predict method
                 predictionText.text = text;
                 ToDraw = true;
+                Debug.Log(ValidGlyph(predictedDigit));
                 UpdateRandomDigit(predictedDigit);
             }
         }
@@ -355,6 +357,21 @@ public class CanvasDrawDigits : MonoBehaviour
 
         // Display the generated number in the UI
         randNumberText.text = _keyDigits.ToString();
+    }
+
+
+    private string ValidGlyph(int digit)
+    {
+        Dictionary<int, string> digitToString = new Dictionary<int, string>
+        {
+            { 0, "air" },
+            { 1, "earth" },
+            { 2, "fire" },
+            { 3, "water" },
+        };
+        string text = digitToString.ContainsKey(digit) ? digitToString[digit] : "Unknown";
+
+        return text;
     }
 
     /// <summary>

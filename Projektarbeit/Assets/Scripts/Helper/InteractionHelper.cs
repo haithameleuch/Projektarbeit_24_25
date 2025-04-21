@@ -35,13 +35,13 @@ public static class InteractionHelper
                 {
                     // Call Interact for every frame
                     interactable.Interact(player);
-                    Debug.Log("EVERY FRAME");
+                    // Debug.Log("EVERY FRAME");
                 }
                 else if (!currentInteractables.Contains(interactableObject))
                 {
                     // Call Interact only once
                     interactable.Interact(player);
-                    Debug.Log("SINGLE FRAME");
+                    // Debug.Log("SINGLE FRAME");
                 }
             }
         }*/

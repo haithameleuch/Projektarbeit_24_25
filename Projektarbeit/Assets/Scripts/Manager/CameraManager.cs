@@ -1,6 +1,5 @@
 using Unity.Cinemachine;
 using UnityEngine;
-using static CanvasDraw;
 
 /// <summary>
 /// Manages camera switching between top-down and first-person views and enables the corresponding player movement controls.

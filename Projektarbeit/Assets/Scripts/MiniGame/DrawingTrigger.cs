@@ -1,10 +1,10 @@
 using UnityEngine;
 
 // Script to handle interaction and triggering of drawing functionality
-public class DrawingTriggerDigits : MonoBehaviour, IInteractable
+public class DrawingTrigger : MonoBehaviour, IInteractable
 {
     private Renderer _playerRenderer; // Player's renderer (unused, could be removed if unnecessary)
-    private bool _isCameraPositionSet = false; // Flag to ensure the camera position is set only once
+    private bool _isCameraPositionSet; // Flag to ensure the camera position is set only once
 
     // Method invoked when the player interacts with the object
     // ReSharper disable Unity.PerformanceAnalysis
