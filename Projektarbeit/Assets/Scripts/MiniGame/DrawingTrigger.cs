@@ -1,12 +1,13 @@
 using UnityEngine;
 
 // Script to handle interaction and triggering of drawing functionality
-public class DrawingTrigger : MonoBehaviour, IInteractable
+public class DrawingTriggerDigits : MonoBehaviour, IInteractable
 {
-    private Renderer playerRenderer; // Player's renderer (unused, could be removed if unnecessary)
-    private bool isCameraPositionSet = false; // Flag to ensure the camera position is set only once
+    private Renderer _playerRenderer; // Player's renderer (unused, could be removed if unnecessary)
+    private bool _isCameraPositionSet = false; // Flag to ensure the camera position is set only once
 
     // Method invoked when the player interacts with the object
+    // ReSharper disable Unity.PerformanceAnalysis
     public void Interact(GameObject interactor)
     {
         // Find the "Center" GameObject, which determines the camera's new position
@@ -22,18 +23,22 @@ public class DrawingTrigger : MonoBehaviour, IInteractable
         if (cinemachineCamera != null)
         {
             // Ensure the camera's position and rotation are set only once
-            if (!isCameraPositionSet)
+            if (!_isCameraPositionSet)
             {
-                // Set the new position based on the "Center" object's position, with an offset in the Z-axis
-                Vector3 position = myObject.transform.position;
-                position.z = myObject.transform.position.z - 2f; // Offset Z value to position the camera correctly
+                // Get the direction orthogonal to the canvas (its "back" direction)
+                Vector3 offsetDirection = -myObject.transform.forward; // or +forward depending on camera setup
+
+                // Calculate the new position: 2 units away from the canvas along the normal
+                Vector3 position = myObject.transform.position + offsetDirection * 2f;
 
                 // Apply the calculated position and rotation to the camera
                 cinemachineCamera.transform.position = position;
-                cinemachineCamera.transform.eulerAngles = myObject.transform.eulerAngles;
+
+                // Make the camera look at the canvas
+                cinemachineCamera.transform.LookAt(myObject.transform);
 
                 // Mark the camera position as set
-                isCameraPositionSet = true;
+                _isCameraPositionSet = true;
             }
 
             // Check if the player presses the [G] key to trigger the drawing mode
