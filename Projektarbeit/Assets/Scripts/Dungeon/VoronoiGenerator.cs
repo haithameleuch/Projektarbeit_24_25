@@ -1,104 +1,173 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
+using Geometry;
 
 public class VoronoiGenerator : MonoBehaviour
 {
-    // Prefab used for the walls of the dungeon
+    [Header("Prefabs for Dungeon")]
     [SerializeField]
-    public GameObject wallsPrefab;
-    // Prefab used for the pillars on the vertexes
+    private GameObject pillar;
     [SerializeField]
-    public GameObject pillar;
-    // Prefab used for things placed on the Voronoi-Sites (currently unused)
+    private GameObject wall;
     [SerializeField]
-    public GameObject pointsPrefab;
-    // Prefab for the floor of the dungeon
+    private GameObject floor;
     [SerializeField]
-    public GameObject floorPrefab;
-    //Width and height of the dungeon
+    private GameObject door;
+    
+    [Header("Dungeon Settings")]
     [SerializeField]
-    public int width = 10;
+    private float size = 40;
     [SerializeField]
-    public int height = 10;
+    private int numPoints = 5;
+    [SerializeField]
+    private int seed;
+    
+    // ONLY FOR DEBUGGING
+    [Header("Gizmos Debugging")]
+    [SerializeField] private bool showPoints = true;
+    [SerializeField] private bool showCenters = true;
+    [SerializeField] private bool showTriangles = true;
+    [SerializeField] private bool showVoronoi = true;
+    [SerializeField] private bool showBisectors = true;
+    [SerializeField] private bool showVoronoiIntersections = true;
+    [SerializeField] private bool showSuperTriangle = true;
+    
+    private List<Point> _debugPoints;
+    private List<Triangle> _debugTriangles;
+    private List<Edge> _debugVoronoi;
+    private List<Point> _debugCenters;
+    private List<Edge> _debugBisectors;
+    private List<Point> _debugVoronoiIntersections;
+    private Triangle _debugSuperTriangle;
+    // ONLY FOR DEBUGGING
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private void Start()
     {
-        List<Point> points = GenerateRandomPoints(5, width, height);
+        #region DEBUG VERSION
 
-        // Calculate the Delaunay-Triangulation
-        List<Triangle> triangles = BowyerWatson(points);
-
-        // Add circumcenters of every triangle, which are the voronoi points, to a list
-        List<Point> circlePoints = new List<Point>();
-        foreach (var triangle in triangles)
+        _debugPoints = generatePoints(numPoints, 6.0f, size);
+        _debugTriangles = BowyerWatson(_debugPoints);
+        _debugVoronoi = generateVoronoi(_debugTriangles);
+        _debugCenters = new List<Point>();
+        foreach (Triangle triangle in _debugTriangles)
         {
-            circlePoints.Add(triangle.GetCircumcenter());
-        }
+            Point center = triangle.getCircumcircle().center;
 
-        // Place Pillars on the edges to hide wall-clipping
-        Instantiate(pillar, new Vector3(0, 0, 0), Quaternion.identity, transform);
-        Instantiate(pillar, new Vector3(width, 0, 0), Quaternion.identity, transform);
-        Instantiate(pillar, new Vector3(width, 0, height), Quaternion.identity, transform);
-        Instantiate(pillar, new Vector3(0, 0, height), Quaternion.identity, transform);
-
-        // Set green markers to indicate the given voronoi sites
-        foreach (var point in points)
-        {
-            Instantiate(pointsPrefab, new Vector3(point.X, 0, point.Y), Quaternion.identity, transform);
-        }
-
-        // Create edges of the voronoi diagramm using the wallPrefab
-        List<Edge> voronoiEdges = ComputeVoronoiDiagram(triangles);
-        foreach (var edge in voronoiEdges)
-        {
-            Point start = edge.A;
-            Point end = edge.B;
-
-            // Create Pillars on the start and end of each wall (results in double placement)
-            Instantiate(pillar, new Vector3(start.X, 0, start.Y), Quaternion.identity, transform);
-            Instantiate(pillar, new Vector3(end.X, 0, end.Y), Quaternion.identity, transform);
-
-            // Create Walls
-            CreateWall(new Vector3(start.X, 0, start.Y), new Vector3(end.X, 0, end.Y));
-        }
-
-        // Place the floor of the dungeon
-        for (int j = 0; j < height/2; j++)
-        {
-            for (int i = 0; i < width / 2; i++)
+            // only add valid centers (inside the map)
+            if (center.x >= 0 && center.x <= size && center.y >= 0 && center.y <= size)
             {
-                GameObject floor = Instantiate(floorPrefab, new Vector3((i * 2) + 1, 0, (j * 2) + 1), Quaternion.identity, transform);
+                _debugCenters.Add(center);
             }
         }
-        
-        // Create outside walls of the dungeon
-        CreateWall(new Vector3(0, 0, 0), new Vector3(width, 0, 0));
-        CreateWall(new Vector3(width, 0, 0), new Vector3(width, 0, height));
-        CreateWall(new Vector3(width, 0, height), new Vector3(0, 0, height));
-        CreateWall(new Vector3(0, 0, height), new Vector3(0, 0, 0));
 
+        
+        buildDungeon();
+        buildVoronoi(_debugVoronoi);
+        placePillars(_debugTriangles);
+        #endregion DEBUG VERSION
+    }
+
+    public List<Point> generatePoints(int count, float radius, float size)
+    {
+        List<Point> points = new List<Point>();
+        System.Random random = new System.Random(seed);
+        int maxAttempts = 1000;
+
+        while (points.Count < count && maxAttempts > 0)
+        {
+            float margin = 2f;
+            float x = margin + (float)random.NextDouble() * (size - 2 * margin);
+            float y = margin + (float)random.NextDouble() * (size - 2 * margin);
+            Point newPoint = new Point(x, y);
+
+            bool isValid = true;
+
+            foreach (Point existing in points)
+            {
+                if (Point.getDistance(existing, newPoint) < radius)
+                {
+                    isValid = false;
+                    break;
+                }
+            }
+            
+            if (isValid)
+            {
+                points.Add(newPoint);
+            }
+            
+            maxAttempts--;
+        }
+        
+        return points;
     }
 
     /// <summary>
-    /// Checks wether a point is within a rectangle bounded by (0,0) and (width,height)
+    /// Builds the dungeon walls and the dungeon floor
     /// </summary>
-    /// <param name="p">The point which should get checked</param>
-    /// <returns>True if point is outside/False if inside</returns>
-    bool isOut(Point p)
+    public void buildDungeon()
     {
-        if ((p.X < 0 || p.X > width) || (p.Y < 0 || p.Y > height))
+        // Place the floor of the dungeon
+        for (int j = 0; j < size / 2; j++)
         {
-            return true;
+            for (int i = 0; i < size / 2; i++)
+            {
+                GameObject floorObj = Instantiate(floor, new Vector3((i * 2) + 1, 0, (j * 2) + 1), Quaternion.identity, transform);
+            }
         }
-        else return false;
+        // Create outside walls of the dungeon
+        CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0));
+        CreateWall(new Vector3(size, 0, 0), new Vector3(size, 0, size));
+        CreateWall(new Vector3(size, 0, size), new Vector3(0, 0, size));
+        CreateWall(new Vector3(0, 0, size), new Vector3(0, 0, 0));
+    }
+
+    /// <summary>
+    /// Places all Pillars at the intersection points of edges
+    /// </summary>
+    /// <param name="delaunay">The delaunay triangulation to get the circle centers</param>
+    public void placePillars(List<Triangle> delaunay)
+    {
+        // Place Pillars on the edges to hide wall-clipping
+        Instantiate(pillar, new Vector3(0, 0, 0), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(size, 0, 0), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(size, 0, size), Quaternion.identity, transform);
+        Instantiate(pillar, new Vector3(0, 0, size), Quaternion.identity, transform);
+        foreach (Triangle triangle in delaunay)
+        {
+            Point center = triangle.getCircumcircle().center;
+            
+            // Only Centers within the map
+            if (center.x < 0 || center.x > size || center.y < 0 || center.y > size)
+                continue;
+            
+            Instantiate(pillar, new Vector3(center.x, 0, center.y), Quaternion.identity, transform);
+        }
+    }
+
+    /// <summary>
+    /// Builds only the segmented Walls for the voronoi-edges
+    /// </summary>
+    /// <param name="voronoi">The list of voronoi edges</param>
+    public void buildVoronoi(List<Edge> voronoi)
+    {
+        foreach (Edge e in voronoi)
+        {
+            CreateWall(new Vector3(e.A.x,0,e.A.y),new Vector3(e.B.x,0,e.B.y));
+        }
     }
 
     void CreateWall(Vector3 start, Vector3 end)
     {
         int widthOfPrefab = 2;
-        int numberOfSegments = (int)Vector3.Distance(start, end)/widthOfPrefab;
-        
+        int numberOfSegments = (int)Vector3.Distance(start, end) / widthOfPrefab;
+
         if (numberOfSegments < 1)
         {
             numberOfSegments = 1;
@@ -108,7 +177,7 @@ public class VoronoiGenerator : MonoBehaviour
 
         for (int i = 0; i < numberOfSegments; i++)
         {
-            CreateWallSegment(start + (i * segmentStep), start + ((i + 1)* segmentStep),scaleOfSegment);
+            CreateWallSegment(start + (i * segmentStep), start + ((i + 1) * segmentStep), scaleOfSegment);
         }
     }
 
@@ -120,7 +189,7 @@ public class VoronoiGenerator : MonoBehaviour
     void CreateWallSegment(Vector3 start, Vector3 end, float scale)
     {
         // Instantiate the wall as child
-        GameObject cube = Instantiate(wallsPrefab,transform);
+        GameObject cube = Instantiate(wall, transform);
 
         // Position the location of the prefab to the middle between start and end
         cube.transform.position = (start + end) / 2;
@@ -132,146 +201,358 @@ public class VoronoiGenerator : MonoBehaviour
         cube.transform.rotation = Quaternion.FromToRotation(Vector3.right, end - start);
     }
 
-    static List<Point> GenerateRandomPoints(int count, int width, int height)
+    /// <summary>
+    /// This Method generates the Voronoi-Diagram by drawing the bisectors of every triangle, joining matching edges and extending the border ones
+    /// </summary>
+    /// <param name="triangulation">A valid Delaunay-Triangulation</param>
+    /// <returns>The List of Voronoi Edges</returns>
+    public List<Edge> generateVoronoi(List<Triangle> triangulation)
     {
-        System.Random rand = new System.Random();
-        List<Point> points = new List<Point>();
-        for (int i = 0; i < count; i++)
+        List<Edge> bisectors = new List<Edge>();
+        List<int> toRemove = new List<int>();
+        List<Edge> voronoi = new List<Edge>();
+        
+        // ONLY FOR DEBUGGING
+        _debugBisectors = new List<Edge>();
+        _debugVoronoiIntersections = new List<Point>();
+        // ONLY FOR DEBUGGING
+
+        foreach (Triangle triangle in triangulation)
         {
-            points.Add(new Point(rand.Next(width), rand.Next(height)));
+            // Generate three edges from every circumcenter to the edge of the triangle
+            Point center = triangle.getCircumcircle().center;
+            
+            // Only Centers within the map
+            if (center.x < 0 || center.x > size || center.y < 0 || center.y > size)
+                continue;
+            
+            foreach (Edge edge in triangle.edges)
+            {
+                bisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
+                
+                // ONLY FOR DEBUGGING
+                _debugBisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
+                // ONLY FOR DEBUGGING
+            }
         }
-        return points;
+
+        int edgeCount = bisectors.Count;
+
+        for (int i = 0; i < edgeCount-1; i++)
+        {
+            for (int j = i+1; j < edgeCount; j++)
+            {
+                if (Point.equals(bisectors[i].B, bisectors[j].B))
+                {
+                    Edge longEdge = new Edge(bisectors[i].A, bisectors[j].A);
+                    voronoi.Add(longEdge);
+                    toRemove.Add(i);
+                    toRemove.Add(j);
+                }
+            }
+        }
+
+        int offset = 0;
+        toRemove.Sort();
+
+        foreach (int count in toRemove)
+        {
+
+            bisectors.RemoveAt(count - offset);
+            offset++;
+        }
+
+        foreach (Edge e in bisectors)
+        {
+            foreach (Triangle tri in triangulation)
+            {
+                Edge bisector_1 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[0].A.x + tri.edges[0].B.x) / 2), ((tri.edges[0].A.y + tri.edges[0].B.y) / 2)));
+                Edge bisector_2 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[1].A.x + tri.edges[1].B.x) / 2), ((tri.edges[1].A.y + tri.edges[1].B.y) / 2)));
+                Edge bisector_3 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[2].A.x + tri.edges[2].B.x) / 2), ((tri.edges[2].A.y + tri.edges[2].B.y) / 2)));
+
+                if (Edge.equals(e, bisector_1) || Edge.equals(e, bisector_2) || Edge.equals(e, bisector_3))
+                {
+                    float diffX = e.B.x - e.A.x;
+                    float diffY = e.B.y - e.A.y;
+
+                    Vector2 dir = new Vector2(diffX, diffY);
+                    dir.Normalize();
+                    Vector2 shortend = new Vector2(dir[0] * 0.01f, dir[1] * 0.01f);
+                    
+                    if (!PointOutTriangle(new Point(e.B.x + shortend[0], e.B.y + shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
+                    {
+                        Point inter = FindIntersectionWithMapBoundary(e, size);
+                        _debugVoronoiIntersections.Add(inter);
+                        Edge newEdge = new Edge(e.A, inter);
+                        voronoi.Add(newEdge);
+                    }
+                    else if (!PointOutTriangle(new Point(e.B.x - shortend[0], e.B.y - shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
+                    {
+                        Point inter = FindIntersectionWithMapBoundary(e, size);
+                        _debugVoronoiIntersections.Add(inter);
+                        Edge newEdge = new Edge(e.A, inter);
+                        voronoi.Add(newEdge);
+                    }
+
+                }
+            }
+        }
+        return voronoi;
+    }
+    
+    public float sign(Point p1, Point p2, Point p3)
+    {
+        return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
     }
 
-    static List<Triangle> BowyerWatson(List<Point> points)
+    public bool PointOutTriangle(Point pt, Point v1, Point v2, Point v3)
     {
-        List<Triangle> triangles = new List<Triangle>();
+        float d1, d2, d3;
+        bool has_neg, has_pos;
 
-        // Super-Triangle erstellen, das alle Punkte enthält
-        int max = 1000;
-        Triangle superTriangle = new Triangle(
-            new Point(-max, -max),
-            new Point(max, -max),
-            new Point(0, max));
-        triangles.Add(superTriangle);
+        d1 = sign(pt, v1, v2);
+        d2 = sign(pt, v2, v3);
+        d3 = sign(pt, v3, v1);
 
+        has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+        has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+        
+        return (has_neg && has_pos);
+    }
+
+    public Point checkPoints(List<Point> points, Point reference)
+    {
+        Point result= new Point(0,0);
+        float minDistance = 10000;
+        foreach (Point p in points)
+        {
+            float distx = reference.x - p.x;
+            float disty = reference.y - p.y;
+            float distance = Mathf.Sqrt((distx*distx)+(disty*disty));
+            if (distance < minDistance)
+            {
+                minDistance = distance;
+                result = p;
+            }
+        }
+        return result;
+    }
+    
+    public Point FindIntersectionWithMapBoundary(Edge edge, float size)
+    {
+        float dx = edge.B.x - edge.A.x;
+        float dy = edge.B.y - edge.A.y;
+
+        float m = 0;
+        float b = 0;
+
+        bool vertical = Mathf.Abs(dx) < 1e-5f;
+        bool horizontal = Mathf.Abs(dy) < 1e-5f;
+
+        List<Point> candidates = new List<Point>();
+
+        if (vertical)
+        {
+            candidates.Add(new Point(edge.B.x, 0));
+            candidates.Add(new Point(edge.B.x, size));
+        }
+        else if (horizontal)
+        {
+            candidates.Add(new Point(0, edge.B.y));
+            candidates.Add(new Point(size, edge.B.y));
+        }
+        else
+        {
+            m = dy / dx;
+            b = edge.B.y - m * edge.B.x;
+
+            candidates.Add(new Point(0, b));                    // left
+            candidates.Add(new Point(size, m * size + b));      // right
+            candidates.Add(new Point((0 - b) / m, 0));          // bottom
+            candidates.Add(new Point((size - b) / m, size));    // top
+        }
+
+        // Only valid points in Range [0, size]
+        candidates.RemoveAll(p => p.x < 0 || p.x > size || p.y < 0 || p.y > size);
+
+        return checkPoints(candidates, edge.B);
+    }
+
+    /// <summary>
+    /// Calculates the Delaunay-Triangulation with a set of given Points
+    /// </summary>
+    /// <param name="points">The set of points used to calculate the delaunay triangulation</param>
+    /// <returns>The Delaunay-Triangulation as a set of Triangles</returns>
+    public List<Triangle> BowyerWatson(List<Point> points)
+    {
+        // List of triangles forming the Delaunay-Triangulation
+        List<Triangle> triangulation = new List<Triangle>();
+
+        // A triangle that is big enough so all points fall within its bound
+        Triangle superTriangle = new Triangle(new Point(-size,-size/2), new Point(size/2,size*2.5f), new Point(2*size,-size/2));
+        triangulation.Add(superTriangle);
+        
+        // ONLY FOR DEBUGGING
+        _debugSuperTriangle = superTriangle;
+        // ONLY FOR DEBUGGING
+
+        // Add each point after point
         foreach (var point in points)
         {
-            List<Triangle> badTriangles = triangles.Where(t => t.IsPointInsideCircumcircle(point)).ToList();
+            // List of invalid triangles in the triangulation
+            List<Triangle> badTriangles = new List<Triangle>();
+            
+            // Find all invalid triangles in the triangulation
+            foreach (var triangle in triangulation)
+            {
+                if (triangle.isInCircumcircle(point))
+                {
+                    badTriangles.Add(triangle);
+                }
+            }
+
             List<Edge> polygon = new List<Edge>();
 
+            // Find boundary polygon for generation of new triangles
             foreach (var triangle in badTriangles)
             {
-                foreach (var edge in triangle.GetEdges())
+                foreach (var edge in triangle.edges)
                 {
-                    if (!badTriangles.Any(t => t != triangle && t.HasEdge(edge)))
+                    int count = 0;
+                    foreach (var other in badTriangles)
+                    {
+                        if (Edge.equals(edge, other.edges[0]))
+                        {
+                            count++;
+                        }
+                        else if (Edge.equals(edge, other.edges[1]))
+                        {
+                            count++;
+                        }
+                        else if (Edge.equals(edge, other.edges[2]))
+                        {
+                            count++;
+                        }
+                    }
+
+                    // Edge is only in one triangle -> at the border
+                    if (count == 1)
                     {
                         polygon.Add(edge);
                     }
                 }
             }
 
-            triangles.RemoveAll(t => badTriangles.Contains(t));
+            // Remove all bad triangles
+            triangulation.RemoveAll(t => badTriangles.Contains(t));
+            
+            // Build new triangle for every edge of the polygon
             foreach (var edge in polygon)
             {
-                triangles.Add(new Triangle(edge.A, edge.B, point));
+                Triangle newTriangle = new Triangle(edge.A,edge.B,point);
+                triangulation.Add(newTriangle);
             }
         }
 
-        triangles.RemoveAll(t => t.ContainsVertex(superTriangle.A) || t.ContainsVertex(superTriangle.B) || t.ContainsVertex(superTriangle.C));
-        return triangles;
+        // Remove all triangles which contain a point of the super triangle
+        triangulation.RemoveAll(t => t.containsPoints(superTriangle.points));
+
+        return triangulation;
     }
 
-    static List<Edge> ComputeVoronoiDiagram(List<Triangle> triangles)
+    #region ONLY FOR DEBUGGING
+    private void OnDrawGizmos()
     {
-        List<Edge> voronoiEdges = new List<Edge>();
-        Dictionary<Edge, List<Point>> edgeToCircumcenters = new Dictionary<Edge, List<Point>>();
+        // RANDOM POINTS (GREEN)
+        if (_debugPoints == null) return;
 
-        foreach (var triangle in triangles)
+        #if UNITY_EDITOR
+        if (showPoints)
         {
-            Point circumcenter = triangle.GetCircumcenter();
-            foreach (var edge in triangle.GetEdges())
+            Gizmos.color = Color.green;
+        
+            for(int i = 0; i < _debugPoints.Count; i++)
             {
-                if (!edgeToCircumcenters.ContainsKey(edge))
-                {
-                    edgeToCircumcenters[edge] = new List<Point>();
-                }
-                edgeToCircumcenters[edge].Add(circumcenter);
+                Point p = _debugPoints[i];
+                Vector3 pos = new Vector3(p.x, 0.5f, p.y);
+                Gizmos.DrawCube(pos, Vector3.one);
+                
+                GUIStyle style = new GUIStyle();
+                style.normal.textColor = Color.white;
+                Handles.Label(pos + Vector3.up * 0.5f, $"\nPoint {i + 1}", style);
             }
         }
-
-        foreach (var entry in edgeToCircumcenters)
+        
+        // CENTER (WHITE)
+        if (showCenters && _debugCenters != null)
         {
-            List<Point> centers = entry.Value;
-            Edge delaunayEdge = entry.Key;
-            if (centers.Count == 2)
+            Gizmos.color = Color.white;
+            foreach (Point center in _debugCenters)
             {
-                // Normale Kante zwischen zwei Voronoi-Zellen
-                voronoiEdges.Add(new Edge(centers[0], centers[1]));
+                Vector3 pos = new Vector3(center.x, 0.5f, center.y);
+                Gizmos.DrawSphere(pos, 0.5f);
             }
-            else if (centers.Count == 1)
+        }
+        
+        // DELAUNAY TRIANGULATION (BLUE)
+        if (showTriangles && _debugTriangles != null)
+        {
+            Gizmos.color = Color.blue;
+            foreach (Triangle triangle in _debugTriangles)
             {
-                // Unendliche Kante: erweitern entlang des Normalenvektors
-                Point circumcenter = centers[0];
-                Vector2 a = new Vector2(delaunayEdge.A.X, delaunayEdge.A.Y);
-                Vector2 b = new Vector2(delaunayEdge.B.X, delaunayEdge.B.Y);
-                Vector2 edgeDir = (b - a).normalized;
-                Vector2 normal = new Vector2(-edgeDir.y, edgeDir.x); // 90° Rotation
-
-                Vector2 cc = new Vector2(circumcenter.X, circumcenter.Y);
-                Vector2 far = cc + normal * 1000f; // "Unendlich weit" hinaus (oder ggf. Dungeon-Grenze)
-
-                voronoiEdges.Add(new Edge(circumcenter, new Point(far.x, far.y)));
+                DrawLine(triangle.points[0], triangle.points[1]);
+                DrawLine(triangle.points[1], triangle.points[2]);
+                DrawLine(triangle.points[2], triangle.points[0]);
             }
         }
 
-        return voronoiEdges;
-    }
-
-    public class Point
-    {
-        public float X { get; set; }
-        public float Y { get; set; }
-        public Point(float x, float y) { X = x; Y = y; }
-    }
-
-    public class Triangle
-    {
-        public Point A { get; }
-        public Point B { get; }
-        public Point C { get; }
-        public Triangle(Point a, Point b, Point c) { A = a; B = b; C = c; }
-
-        public bool IsPointInsideCircumcircle(Point p)
+        // VORONOI TRIANGULATION (YELLOW)
+        if (showVoronoi && _debugVoronoi != null)
         {
-            double ax = A.X - p.X, ay = A.Y - p.Y;
-            double bx = B.X - p.X, by = B.Y - p.Y;
-            double cx = C.X - p.X, cy = C.Y - p.Y;
-            double det = (ax * ax + ay * ay) * (bx * cy - by * cx)
-                       - (bx * bx + by * by) * (ax * cy - ay * cx)
-                       + (cx * cx + cy * cy) * (ax * by - ay * bx);
-            return det > 0;
+            Gizmos.color = Color.yellow;
+            foreach (Edge edge in _debugVoronoi)
+            {
+                DrawLine(edge.A, edge.B);
+            }
+        }
+        
+        // BISEKTOREN (MAGENTA)
+        if (showBisectors && _debugBisectors != null)
+        {
+            Gizmos.color = Color.magenta;
+            foreach (Edge edge in _debugBisectors)
+            {
+                DrawLine(edge.A, edge.B);
+            }
         }
 
-        public List<Edge> GetEdges() => new List<Edge> { new Edge(A, B), new Edge(B, C), new Edge(C, A) };
-        public bool HasEdge(Edge e) => GetEdges().Any(edge => edge.Equals(e));
-        public bool ContainsVertex(Point p) => A == p || B == p || C == p;
-
-        public Point GetCircumcenter()
+        // INTERSECTIONS (GRAY)
+        if (showVoronoiIntersections && _debugVoronoiIntersections != null)
         {
-            double d = 2 * (A.X * (B.Y - C.Y) + B.X * (C.Y - A.Y) + C.X * (A.Y - B.Y));
-            double ux = ((A.X * A.X + A.Y * A.Y) * (B.Y - C.Y) + (B.X * B.X + B.Y * B.Y) * (C.Y - A.Y) + (C.X * C.X + C.Y * C.Y) * (A.Y - B.Y)) / d;
-            double uy = ((A.X * A.X + A.Y * A.Y) * (C.X - B.X) + (B.X * B.X + B.Y * B.Y) * (A.X - C.X) + (C.X * C.X + C.Y * C.Y) * (B.X - A.X)) / d;
-            return new Point((int)ux, (int)uy);
+            Gizmos.color = Color.gray;
+            foreach (Point point in _debugVoronoiIntersections)
+            {
+                Vector3 pos = new Vector3(point.x, 0.5f, point.y);
+                Gizmos.DrawSphere(pos, 0.5f);
+            }
         }
+        
+        // SUPERTRIANGLE (BLACK)
+        if (showSuperTriangle && _debugSuperTriangle != null)
+        {
+            Gizmos.color = Color.black;
+            DrawLine(_debugSuperTriangle.points[0], _debugSuperTriangle.points[1]);
+            DrawLine(_debugSuperTriangle.points[1], _debugSuperTriangle.points[2]);
+            DrawLine(_debugSuperTriangle.points[2], _debugSuperTriangle.points[0]);
+        }
+        #endif
     }
-
-    public class Edge
+    
+    private void DrawLine(Point a, Point b)
     {
-        public Point A { get; }
-        public Point B { get; }
-        public Edge(Point a, Point b) { A = a; B = b; }
-        public override bool Equals(object obj) => obj is Edge e && ((A == e.A && B == e.B) || (A == e.B && B == e.A));
-        public override int GetHashCode() => A.GetHashCode() ^ B.GetHashCode();
+        Vector3 start = new Vector3(a.x, 0.5f, a.y);
+        Vector3 end = new Vector3(b.x, 0.5f, b.y);
+        Gizmos.DrawLine(start, end);
     }
+    #endregion ONLY FOR DEBUGGING
 }
