@@ -3,74 +3,49 @@ using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Serialization;
-using System.Collections.Generic;
 
 /// <summary>
 /// Manages the drawing canvas, and texture processing.
 /// </summary>
-public class CanvasDraw : MonoBehaviour
+public class CanvasDrawDigits : MonoBehaviour
 {
     // Drawing-related variables
-    // Camera used to render the canvas (e.g., for capturing input or displaying the canvas)
     private GameObject _canvasCamera;
-
-    // Brush color for drawing on the canvas
     private readonly Color _brushColor = Color.black;
-
-    // Tracks whether the mouse/finger was pressed in the last frame (for detecting drag)
     private bool _pressedLastFrame;
 
-    // Stores last recorded pixel position to interpolate lines while drawing
-    private int _lastX, _lastY;
+    private int _lastX,
+        _lastY;
 
-    // Current pixel position where the brush will draw
-    private int _xPixel, _yPixel;
+    private int _xPixel,
+        _yPixel;
 
-    // Multipliers used to convert world/screen coordinates to canvas pixel coordinates
-    private float _xMult, _yMult;
+    private float _xMult,
+        _yMult;
 
-    // Color array representing the pixel data of the canvas texture
     private Color[] _colorMap;
-
-    // The texture that gets updated while drawing (e.g., for digit recognition)
     public Texture2D generatedTexture;
 
-    // Flag to indicate if the glyph mode is enabled (e.g., for digit input mode)
-    [SerializeField] public bool glyph = true;
-
-    // Canvas dimensions in pixels
+    // Public settings for the canvas size and brush
     [SerializeField] public int totalXPixels = 200;
+
     [SerializeField] public int totalYPixels = 200;
 
-    // Brush radius/size in pixels
     [SerializeField] public int brushSize = 10;
 
-    // TextMeshPro element to display the predicted output (e.g., digit classifier result)
     [SerializeField] public TextMeshPro predictionText;
 
-    // TextMeshPro element to display a randomly generated number (e.g., for verification tasks)
     [SerializeField] public TextMeshPro randNumberText;
 
-    // Flag that controls whether drawing should occur (e.g., set from UI or logic)
+
     public static bool ToDraw;
-
-    // Shader property ID for the base texture of a material (used when updating canvas material)
     private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
-
-    // Whether to use interpolation between brush points (to make strokes smoother)
     public bool useInterpolation = true;
-
-    // Reference to the top-left corner of the drawing area in world space
     public Transform topLeftCorner;
-
-    // Reference to the bottom-right corner of the drawing area in world space
     public Transform bottomRightCorner;
-
-    // Transform that represents the input point (e.g., touch/mouse position in world space)
     public Transform point;
 
-
-    [FormerlySerializedAs("classifierDigits")] [SerializeField] private Classifier classifier;
+    [FormerlySerializedAs("classifier")] [SerializeField] private ClassifierDigits classifierDigits;
 
     // Draw Texture Material(Canvas Color, e.g. White)
     public Material material;
@@ -91,7 +66,7 @@ public class CanvasDraw : MonoBehaviour
     {
         // UIManager.Instance.HidePanel();
         // Generate 4 Digit number randomly
-        GenerateRandomDigit(glyph);
+        GenerateRandomDigit();
         // Initialize color map based on the canvas dimensions
         _colorMap = new Color[totalXPixels * totalYPixels];
 
@@ -147,19 +122,10 @@ public class CanvasDraw : MonoBehaviour
             {
                 // Preprocess the image to resize it for prediction
                 Texture2D preprocessedTexture = Preprocessing(generatedTexture, 28, 28);
-                (int predictedDigit, string text) = classifier.Predict(preprocessedTexture); // Call the Predict method
-                
+                (int predictedDigit, string text) = classifierDigits.Predict(preprocessedTexture); // Call the Predict method
+                predictionText.text = text;
                 ToDraw = true;
-                
-                if (glyph)
-                {
-                    predictionText.text = text + ValidGlyph(predictedDigit);
-                }
-                else
-                {
-                    UpdateRandomDigit(predictedDigit);
-                    predictionText.text = text;
-                }
+                UpdateRandomDigit(predictedDigit);
             }
         }
     }
@@ -213,8 +179,8 @@ public class CanvasDraw : MonoBehaviour
             float width = transform.localScale.x;
             float height = transform.localScale.y;
 
-            float normalizedX = (localPoint.x + width * 0.5f) / width;
-            float normalizedY = (localPoint.y + height * 0.5f) / height;
+            float normalizedX = (localPoint.x / width) + 0.5f;
+            float normalizedY = (localPoint.y / height) + 0.5f;
 
             _xPixel = Mathf.Clamp((int)(normalizedX * totalXPixels), 0, totalXPixels - 1);
             _yPixel = Mathf.Clamp((int)(normalizedY * totalYPixels), 0, totalYPixels - 1);
@@ -356,27 +322,12 @@ public class CanvasDraw : MonoBehaviour
 
                 // Invert the color
                 Color originalColor = pixels[x + y * rowLength];
-                Color invertedColor;
-                if (glyph)
-                {
-                    invertedColor = new Color(
-                        originalColor.r,
-                        originalColor.g,
-                        originalColor.b,
-                        originalColor.a
-                    );
-                    
-                }
-                else
-                {
-                    invertedColor = new Color(
-                                        1- originalColor.r,
-                                        1- originalColor.g,
-                                        1- originalColor.b,
-                                        originalColor.a
-                                    );
-                }
-                
+                Color invertedColor = new Color(
+                    1.0f - originalColor.r,
+                    1.0f - originalColor.g,
+                    1.0f - originalColor.b,
+                    originalColor.a
+                );
 
                 // Set the flipped and inverted pixel
                 flippedPixels[flippedIndex] = invertedColor;
@@ -397,45 +348,14 @@ public class CanvasDraw : MonoBehaviour
     /// <summary>
     /// Generates a random 4-digit number to be used for unlocking the door.
     /// </summary>
-    private void GenerateRandomDigit(bool glyph)
+    private void GenerateRandomDigit()
     {
-        if (!glyph)
-        {
-            // Generate a random 4-digit number (between 1000 and 9999) as the keyDigits
-            _keyDigits = UnityEngine.Random.Range(1000, 10000);
-        }
-        else
-        {
-            _keyDigits = UnityEngine.Random.Range(0, classifier.outputSize);
-            Debug.Log(_keyDigits);
+        // Generate a random 4-digit number (between 1000 and 9999) as the keyDigits
+        _keyDigits = UnityEngine.Random.Range(1000, 10000);
 
-        }
+        // Display the generated number in the UI
+        randNumberText.text = _keyDigits.ToString();
     }
-
-
-    // Returns the corresponding glyph name for a given digit.
-    // If the digit is not found in the dictionary, returns "Unknown".
-    private string ValidGlyph(int digit)
-    {
-        // Mapping of digits to symbolic glyph names
-        Dictionary<int, string> digitToString = new Dictionary<int, string>
-        {
-            { 0, "air" },
-            { 1, "earth" },
-            { 2, "energy" },
-            { 3, "fire" },
-            { 4, "light" },
-            { 5, "power" },
-            { 6, "time" },
-            { 7, "water" },
-        };
-
-        // Retrieve the corresponding glyph name, or return "Unknown" if the digit is invalid
-        string text = digitToString.ContainsKey(digit) ? digitToString[digit] : "Unknown";
-
-        return text;
-    }
-
 
     /// <summary>
     /// Updates the random digit display and checks if the correct digits are entered by the player.

@@ -1,10 +1,10 @@
 using UnityEngine;
 
 // Script to handle interaction and triggering of drawing functionality
-public class DrawingTrigger : MonoBehaviour, IInteractable
+public class DrawingTriggerDigits : MonoBehaviour, IInteractable
 {
     private Renderer _playerRenderer; // Player's renderer (unused, could be removed if unnecessary)
-    private bool _isCameraPositionSet; // Flag to ensure the camera position is set only once
+    private bool _isCameraPositionSet = false; // Flag to ensure the camera position is set only once
 
     // Method invoked when the player interacts with the object
     // ReSharper disable Unity.PerformanceAnalysis
@@ -12,7 +12,6 @@ public class DrawingTrigger : MonoBehaviour, IInteractable
     {
         // Find the "Center" GameObject, which determines the camera's new position
         GameObject myObject = GameObject.Find("Center");
-		Debug.Log("drawing");
 
         // Find the Cinemachine camera using the "CanvCamera" tag
         GameObject cinemachineCamera = GameObject.FindWithTag("CanvCamera");
