@@ -8,19 +8,26 @@ using UnityEngine;
 
 public class Thorben_1 : MonoBehaviour
 {
-    [SerializeField]
-    private float size = 40;
-    [SerializeField]
-    private int numPoints = 5;
+    [Header("Prefabs for Dungeon")]
     [SerializeField]
     private GameObject pillar;
     [SerializeField]
     private GameObject wall;
     [SerializeField]
     private GameObject floor;
+    [SerializeField]
+    private GameObject door;
+    
+    [Header("Dungeon Settings")]
+    [SerializeField]
+    private float size = 40;
+    [SerializeField]
+    private int numPoints = 5;
+    [SerializeField]
+    private int seed;
     
     // ONLY FOR DEBUGGING
-    [Header("GIZMOS DEBUGGING")]
+    [Header("Gizmos Debugging")]
     [SerializeField] private bool showPoints = true;
     [SerializeField] private bool showCenters = true;
     [SerializeField] private bool showTriangles = true;
@@ -42,8 +49,7 @@ public class Thorben_1 : MonoBehaviour
     private void Start()
     {
         #region DEBUG VERSION
-        //_debugPoints = generatePoints(numPoints);
-        _debugPoints = generatePoints2(numPoints, 6.0f, size);
+        _debugPoints = generatePoints(numPoints, 6.0f, size);
 
         _debugTriangles = BowyerWatson(_debugPoints);
         _debugVoronoi = generateVoronoi(_debugTriangles);
@@ -60,38 +66,10 @@ public class Thorben_1 : MonoBehaviour
         #endregion DEBUG VERSION
     }
 
-    // TODO nicht komplett zufaellig
-    public List<Point> generatePoints(int count)
-    {
-        System.Random random = new System.Random();
-        List<Point> points= new List<Point>();
-
-        int root = (int)Math.Sqrt(count);
-        float offsetX = 0;
-        float offsetY = 0;
-        float ratio = (size / root);
-
-        for (int i = 0; i <root ; i++)
-        {
-            for (int j=0;j< root;j++ ) {
-                
-                float randX = (float)random.NextDouble() * ratio+offsetX;
-                float randY = (float)random.NextDouble() * ratio+offsetY;
-
-                points.Add(new Point(randX, randY));
-
-                offsetX += ratio;
-            }
-            offsetX = 0;
-            offsetY += ratio;
-        }
-        return points;
-    }
-
-    public List<Point> generatePoints2(int count, float radius, float size)
+    public List<Point> generatePoints(int count, float radius, float size)
     {
         List<Point> points = new List<Point>();
-        System.Random random = new System.Random();
+        System.Random random = new System.Random(seed);
         int maxAttempts = 1000;
 
         while (points.Count < count && maxAttempts > 0)
