@@ -1,81 +1,63 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using TMPro;
 using Unity.Cinemachine;
-using Unity.Sentis; // https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/index.html
 using UnityEngine;
-using UnityEngine.UI;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Manages the drawing canvas, and texture processing.
 /// </summary>
-public class CanvasDraw : MonoBehaviour
+public class CanvasDrawDigits : MonoBehaviour
 {
-    // AI Model-related variables
-    private Worker engine;
-
-    // This small model works just as fast on the CPU as well as the GPU:
-    static Unity.Sentis.BackendType backendType = Unity.Sentis.BackendType.CPU;
-
-    // input tensor
-    Tensor<float> outputTensor = null;
-
     // Drawing-related variables
-    private GameObject CanvCamera;
-    private Color brushColor = Color.black;
-    private bool pressedLastFrame = false;
-    private int lastX,
-        lastY = 0;
-    private int xPixel,
-        yPixel = 0;
-    private float xMult,
-        yMult;
-    private Color[] colorMap;
+    private GameObject _canvasCamera;
+    private readonly Color _brushColor = Color.black;
+    private bool _pressedLastFrame;
+
+    private int _lastX,
+        _lastY;
+
+    private int _xPixel,
+        _yPixel;
+
+    private float _xMult,
+        _yMult;
+
+    private Color[] _colorMap;
     public Texture2D generatedTexture;
 
-    // width and height of the image:
-    const int imageWidth = 28;
-
     // Public settings for the canvas size and brush
-    [SerializeField]
-    public int totalXPixels = 200;
+    [SerializeField] public int totalXPixels = 200;
 
-    [SerializeField]
-    public int totalYPixels = 200;
+    [SerializeField] public int totalYPixels = 200;
 
-    [SerializeField]
-    public int brushSize = 10;
+    [SerializeField] public int brushSize = 10;
 
-    [SerializeField]
-    public TextMeshPro predictionText;
+    [SerializeField] public TextMeshPro predictionText;
 
-    [SerializeField]
-    public TextMeshPro randNumberText;
+    [SerializeField] public TextMeshPro randNumberText;
 
-    [SerializeField]
-    private ModelAsset modelAsset;
-    Model model;
 
-    public static bool draw = false;
+    public static bool ToDraw;
+    private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
     public bool useInterpolation = true;
     public Transform topLeftCorner;
     public Transform bottomRightCorner;
     public Transform point;
 
+    [FormerlySerializedAs("classifier")] [SerializeField] private ClassifierDigits classifierDigits;
+
     // Draw Texture Material(Canvas Color, e.g. White)
     public Material material;
 
     // Generated 4 Digit Number
-    private int keyDigits;
-    private int counterDigits = 4;
-    private string digit1,
-        digit2,
-        digit3,
-        digit4 = "";
+    private int _keyDigits;
+    private int _counterDigits = 4;
+
+    private string _digit1,
+        _digit2,
+        _digit3,
+        _digit4 = "";
 
     /// <summary>
     /// Initializes the canvas, texture, and the drawing environment at the start.
@@ -85,25 +67,19 @@ public class CanvasDraw : MonoBehaviour
         // UIManager.Instance.HidePanel();
         // Generate 4 Digit number randomly
         GenerateRandomDigit();
-
-        // Initialize AI model by loading the model asset
-        model = ModelLoader.Load(modelAsset);
-
-        // Create the neural network engine
-        engine = new Worker(model, backendType);
-
         // Initialize color map based on the canvas dimensions
-        colorMap = new Color[totalXPixels * totalYPixels];
+        _colorMap = new Color[totalXPixels * totalYPixels];
 
         // Create a new texture with the specified width and height
-        generatedTexture = new Texture2D(totalYPixels, totalXPixels, TextureFormat.RGBA32, false); // RGBA32 format for color
+        generatedTexture =
+            new Texture2D(totalYPixels, totalXPixels, TextureFormat.RGBA32, false); // RGBA32 format for color
         ResetColor(); // Reset the canvas to white
         generatedTexture.filterMode = FilterMode.Point; // Pixelated look
-        material.SetTexture("_BaseMap", generatedTexture); // Assign texture to the material
+        material.SetTexture(BaseMap, generatedTexture); // Assign texture to the material
 
         // Precompute scaling factors to translate mouse position to pixel coordinates
-        xMult = Math.Abs(totalXPixels / (bottomRightCorner.position.x - topLeftCorner.position.x));
-        yMult = Math.Abs(totalYPixels / (bottomRightCorner.position.y - topLeftCorner.position.y));
+        _xMult = Math.Abs(totalXPixels / (bottomRightCorner.position.x - topLeftCorner.position.x));
+        _yMult = Math.Abs(totalYPixels / (bottomRightCorner.position.y - topLeftCorner.position.y));
     }
 
     /// <summary>
@@ -116,15 +92,15 @@ public class CanvasDraw : MonoBehaviour
         Remark:
             - Input.GetMouseButtonDown(1): Executes only on the first frame of the mouse button press.
             - Input.GetMouseButton(1): Executes for every frame the button is held down.
-            
+
         */
 
-        if (draw == true)
+        if (ToDraw)
         {
             // Start drawing when the mouse button is pressed
             if (Input.GetMouseButtonDown(0))
             {
-                pressedLastFrame = false; // Disable interpolation when starting a new stroke
+                _pressedLastFrame = false; // Disable interpolation when starting a new stroke
             }
 
             // Draw when the mouse button is held down
@@ -136,15 +112,19 @@ public class CanvasDraw : MonoBehaviour
             // Clear the canvas when "C" key is pressed
             if (Input.GetKeyDown(KeyCode.C))
             {
-                xPixel = 0;
-                yPixel = 0;
+                _xPixel = 0;
+                _yPixel = 0;
                 ResetColor(); // Reset the canvas to white
             }
 
             // Right-click to predict the digit on the image
             if (Input.GetMouseButtonDown(1))
             {
-                int predictedDigit = Predict(generatedTexture); // Call the Predict method
+                // Preprocess the image to resize it for prediction
+                Texture2D preprocessedTexture = Preprocessing(generatedTexture, 28, 28);
+                (int predictedDigit, string text) = classifierDigits.Predict(preprocessedTexture); // Call the Predict method
+                predictionText.text = text;
+                ToDraw = true;
                 UpdateRandomDigit(predictedDigit);
             }
         }
@@ -159,8 +139,8 @@ public class CanvasDraw : MonoBehaviour
     /// </summary>
     private void CalculatePixel()
     {
-        xPixel = 0;
-        yPixel = 0;
+        _xPixel = 0;
+        _yPixel = 0;
 
         // Get the Cinemachine Virtual Camera (used for raycasting)
         CinemachineCamera cinemachineCamera = GameObject
@@ -170,7 +150,7 @@ public class CanvasDraw : MonoBehaviour
         // Error check: Ensure Cinemachine Camera is found
         if (cinemachineCamera == null)
         {
-            UnityEngine.Debug.LogError(
+            Debug.LogError(
                 "Cinemachine Virtual Camera with tag 'CanvCamera' not found!"
             );
             return;
@@ -180,34 +160,37 @@ public class CanvasDraw : MonoBehaviour
         Camera mainCamera = Camera.main;
         if (mainCamera == null)
         {
-            UnityEngine.Debug.LogError("Main Camera not found!");
+            Debug.LogError("Main Camera not found!");
             return;
         }
 
         // Cast a ray from the mouse position in 3D space
-        Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
+        var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
         // Check if the ray hits any object (such as the canvas)
-        if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+        if (Physics.Raycast(ray, out var hit, Mathf.Infinity))
         {
             point.position = hit.point; // Move the pointer to the hit point
 
-            // Calculate pixel position based on the pointer's position relative to canvas corners
-            xPixel = (int)((point.position.x - topLeftCorner.position.x) * xMult);
-            yPixel = (int)((point.position.y - bottomRightCorner.position.y) * yMult);
+            // Convert world point to local space of the canvas
+            Vector3 localPoint = transform.InverseTransformPoint(hit.point);
 
-            // Ensure pixel positions are within valid bounds
-            xPixel = Mathf.Clamp(xPixel, 0, totalXPixels - 1);
-            yPixel = Mathf.Clamp(yPixel, 0, totalYPixels - 1);
+            // Calculate pixel position from local space
+            float width = transform.localScale.x;
+            float height = transform.localScale.y;
 
-            // Apply brush stroke at the calculated pixel position
+            float normalizedX = (localPoint.x / width) + 0.5f;
+            float normalizedY = (localPoint.y / height) + 0.5f;
+
+            _xPixel = Mathf.Clamp((int)(normalizedX * totalXPixels), 0, totalXPixels - 1);
+            _yPixel = Mathf.Clamp((int)(normalizedY * totalYPixels), 0, totalYPixels - 1);
+
             ChangePixelsAroundPoint();
         }
         else
         {
             // If raycast doesn't hit the canvas, disable interpolation for next frame
-            pressedLastFrame = false;
+            _pressedLastFrame = false;
         }
     }
 
@@ -217,32 +200,32 @@ public class CanvasDraw : MonoBehaviour
     private void ChangePixelsAroundPoint()
     {
         // Apply interpolation if enabled and the current pixel differs from the last
-        if (useInterpolation && pressedLastFrame && (lastX != xPixel || lastY != yPixel))
+        if (useInterpolation && _pressedLastFrame && (_lastX != _xPixel || _lastY != _yPixel))
         {
             // Calculate the distance between the current and previous pixel positions
             int dist = (int)
                 Mathf.Sqrt(
-                    (xPixel - lastX) * (xPixel - lastX) + (yPixel - lastY) * (yPixel - lastY)
+                    (_xPixel - _lastX) * (_xPixel - _lastX) + (_yPixel - _lastY) * (_yPixel - _lastY)
                 );
 
             // Interpolate between the two points and apply brush to each intermediate pixel
             for (int i = 1; i <= dist; i++)
             {
-                int interpolatedX = (i * xPixel + (dist - i) * lastX) / dist;
-                int interpolatedY = (i * yPixel + (dist - i) * lastY) / dist;
+                int interpolatedX = (i * _xPixel + (dist - i) * _lastX) / dist;
+                int interpolatedY = (i * _yPixel + (dist - i) * _lastY) / dist;
                 DrawBrush(interpolatedX, interpolatedY);
             }
         }
         else
         {
             // No interpolation, directly apply brush at the current pixel
-            DrawBrush(xPixel, yPixel);
+            DrawBrush(_xPixel, _yPixel);
         }
 
         // Update state for next frame
-        pressedLastFrame = true; // Enable interpolation next time
-        lastX = xPixel; // Store the current X position
-        lastY = yPixel; // Store the current Y position
+        _pressedLastFrame = true; // Enable interpolation next time
+        _lastX = _xPixel; // Store the current X position
+        _lastY = _yPixel; // Store the current Y position
 
         // Update the texture with the modified color map
         SetTexture();
@@ -265,7 +248,7 @@ public class CanvasDraw : MonoBehaviour
             {
                 if ((x - xPix) * (x - xPix) + (y - yPix) * (y - yPix) <= brushSize * brushSize)
                 {
-                    colorMap[y * totalYPixels + x] = brushColor;
+                    _colorMap[y * totalYPixels + x] = _brushColor;
                 }
             }
         }
@@ -277,14 +260,14 @@ public class CanvasDraw : MonoBehaviour
     void SetTexture()
     {
         // Create a rotated copy of the color map (for visual effect or canvas alignment)
-        Color[] rotatedColorMap = new Color[colorMap.Length];
+        Color[] rotatedColorMap = new Color[_colorMap.Length];
         for (int y = 0; y < totalYPixels; y++)
         {
             for (int x = 0; x < totalXPixels; x++)
             {
                 int originalIndex = y * totalXPixels + x;
                 int rotatedIndex = (totalYPixels - 1 - y) * totalXPixels + (totalXPixels - 1 - x);
-                rotatedColorMap[rotatedIndex] = colorMap[originalIndex];
+                rotatedColorMap[rotatedIndex] = _colorMap[originalIndex];
             }
         }
 
@@ -299,89 +282,13 @@ public class CanvasDraw : MonoBehaviour
     void ResetColor()
     {
         // Fill the entire color map with white color (RGBA = 1, 1, 1, 1)
-        for (int i = 0; i < colorMap.Length; i++)
+        for (int i = 0; i < _colorMap.Length; i++)
         {
-            colorMap[i] = new Color(1f, 1f, 1f, 1f); // White color
+            _colorMap[i] = new Color(1f, 1f, 1f, 1f); // White color
         }
 
         // Apply the updated color map to the canvas texture
         SetTexture();
-    }
-
-    // =======================================
-    // AI Section - Handles prediction using Barracuda model
-    // =======================================
-
-    /// <summary>
-    /// Predict the digit using the Texture from Canvas
-    /// </summary>
-    public int Predict(Texture2D image)
-    {
-        // Preprocess the image to resize it for prediction
-        Texture2D preprocessedTexture = Preprocessing(image, 28, 28);
-
-        if (outputTensor != null)
-        {
-            outputTensor.Dispose();
-            outputTensor = null;
-        }
-
-        // Convert the resized texture into a tensor
-        Tensor<float> inputTensor = TextureConverter.ToTensor(
-            preprocessedTexture,
-            width: 28,
-            height: 28,
-            channels: 1
-        );
-
-        // Run the neural network engine to make a prediction
-        engine.Schedule(inputTensor);
-        Tensor<float> rawOutput = engine.PeekOutput() as Tensor<float>;
-        outputTensor = rawOutput.ReadbackAndClone();
-
-        rawOutput.Dispose();
-        rawOutput = null;
-
-        // Display the predicted digit probabilities in the UI
-        predictionText.text = "Probabilities of different digits:\n";
-        string probabilitiesText = "";
-        for (int i = 0; i < 10; i++)
-        {
-            probabilitiesText += $"Digit {i}: {outputTensor[i]:0.000}\n";
-        }
-
-        // Append the predicted digit in green color
-        string predictedValueText =
-            $"Predicted: <color=green>{GetMaxValueAndIndex(outputTensor)}</color>";
-
-        // Combine both probabilities and the predicted value
-        predictionText.text =
-            "Probabilities of different digits:\n" + probabilitiesText + "\n" + predictedValueText;
-        inputTensor?.Dispose(); // Clean up the input tensor
-
-        return GetMaxValueAndIndex(outputTensor);
-    }
-
-    /// <summary>
-    /// Find the index of the greatest Value of the output
-    /// </summary>
-    public int GetMaxValueAndIndex(Tensor<float> tensor)
-    {
-        // Find the max value and its index
-        float maxValue = float.MinValue;
-        int maxIndex = -1;
-
-        for (int i = 0; i < 10; i++)
-        {
-            if (tensor[i] > maxValue)
-            {
-                maxValue = tensor[i];
-                maxIndex = i;
-            }
-        }
-
-        // Return the index of the predicted digit
-        return maxIndex;
     }
 
     /// <summary>
@@ -439,35 +346,15 @@ public class CanvasDraw : MonoBehaviour
     }
 
     /// <summary>
-    /// Cleans up any resources when the object is destroyed.
-    /// </summary>
-    private void OnDestroy()
-    {
-        // Dispose of the engine to release resources
-        if (engine != null)
-        {
-            engine.Dispose();
-            engine = null;
-        }
-
-        // Dispose of the output tensor to release resources
-        if (outputTensor != null)
-        {
-            outputTensor.Dispose();
-            outputTensor = null;
-        }
-    }
-
-    /// <summary>
     /// Generates a random 4-digit number to be used for unlocking the door.
     /// </summary>
     private void GenerateRandomDigit()
     {
         // Generate a random 4-digit number (between 1000 and 9999) as the keyDigits
-        keyDigits = UnityEngine.Random.Range(1000, 10000);
+        _keyDigits = UnityEngine.Random.Range(1000, 10000);
 
         // Display the generated number in the UI
-        randNumberText.text = keyDigits.ToString();
+        randNumberText.text = _keyDigits.ToString();
     }
 
     /// <summary>
@@ -477,41 +364,46 @@ public class CanvasDraw : MonoBehaviour
     private void UpdateRandomDigit(int currDigit)
     {
         // Check if the door is already open (counterDigits == 0)
-        if (counterDigits == 0)
+        if (_counterDigits == 0)
         {
             return; // If the door is already open, no further checks are needed
         }
 
         // Check if the first digit is correct (thousands place)
-        if (counterDigits == 4 && (keyDigits / 1000) == currDigit)
+        if (_counterDigits == 4 && (_keyDigits / 1000) == currDigit)
         {
-            digit1 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
-            randNumberText.text = digit1 + (keyDigits % 1000).ToString(); // Update the UI with the correct first digit
-            counterDigits--; // Decrement the counter (next digit to check)
+            _digit1 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
+            randNumberText.text =
+                _digit1 + (_keyDigits % 1000).ToString(); // Update the UI with the correct first digit
+            _counterDigits--; // Decrement the counter (next digit to check)
         }
         // Check if the second digit is correct (hundreds place)
-        else if (counterDigits == 3 && ((keyDigits % 1000) / 100) == currDigit)
+        else if (_counterDigits == 3 && ((_keyDigits % 1000) / 100) == currDigit)
         {
-            digit2 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
-            randNumberText.text = digit1 + digit2 + (keyDigits % 100).ToString(); // Update the UI with the correct second digit
-            counterDigits--; // Decrement the counter (next digit to check)
+            _digit2 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
+            randNumberText.text =
+                _digit1 + _digit2 + (_keyDigits % 100).ToString(); // Update the UI with the correct second digit
+            _counterDigits--; // Decrement the counter (next digit to check)
         }
         // Check if the third digit is correct (tens place)
-        else if (counterDigits == 2 && ((keyDigits % 100) / 10) == currDigit)
+        else if (_counterDigits == 2 && ((_keyDigits % 100) / 10) == currDigit)
         {
-            digit3 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
-            randNumberText.text = digit1 + digit2 + digit3 + (keyDigits % 10).ToString(); // Update the UI with the correct third digit
-            counterDigits--; // Decrement the counter (next digit to check)
+            _digit3 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
+            randNumberText.text =
+                _digit1 + _digit2 + _digit3 +
+                (_keyDigits % 10).ToString(); // Update the UI with the correct third digit
+            _counterDigits--; // Decrement the counter (next digit to check)
         }
         // Check if the fourth digit is correct (ones place)
-        else if (counterDigits == 1 && (keyDigits % 10) == currDigit)
+        else if (_counterDigits == 1 && (_keyDigits % 10) == currDigit)
         {
-            digit4 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
-            randNumberText.text = digit1 + digit2 + digit3 + digit4; // Update the UI with the full correct number
+            _digit4 = $"<color=green>{currDigit.ToString()}</color>"; // Mark the correct digit as green
+            randNumberText.text =
+                _digit1 + _digit2 + _digit3 + _digit4; // Update the UI with the full correct number
             string message = "unlocked";
             string unlockMessage = $"<color=green>{message}</color>"; // Mark the correct digit as green
             randNumberText.text = unlockMessage;
-            counterDigits--; // Decrement the counter (no more digits to check)
+            _counterDigits--; // Decrement the counter (no more digits to check)
             EventManager.Instance.TriggerOpenDoors(); // Open all needed doors using Event
         }
     }
