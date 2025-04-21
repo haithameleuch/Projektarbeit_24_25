@@ -1,3 +1,7 @@
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,35 +41,9 @@ public class Thorben_1 : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     private void Start()
     {
-        #region THORBEN VERSION
-        /*
-        //List<Point> points = new List<Point>
-        //{
-        //    new Point(10f, 10f),
-        //    new Point(30f, 5f),
-        //    new Point(10f, 30f),
-        //    new Point(30f, 30f)
-        //};
-        List<Point> points = generatePoints(numPoints);
-
-        List<Triangle> triangulation = BowyerWatson(points);
-        List<Edge> voronoi = generateVoronoi(triangulation);
-        buildDungeon();
-        buildVoronoi(voronoi);
-        placePillars(triangulation);*/
-        #endregion THORBEN VERSION
-        
         #region DEBUG VERSION
-        /*_debugPoints = new List<Point>
-        {
-            new Point(10f, 10f),
-            new Point(30f, 5f),
-            new Point(10f, 30f),
-            new Point(30f, 30f)
-        };*/
-        
-        _debugPoints = generatePoints(numPoints);
-        //_debugPoints = generatePoints2(numPoints, 6.0f, size);
+        //_debugPoints = generatePoints(numPoints);
+        _debugPoints = generatePoints2(numPoints, 6.0f, size);
 
         _debugTriangles = BowyerWatson(_debugPoints);
         _debugVoronoi = generateVoronoi(_debugTriangles);
@@ -713,14 +691,20 @@ public class Thorben_1 : MonoBehaviour
         // RANDOM POINTS (GREEN)
         if (_debugPoints == null) return;
 
+        #if UNITY_EDITOR
         if (showPoints)
         {
             Gizmos.color = Color.green;
         
-            foreach (Point p in _debugPoints)
+            for(int i = 0; i < _debugPoints.Count; i++)
             {
+                Point p = _debugPoints[i];
                 Vector3 pos = new Vector3(p.x, 0.5f, p.y);
                 Gizmos.DrawCube(pos, Vector3.one);
+                
+                GUIStyle style = new GUIStyle();
+                style.normal.textColor = Color.white;
+                Handles.Label(pos + Vector3.up * 0.5f, $"\nPoint {i + 1}", style);
             }
         }
         
@@ -786,6 +770,7 @@ public class Thorben_1 : MonoBehaviour
             DrawLine(_debugSuperTriangle.points[1], _debugSuperTriangle.points[2]);
             DrawLine(_debugSuperTriangle.points[2], _debugSuperTriangle.points[0]);
         }
+        #endif
     }
     
     private void DrawLine(Point a, Point b)
