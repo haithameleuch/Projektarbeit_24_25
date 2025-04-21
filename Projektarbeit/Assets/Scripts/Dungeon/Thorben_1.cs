@@ -57,8 +57,15 @@ public class Thorben_1 : MonoBehaviour
         _debugCenters = new List<Point>();
         foreach (Triangle triangle in _debugTriangles)
         {
-            _debugCenters.Add(triangle.getCircumcircle().center);
+            Point center = triangle.getCircumcircle().center;
+
+            // only add valid centers (inside the map)
+            if (center.x >= 0 && center.x <= size && center.y >= 0 && center.y <= size)
+            {
+                _debugCenters.Add(center);
+            }
         }
+
         
         buildDungeon();
         buildVoronoi(_debugVoronoi);
@@ -135,6 +142,11 @@ public class Thorben_1 : MonoBehaviour
         foreach (Triangle triangle in delaunay)
         {
             Point center = triangle.getCircumcircle().center;
+            
+            // Only Centers within the map
+            if (center.x < 0 || center.x > size || center.y < 0 || center.y > size)
+                continue;
+            
             Instantiate(pillar, new Vector3(center.x, 0, center.y), Quaternion.identity, transform);
         }
     }
@@ -209,6 +221,11 @@ public class Thorben_1 : MonoBehaviour
         {
             // Generate three edges from every circumcenter to the edge of the triangle
             Point center = triangle.getCircumcircle().center;
+            
+            // Only Centers within the map
+            if (center.x < 0 || center.x > size || center.y < 0 || center.y > size)
+                continue;
+            
             foreach (Edge edge in triangle.edges)
             {
                 bisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
