@@ -1,6 +1,6 @@
 using UnityEngine;
 using Unity.Sentis; // https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/index.html
-public class ClassifierDigits: MonoBehaviour
+public class Classifier: MonoBehaviour
 {
     // AI Model-related variables
     private Worker _engine;
@@ -19,7 +19,7 @@ public class ClassifierDigits: MonoBehaviour
     
     private Model _model;
 
-    public ClassifierDigits(ModelAsset modelAsset)
+    public Classifier(ModelAsset modelAsset)
     {
         this.modelAsset = modelAsset;
     }
