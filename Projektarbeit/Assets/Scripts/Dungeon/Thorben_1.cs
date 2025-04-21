@@ -265,12 +265,14 @@ public class Thorben_1 : MonoBehaviour
                     if (!PointOutTriangle(new Point(e.B.x + shortend[0], e.B.y + shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
                     {
                         Point inter = FindIntersectionWithMapBoundary(e, size);
+                        _debugVoronoiIntersections.Add(inter);
                         Edge newEdge = new Edge(e.A, inter);
                         voronoi.Add(newEdge);
                     }
                     else if (!PointOutTriangle(new Point(e.B.x - shortend[0], e.B.y - shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
                     {
                         Point inter = FindIntersectionWithMapBoundary(e, size);
+                        _debugVoronoiIntersections.Add(inter);
                         Edge newEdge = new Edge(e.A, inter);
                         voronoi.Add(newEdge);
                     }
