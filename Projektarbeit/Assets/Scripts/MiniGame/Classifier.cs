@@ -1,6 +1,6 @@
 using UnityEngine;
 using Unity.Sentis; // https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/index.html
-public class Classifier: MonoBehaviour
+public class ClassifierDigits: MonoBehaviour
 {
     // AI Model-related variables
     private Worker _engine;
@@ -9,7 +9,7 @@ public class Classifier: MonoBehaviour
     private static readonly BackendType BackendType = BackendType.CPU;
 
     // input tensor
-    public Tensor<float> _outputTensor;
+    private Tensor<float> _outputTensor;
     
     [SerializeField]
     public ModelAsset modelAsset;
@@ -19,7 +19,7 @@ public class Classifier: MonoBehaviour
     
     private Model _model;
 
-    public Classifier(ModelAsset modelAsset)
+    public ClassifierDigits(ModelAsset modelAsset)
     {
         this.modelAsset = modelAsset;
     }
