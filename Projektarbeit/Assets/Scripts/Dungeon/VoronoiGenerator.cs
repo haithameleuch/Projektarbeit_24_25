@@ -163,16 +163,28 @@ public class VoronoiGenerator : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Create a wall using wall scaled segments
+    /// </summary>
+    /// <param name="start">Beginning of the wall</param>
+    /// <param name="end">End of the wall</param>
     void CreateWall(Vector3 start, Vector3 end)
     {
+        // Size of the prefab (in our case its 2 units wide)
         int widthOfPrefab = 2;
-        int numberOfSegments = (int)Vector3.Distance(start, end) / widthOfPrefab;
 
+        int numberOfSegments = (int)Vector3.Distance(start, end) / widthOfPrefab;
+        
+        // Set number of segments to 1 if the wall is to short
         if (numberOfSegments < 1)
         {
             numberOfSegments = 1;
         }
+
+        // The factor by which the segment is scaled
         float scaleOfSegment = (Vector3.Distance(start, end) / widthOfPrefab) / numberOfSegments;
+
+        // A Vector to keep track of how far we have to place the centers of each segment apart
         Vector3 segmentStep = (end - start) / numberOfSegments;
 
         for (int i = 0; i < numberOfSegments; i++)
@@ -182,7 +194,7 @@ public class VoronoiGenerator : MonoBehaviour
     }
 
     /// <summary>
-    /// Create a wall from the prefab and scale and rotate it between two points
+    /// Create a wall segment from the prefab and scale and rotate it between two points
     /// </summary>
     /// <param name="start">The beginning of the wall</param>
     /// <param name="end">The end of the wall</param>
@@ -217,15 +229,17 @@ public class VoronoiGenerator : MonoBehaviour
         _debugVoronoiIntersections = new List<Point>();
         // ONLY FOR DEBUGGING
 
+        // Generate three edges from every circumcenter to the edge of the triangle
         foreach (Triangle triangle in triangulation)
         {
-            // Generate three edges from every circumcenter to the edge of the triangle
+            
             Point center = triangle.getCircumcircle().center;
             
             // Only Centers within the map
             if (center.x < 0 || center.x > size || center.y < 0 || center.y > size)
                 continue;
             
+            // Add bisectors to a list for later use
             foreach (Edge edge in triangle.edges)
             {
                 bisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
@@ -238,6 +252,7 @@ public class VoronoiGenerator : MonoBehaviour
 
         int edgeCount = bisectors.Count;
 
+        // Connect two bisectors that meet to one big edge
         for (int i = 0; i < edgeCount-1; i++)
         {
             for (int j = i+1; j < edgeCount; j++)
@@ -252,9 +267,11 @@ public class VoronoiGenerator : MonoBehaviour
             }
         }
 
+        // Prevent out of bounds exception
         int offset = 0;
         toRemove.Sort();
 
+        // Remove all bisectors that have been connected
         foreach (int count in toRemove)
         {
 
@@ -262,23 +279,30 @@ public class VoronoiGenerator : MonoBehaviour
             offset++;
         }
 
+        // For each remaining bisector, so every bisector that goes to the outside of the dungeon
         foreach (Edge e in bisectors)
         {
             foreach (Triangle tri in triangulation)
             {
+                // Get every bisector of the triangle
                 Edge bisector_1 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[0].A.x + tri.edges[0].B.x) / 2), ((tri.edges[0].A.y + tri.edges[0].B.y) / 2)));
                 Edge bisector_2 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[1].A.x + tri.edges[1].B.x) / 2), ((tri.edges[1].A.y + tri.edges[1].B.y) / 2)));
                 Edge bisector_3 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[2].A.x + tri.edges[2].B.x) / 2), ((tri.edges[2].A.y + tri.edges[2].B.y) / 2)));
 
+                // Check if the bisector we want is in the triangle
                 if (Edge.equals(e, bisector_1) || Edge.equals(e, bisector_2) || Edge.equals(e, bisector_3))
                 {
+                    // Direction vector of the bisector
                     float diffX = e.B.x - e.A.x;
                     float diffY = e.B.y - e.A.y;
-
                     Vector2 dir = new Vector2(diffX, diffY);
+
+                    // Normalize and shorten the direction vector
                     dir.Normalize();
                     Vector2 shortend = new Vector2(dir[0] * 0.01f, dir[1] * 0.01f);
                     
+                    // Now check a point a little bit before and after the intersection of the bisector and the triangle edge
+                    // Then build the edge AWAY from the triangle ( if one point is inside of the triangle use the other)
                     if (!PointOutTriangle(new Point(e.B.x + shortend[0], e.B.y + shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
                     {
                         Point inter = FindIntersectionWithMapBoundary(e, size);
@@ -297,14 +321,24 @@ public class VoronoiGenerator : MonoBehaviour
                 }
             }
         }
+        // Return the voronoi diagramm as a list of Edges
         return voronoi;
     }
     
+    // Helper Method
     public float sign(Point p1, Point p2, Point p3)
     {
         return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
     }
 
+    /// <summary>
+    /// Checks if a Point is outside of a triangle
+    /// </summary>
+    /// <param name="pt">The point we want to know</param>
+    /// <param name="v1">Point A</param>
+    /// <param name="v2">Point B</param>
+    /// <param name="v3">Point C</param>
+    /// <returns>Wether the point is outside(true) or inside (false)</returns>
     public bool PointOutTriangle(Point pt, Point v1, Point v2, Point v3)
     {
         float d1, d2, d3;
@@ -320,6 +354,12 @@ public class VoronoiGenerator : MonoBehaviour
         return (has_neg && has_pos);
     }
 
+    /// <summary>
+    /// Find the closest Point from a list to another point
+    /// </summary>
+    /// <param name="points">The list of points we want to get the closest from</param>
+    /// <param name="reference">The point we want to get closest to</param>
+    /// <returns>the point from the list that is closest to reference</returns>
     public Point checkPoints(List<Point> points, Point reference)
     {
         Point result= new Point(0,0);
