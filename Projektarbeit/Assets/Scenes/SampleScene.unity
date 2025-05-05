@@ -615,9 +615,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: c50da90f1c6484741afc20714bccd86e, type: 2}
   - {fileID: 11400000, guid: 7bfa787caf3ee4074a9793d1fbc12740, type: 2}
   offset: {x: 18, y: 10}
-  items:
-  - {fileID: 455864372753830893, guid: d130acdbb250da0418909701a876d82e, type: 3}
-  - {fileID: 8704186722926435911, guid: 64b689b3bae699542a90da1dfa2f3153, type: 3}
+  _items:
+  - itemData: {fileID: 11400000, guid: 8d18fdbdf4503514ba7a3f36eb03cc3d, type: 2}
+    itemQuantity: 9
+  - itemData: {fileID: 11400000, guid: 361d2623144dc3743ae393867f44375a, type: 2}
+    itemQuantity: 4
+  - itemData: {fileID: 11400000, guid: 36ae0ca13c0017b4a9f57d43f8e0592f, type: 2}
+    itemQuantity: 3
 --- !u!4 &546174994
 Transform:
   m_ObjectHideFlags: 0
@@ -1222,6 +1226,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb2e7a9268c801f4696f0c56955e0daf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  items: []
 --- !u!114 &1561343260
 MonoBehaviour:
   m_ObjectHideFlags: 0

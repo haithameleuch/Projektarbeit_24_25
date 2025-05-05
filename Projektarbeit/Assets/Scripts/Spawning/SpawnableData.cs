@@ -1,14 +1,19 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-[CreateAssetMenu(fileName = "NewSpawnableData", menuName = "Spawnable/SpawnableData")]
-public class SpawnableData<T> : ScriptableObject
+[CreateAssetMenu(fileName = "SpawnableData", menuName = "SpawnableData")]
+public class SpawnableData : ScriptableObject
 {
     [SerializeField]
-    public string spawnableName = "";
+    public string spawnName = "";
     
     [SerializeField] 
-    public GameObject prefab;
+    public GameObject spawnObject;
 
-    [Range(1, 100)] 
-    public int spawnProbability = 0;
+    [SerializeField]
+    [Range(0, 100)]
+    public float spawnProbability = 50.0f;
+    
+    [SerializeField]
+    public Sprite spawnSprite = null;
 }
