@@ -2,29 +2,36 @@ using UnityEngine;
 
 public class CollectibleItem : MonoBehaviour, IInteractable
 {
-    public string itemName;
-    public Sprite itemIcon;
-    public int itemQuantity;
+    public ItemInstance item;
 
+    public void Initialize(ItemInstance item)
+    {
+        this.item = item;
+    }
     public void Interact(GameObject interactor)
     {
         //füge hier das item zum inventory hinzu
         Inventory inv = interactor.GetComponent<Inventory>();
         if (inv != null)
         {
-            if (inv.AddItem(new Item(itemName, itemIcon, itemQuantity)))
+            if (inv.AddItem(item))
             {
-                Destroy(gameObject);
+                Renderer rend = GetComponent<Renderer>();
+                Collider collider = GetComponent<Collider>();
+                if (collider != null) collider.enabled = false;
+                if (rend != null) rend.enabled = false;
+                
+                item.itemData.spawnObject.SetActive(false);
             }
         }
-
+    
     }
     
     public void OnExit(GameObject interactor)
     {
         // Only if needed!
     }
-
+    
     public bool ShouldRepeat()
     {
         return false;

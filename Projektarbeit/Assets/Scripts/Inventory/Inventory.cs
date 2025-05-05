@@ -13,7 +13,7 @@ public class Inventory : MonoBehaviour
     /// The main part of the inventory, the list contains all items present in the inventory, in the order they were added.
     /// </summary>
     [SerializeField]
-    private List<Item> items = new List<Item>();
+    private List<ItemInstance> items = new List<ItemInstance>();
     
     /// <summary>
     /// Maximum number of different items the inventory is allowed to hold.
@@ -23,20 +23,22 @@ public class Inventory : MonoBehaviour
     /// <summary>
     /// This method adds an item to the inventory either by adding it to a stack of already present items, or to a new stack if the space is available.
     /// </summary>
-    /// <param name="newItem">Is the object of the item class that should be added to the inventory.</param>
+    /// <param name="newItemInstance">Is the object of the item class that should be added to the inventory.</param>
     /// <returns>The method returns a boolean wether the addition of the item was succesful. This should be used incase something should happen regarding the result of the addition.</returns>
-    public bool AddItem(Item newItem)
+    public bool AddItem(ItemInstance newItemInstance)
     {
-        if (newItem.itemQuantity<=0)
+        Debug.Log("Adding item: " + newItemInstance.itemQuantity);
+        if (newItemInstance.itemQuantity<=0)
         {
+            Debug.Log("Item is empty");
             return false;
         }
         // Add Item to stack if the item is already in the Inventory and return true
-        foreach (Item item in items)
+        foreach (ItemInstance item in items)
         {
-            if (item.itemName==newItem.itemName)
+            if (item.itemData.spawnName==newItemInstance.itemData.spawnName)
             {
-                item.itemQuantity += newItem.itemQuantity;
+                item.itemQuantity += newItemInstance.itemQuantity;
                 return true;
             }
         }
@@ -44,14 +46,12 @@ public class Inventory : MonoBehaviour
         // If the inventory is ful stop and return false, else add the item to the inventory and return true
         if (items.Count < maxSlots)
         {
-            items.Add(newItem);
+            items.Add(newItemInstance);
             return true;
         }
-        else
-        {
-            Debug.Log("Inventar ist voll!");
-            return false;
-        }
+        
+        Debug.Log("Inventar ist voll!");
+        return false;
     }
 
     /// <summary>
@@ -59,7 +59,7 @@ public class Inventory : MonoBehaviour
     /// </summary>
     /// <param name="item">The item that should be removed.</param>
     /// <param name="amount">The amount of the item that should be removed</param>
-    public void RemoveItem(Item toRemove,int amount)
+    public void RemoveItem(ItemInstance toRemove,int amount)
     {
         foreach (var item in items)
         {
@@ -81,7 +81,7 @@ public class Inventory : MonoBehaviour
         Debug.Log("Inventar:");
         foreach (var item in items)
         {
-            Debug.Log($"{item.itemName} - Menge: {item.itemQuantity}");
+            Debug.Log($"{item.itemData.spawnName} - Menge: {item.itemQuantity}");
         }
     }
 
@@ -89,7 +89,7 @@ public class Inventory : MonoBehaviour
     /// Getter-method for the inventory
     /// </summary>
     /// <returns>The list of items.</returns>
-    public List<Item> getInventory()
+    public List<ItemInstance> getInventory()
     {
         return items; 
     }
@@ -99,15 +99,15 @@ public class Inventory : MonoBehaviour
     /// </summary>
     /// <param name="itemName">The name of the item you search for.</param>
     /// <returns>The item from the list.</returns>
-    public Item GetItem(string itemName)
+    public ItemInstance GetItem(string itemName)
     {
         foreach(var item in items)
         {
-            if (item.itemName.Equals(itemName))
+            if (item.itemData.spawnName.Equals(itemName))
             {
                 return item;
             }
         }
-        return new Item("",null,0);
+        return new ItemInstance();
     }
 }

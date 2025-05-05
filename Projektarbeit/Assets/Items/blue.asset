@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4c0bfe7164775134cbb1ae387fa46568, type: 3}
-  m_Name: BlueItem
+  m_Name: blue
   m_EditorClassIdentifier: 
-  spawnableName: BlueItem
-  type: 1
-  prefab: {fileID: 455864372753830893, guid: b6fc1e3f36ac6c3469f088367225eb2f, type: 3}
-  spawnProbability: 0
+  spawnName: blue
+  spawnObject: {fileID: 455864372753830893, guid: b6fc1e3f36ac6c3469f088367225eb2f, type: 3}
+  spawnProbability: 50
+  spawnSprite: {fileID: 21300000, guid: 9b6979f15ed48154e9c086a0cd2ba69d, type: 3}
