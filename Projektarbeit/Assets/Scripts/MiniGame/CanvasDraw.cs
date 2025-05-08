@@ -29,7 +29,7 @@ public class CanvasDraw : MonoBehaviour
 
     // Public settings for the canvas size and brush
     [SerializeField] public int totalXPixels = 200;
-
+    
     [SerializeField] public int totalYPixels = 200;
 
     [SerializeField] public int brushSize = 10;
@@ -181,8 +181,8 @@ public class CanvasDraw : MonoBehaviour
             float width = transform.localScale.x;
             float height = transform.localScale.y;
 
-            float normalizedX = (localPoint.x / width) + 0.5f;
-            float normalizedY = (localPoint.y / height) + 0.5f;
+            float normalizedX = (localPoint.x + width * 0.5f) / width;
+            float normalizedY = (localPoint.y + height * 0.5f) / height;
 
             _xPixel = Mathf.Clamp((int)(normalizedX * totalXPixels), 0, totalXPixels - 1);
             _yPixel = Mathf.Clamp((int)(normalizedY * totalYPixels), 0, totalYPixels - 1);
