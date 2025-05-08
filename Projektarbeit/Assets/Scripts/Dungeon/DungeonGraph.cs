@@ -20,25 +20,7 @@ public class DungeonGraph
         roomDict[room.center] = room;
         idDict[room.id] = room;
     }
-
-    /// <summary>
-    /// Adds a bidirectional connection between two rooms identified by their center points.
-    /// </summary>
-    /// <param name="a">First room's center point.</param>
-    /// <param name="b">Second room's center point.</param>
-    public void AddConnection(Point a, Point b)
-    {
-        if (roomDict.ContainsKey(a) && roomDict.ContainsKey(b))
-        {
-            Room roomA = roomDict[a];
-            Room roomB = roomDict[b];
-            if (!roomA.neighbors.Contains(roomB))
-                roomA.neighbors.Add(roomB);
-            if (!roomB.neighbors.Contains(roomA))
-                roomB.neighbors.Add(roomA);
-        }
-    }
-
+    
     /// <summary>
     /// Returns a list of unvisited neighboring rooms.
     /// </summary>
@@ -240,5 +222,21 @@ public class Room
     {
         this.id = id;
         this.center = center;
+    }
+    
+    /// <summary>
+    /// Adds neighbors to this room based on a given set of room IDs.
+    /// </summary>
+    /// <param name="allRooms">List of all rooms</param>
+    /// <param name="neighborIndices">Set of room IDs that are neighbors to this room</param>
+    public void AddNeighbors(List<Room> allRooms, HashSet<int> neighborIndices)
+    {
+        foreach (int index in neighborIndices)
+        {
+            if (index >= 0 && index < allRooms.Count && allRooms[index] != this && !neighbors.Contains(allRooms[index]))
+            {
+                neighbors.Add(allRooms[index]);
+            }
+        }
     }
 }
