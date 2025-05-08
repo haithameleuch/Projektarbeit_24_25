@@ -4,6 +4,7 @@ using UnityEditor;
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Geometry;
 
@@ -18,6 +19,8 @@ public class VoronoiGenerator : MonoBehaviour
     private GameObject floor;
     [SerializeField]
     private GameObject door;
+    [SerializeField]
+    private GameObject light;
     
     [Header("Dungeon Settings")]
     [SerializeField]
@@ -26,6 +29,8 @@ public class VoronoiGenerator : MonoBehaviour
     private int numPoints = 5;
     [SerializeField]
     private int seed;
+    
+    DungeonGraph dungonGraph = new DungeonGraph();
     
     // ONLY FOR DEBUGGING
     [Header("Gizmos Debugging")]
@@ -69,10 +74,63 @@ public class VoronoiGenerator : MonoBehaviour
         
         buildDungeon();
         buildVoronoi(_debugVoronoi);
-        placePillars(_debugTriangles);
+        placePillars(_debugTriangles); 
+        
+        
+        
+        // Dungon graph
+        List<Room> rooms = new List<Room>();
+        for (int id = 0; id < _debugPoints.Count; id++)
+        {
+            Room room = new Room(id, _debugPoints[id]);
+            rooms.Add(room);
+        }
+        
+        int total = rooms.Count;
+        System.Random rand = new System.Random();
+
+        // Shuffle indices to randomly assign types
+        List<int> indices = Enumerable.Range(0, total).OrderBy(x => rand.Next()).ToList();
+
+        // Assign 1 Start Room
+        rooms[indices[0]].type = RoomType.Start;
+        
+        // Assign 1 Boss Room
+        rooms[indices[1]].type = RoomType.Boss;
+
+        // Assign 2 Minigame Rooms
+        rooms[indices[2]].type = RoomType.MiniGame;
+        rooms[indices[3]].type = RoomType.MiniGame;
+
+        int itemRoomCount = (int)(0.2f * total);
+        int enemyRoomCount = (int)(0.2f * total);
+
+        // Assign Item Rooms
+        for (int i = 3; i < 3 + itemRoomCount; i++)
+        {
+            rooms[indices[i]].type = RoomType.Item;
+        }
+
+        // Assign Enemy Rooms
+        for (int i = 3 + itemRoomCount; i < 3 + itemRoomCount + enemyRoomCount; i++)
+        {
+            rooms[indices[i]].type = RoomType.Enemy;
+        }
+
+        foreach (Room room in rooms)
+        {
+            room.AddNeighbors(rooms, GetNeighbors(room.id));
+            dungonGraph.AddRoom(room);
+        }
+
+        foreach (Room room in dungonGraph.GetAllEnemyRooms())
+        {
+            Debug.Log(room.id);
+        }
+
         #endregion DEBUG VERSION
     }
-
+    
     public List<Point> generatePoints(int count, float radius, float size)
     {
         List<Point> points = new List<Point>();
@@ -85,7 +143,6 @@ public class VoronoiGenerator : MonoBehaviour
             float x = margin + (float)random.NextDouble() * (size - 2 * margin);
             float y = margin + (float)random.NextDouble() * (size - 2 * margin);
             Point newPoint = new Point(x, y);
-
             bool isValid = true;
 
             foreach (Point existing in points)
@@ -500,6 +557,46 @@ public class VoronoiGenerator : MonoBehaviour
         return triangulation;
     }
 
+    /// <summary>
+    /// Finds all neighboring points (by index) in triangles that share the specified target point.
+    /// </summary>
+    /// <param name="pointID">Index of the target point in _debugPoints</param>
+    /// <returns>A HashSet of indices representing all neighboring points</returns>
+    public HashSet<int> GetNeighbors(int pointID)
+    {
+        Point target = _debugPoints[pointID];
+        HashSet<int> neighbors = new HashSet<int>();
+
+        foreach (Triangle t in _debugTriangles)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                Point current = t.points[i];
+                if (Mathf.Approximately(current.x, target.x) && Mathf.Approximately(current.y, target.y))
+                {
+                    int next1 = (i + 1) % 3;
+                    int next2 = (i + 2) % 3;
+
+                    Point neighbor1 = t.points[next1];
+                    Point neighbor2 = t.points[next2];
+
+                    int index1 = _debugPoints.FindIndex(p =>
+                        Mathf.Approximately(p.x, neighbor1.x) && Mathf.Approximately(p.y, neighbor1.y));
+                    int index2 = _debugPoints.FindIndex(p =>
+                        Mathf.Approximately(p.x, neighbor2.x) && Mathf.Approximately(p.y, neighbor2.y));
+
+                    if (index1 != -1) neighbors.Add(index1);
+                    if (index2 != -1) neighbors.Add(index2);
+
+                    break; // Found the point in this triangle; no need to keep looping i
+                }
+            }
+        }
+
+        return neighbors;
+    }
+    
+    
     #region ONLY FOR DEBUGGING
     private void OnDrawGizmos()
     {
@@ -519,7 +616,34 @@ public class VoronoiGenerator : MonoBehaviour
                 
                 GUIStyle style = new GUIStyle();
                 style.normal.textColor = Color.white;
-                Handles.Label(pos + Vector3.up * 0.5f, $"\nPoint {i + 1}", style);
+                Room room = dungonGraph.GetRoomByID(i);
+                Color labelColor = Color.white;
+
+                switch (room.type)
+                {
+                    case RoomType.Boss:
+                        labelColor = Color.red;
+                        break;
+                    case RoomType.MiniGame:
+                        labelColor = Color.cyan;
+                        break;
+                    case RoomType.Item:
+                        labelColor = Color.yellow;
+                        break;
+                    case RoomType.Enemy:
+                        labelColor = Color.magenta;
+                        break;
+                    case RoomType.Normal:
+                        labelColor = Color.white;
+                        break;
+                    case RoomType.Start:
+                        labelColor = Color.blue;
+                        break;
+                }
+
+                //Set the color before drawing the label
+                style.normal.textColor = labelColor;
+                Handles.Label(pos + Vector3.up * 0.5f, $"\nPoint {i} : {room.type}", style);
             }
         }
         
