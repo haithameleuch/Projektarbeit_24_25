@@ -1,4 +1,5 @@
 using TMPro; // Import TextMeshPro namespace for using TMP_Text components
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -15,6 +16,17 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private TMP_Text tmpText; // Reference to the TMP_Text component in the scene used for UI text updates.
+
+
+    [SerializeField]
+    private RectTransform start; // Reference to the start screen
+
+    [SerializeField]
+    private RectTransform pause; // Reference to the pause screen
+
+    // Needed to check wether the pause screen is displayed
+    bool isPauseVisible = false;
+
 
     /// <summary>
     /// Ensures there is only one instance of the UIManager in the scene.
@@ -56,5 +68,42 @@ public class UIManager : MonoBehaviour
     public void HidePanel()
     {
         tmpText.gameObject.SetActive(false); // Deactivate the TMP_Text GameObject to hide the panel.
+    }
+
+    /// <summary>
+    /// Method called every Frame
+    /// </summary>
+    private void Update()
+    {
+        //Check wether "ESC" is pressed to toggle the inventory
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            if (isPauseVisible)
+            {
+                pause.gameObject.SetActive(false);
+
+                //Lock Cursor in the game view
+                UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+                UnityEngine.Cursor.visible = false;
+
+                //Resume time to normal value
+                Time.timeScale = 1;
+                isPauseVisible=false;
+            }
+            else
+            {
+                HidePanel();
+                start.gameObject.SetActive(false);
+                pause.gameObject.SetActive(true);
+
+                //Make the cursor moveable within the game window
+                UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+                UnityEngine.Cursor.visible = true;
+
+                //Pause the game
+                Time.timeScale = 0;
+                isPauseVisible=true;
+            }
+        }
     }
 }
