@@ -10,7 +10,9 @@ public class ItemSpawner : ISpawner
     /// <summary>
     /// Array of item prefabs to spawn.
     /// </summary>
-    private readonly GameObject[] _items;
+    // private readonly GameObject[] _items;
+    
+    private Distributor<ItemInstance> itemsDistributor;
     
     /// <summary>
     /// The size of the room to determine spawning bounds.
@@ -20,12 +22,12 @@ public class ItemSpawner : ISpawner
     /// <summary>
     /// Initializes a new instance of the ItemSpawner class.
     /// </summary>
-    /// <param name="items">Array of item prefabs to spawn.</param>
+    /// <param name="items">Array of item instance objects to spawn.</param>
     /// <param name="offset">The size of the room to determine spawning bounds.</param>
-    public ItemSpawner(GameObject[] items, Vector2 offset)
+    public ItemSpawner(List<ItemInstance> items, Vector2 offset)
     {
-        this._items = items;
-        this._offset = offset;
+        itemsDistributor = new Distributor<ItemInstance>(items);
+        _offset = offset;
     }
 
     /// <summary>
@@ -41,6 +43,7 @@ public class ItemSpawner : ISpawner
         int numberOfItems = Random.Range(1, 4);
         Bounds roomBounds = new Bounds(room.transform.position, new Vector3(_offset.x, 0, _offset.y));
 
+        //@TODO: needs to be refactored after the voronoi diagram is the default way to create the dungeon
         List<Vector3> availablePositions = GenerateGridPositions(roomBounds, 3, 3);
 
         for (int i = 0; i < numberOfItems && availablePositions.Count > 0; i++)
@@ -52,11 +55,26 @@ public class ItemSpawner : ISpawner
             // Random rotation on Y-axis
             Quaternion randomRotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
 
-            Object.Instantiate(_items[Random.Range(0, _items.Length)],
-                position,
-                randomRotation,
-                room.transform
-            );
+            ItemInstance item = itemsDistributor.GetRandomElement();
+
+            GameObject spawnedItem = GameObject.Instantiate(item.itemData.spawnObject, position, randomRotation, room.transform);
+            
+            CollectibleItem collectible = spawnedItem.GetComponent<CollectibleItem>();
+            if (collectible != null)
+            {
+                collectible.item = item;
+            }
+            
+            // item.itemData.spawnObject.transform.position = position;
+            // item.itemData.spawnObject.transform.position = position + room.transform.position;
+            // item.itemData.spawnObject.transform.rotation = randomRotation;
+            // item.itemData.spawnObject.transform.parent = room.transform;
+            // item.itemData.spawnObject.SetActive(true);
+            // Object.Instantiate(itemsDistributor.GetRandomElement().itemData.spawnObject,
+            //     position,
+            //     randomRotation,
+            //     room.transform
+            // );
         }
     }
 

@@ -47,8 +47,8 @@ public class InventoryUIV2 : MonoBehaviour
         foreach (var item in inventoryManager.getInventory())
         {
             TemplateContainer itemElement = itemTemplate.CloneTree();
-            itemElement.Q<Label>("Name").text = item.itemName;
-            itemElement.Q<VisualElement>("Top").style.backgroundImage = new StyleBackground(item.itemIcon);
+            itemElement.Q<Label>("Name").text = item.itemData.spawnName;
+            itemElement.Q<VisualElement>("Top").style.backgroundImage = new StyleBackground(item.itemData.spawnSprite);
             itemElement.Q<Label>("ItemCount").text = "" + item.itemQuantity;
             itemElement.AddToClassList("TemplateContainer");
             inventoryContainer.Add(itemElement);
@@ -121,8 +121,8 @@ public class InventoryUIV2 : MonoBehaviour
     /// </summary>
     private void throwItemAway()
     {
-        Item toRemove = getItemUnderMouse();
-        if (!toRemove.itemName.Equals(""))
+        ItemInstance toRemove = getItemUnderMouse();
+        if (!toRemove.itemData.spawnName.Equals(""))
         {
             inventoryManager.RemoveItem(toRemove, 1);
             RefreshUI();
@@ -131,8 +131,8 @@ public class InventoryUIV2 : MonoBehaviour
 
     private void useItem()
     {
-        Item toUse = getItemUnderMouse();
-        if (!toUse.itemName.Equals(""))
+        ItemInstance toUse = getItemUnderMouse();
+        if (!toUse.itemData.spawnName.Equals(""))
         {
             //TODO code to use Item
             inventoryManager.RemoveItem(toUse, 1);
@@ -140,7 +140,7 @@ public class InventoryUIV2 : MonoBehaviour
         }
     }
 
-    private Item getItemUnderMouse()
+    private ItemInstance getItemUnderMouse()
     {
         //Get mouse location
         Vector2 mousePosition = Input.mousePosition;
@@ -180,6 +180,6 @@ public class InventoryUIV2 : MonoBehaviour
 
             }
         }
-        return new Item("", null, 0);
+        return new ItemInstance("",new GameObject(),0, null,0);
     }
 }

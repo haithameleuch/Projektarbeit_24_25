@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   roomName: EnemyRoom
   roomType: 3
-  roomPrefab: {fileID: 0}
+  roomPrefab: {fileID: 7196524108051718529, guid: e32fd4d0220e74b938364bdaa3fcb8a7, type: 3}
   minCount: 1
   maxCount: 0
