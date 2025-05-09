@@ -215,6 +215,7 @@ public class Room
     public int id;
     public Point center;
     public List<Room> neighbors = new List<Room>();
+    public HashSet<int> walls = new HashSet<int>();
     public bool visited = false;
     public RoomType type = RoomType.Normal;
 
@@ -222,6 +223,11 @@ public class Room
     {
         this.id = id;
         this.center = center;
+    }
+    
+    public void AddWallEdge(int edge)
+    {
+        walls.Add(edge);
     }
     
     /// <summary>
@@ -239,4 +245,5 @@ public class Room
             }
         }
     }
+
 }
