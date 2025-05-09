@@ -272,10 +272,10 @@ MonoBehaviour:
   pillar: {fileID: 16038835297913163, guid: 7c7baabdbc078cb4098d5880fc72c0f3, type: 3}
   wall: {fileID: 6229247520373792897, guid: 3ad7a1cffb2556547a8b7e60fd320431, type: 3}
   floor: {fileID: 9100508158649072905, guid: e348e7143b6247b488737e4be26fb038, type: 3}
-  door: {fileID: 4463566038210007903, guid: 49a5f24a081cbbc44bd23d76c2869723, type: 3}
+  door: {fileID: 187169917318524780, guid: 64a0a6f873e11ae469a7caaa22514fc0, type: 3}
   light: {fileID: 0}
   size: 40
-  numPoints: 7
+  numPoints: 9
   seed: 42
   showPoints: 1
   showCenters: 1
