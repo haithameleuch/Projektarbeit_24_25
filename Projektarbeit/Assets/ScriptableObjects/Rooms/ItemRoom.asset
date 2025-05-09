@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 618d40d766418405db982c7c32325254, type: 3}
-  m_Name: BossRoom
+  m_Name: ItemRoom
   m_EditorClassIdentifier: 
-  roomName: BossRoom
-  roomType: 5
-  roomPrefab: {fileID: 0}
+  roomName: ItemRoom
+  roomType: 2
+  roomPrefab: {fileID: 7196524108051718529, guid: 647c8f3acf4b547e09bfbc9f8c7b7ab0, type: 3}
   minCount: 1
-  maxCount: 1
+  maxCount: 20

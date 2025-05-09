@@ -60,7 +60,8 @@ public class DungeonGenerator : MonoBehaviour
     /// Array of item prefabs to be spawned in the dungeon rooms.
     /// </summary>
     [Header("Item Settings")]
-    [SerializeField] private GameObject[] items;
+    [SerializeField] 
+    private List<ItemInstance> _items;
 
     /// <summary>
     /// List of spawners used to populate dungeon rooms.
@@ -127,7 +128,7 @@ public class DungeonGenerator : MonoBehaviour
 
         _spawners = new List<ISpawner>
         {
-            new ItemSpawner(items, offset)
+            new ItemSpawner(_items, offset)
         };
         
         InitializeRoomDataArray(roomDataArray);

@@ -22,10 +22,13 @@ public static class InteractionHelper
             GameObject interactableObject = hit.collider.gameObject;
             // Attempt to get the IInteractable component from the object that was hit
             IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+            
 
             // If the object implements the IInteractable interface, interact with it
             if (interactable != null)
             {
+                Debug.Log("interactable object name: " + interactableObject);
+                Debug.Log("interactable: " + interactable);
                 newInteractables.Add(interactableObject);
 
                 if (interactable.ShouldRepeat())
