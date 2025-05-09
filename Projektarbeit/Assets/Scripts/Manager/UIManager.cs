@@ -17,10 +17,6 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private TMP_Text tmpText; // Reference to the TMP_Text component in the scene used for UI text updates.
 
-
-    [SerializeField]
-    private RectTransform start; // Reference to the start screen
-
     [SerializeField]
     private RectTransform pause; // Reference to the pause screen
 
@@ -93,7 +89,6 @@ public class UIManager : MonoBehaviour
             else
             {
                 HidePanel();
-                start.gameObject.SetActive(false);
                 pause.gameObject.SetActive(true);
 
                 //Make the cursor moveable within the game window
