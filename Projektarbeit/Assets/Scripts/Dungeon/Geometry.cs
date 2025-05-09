@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Geometry
@@ -230,13 +231,17 @@ namespace Geometry
     {
         public Point A, B;
         private static int _nextId = 0;
-        public int Id { get; }   
+        public int Id;
 
         public Edge(Point A, Point B)
         {
             this.A = A;
             this.B = B;
-            Id = _nextId++; 
+        }
+
+        public void giveID()
+        {
+            Id = _nextId++;
         }
 
         public static bool equals(Edge e_1, Edge e_2)
