@@ -30,7 +30,7 @@ public class VoronoiGenerator : MonoBehaviour
     [SerializeField]
     private int seed;
     
-    DungeonGraph dungonGraph;
+    DungeonGraph dungeonGraph;
     
     // ONLY FOR DEBUGGING
     [Header("Gizmos Debugging")]
@@ -60,6 +60,7 @@ public class VoronoiGenerator : MonoBehaviour
         _debugTriangles = BowyerWatson(_debugPoints);
         _debugVoronoi = generateVoronoi(_debugTriangles);
         _debugCenters = new List<Point>();
+        
         foreach (Triangle triangle in _debugTriangles)
         {
             Point center = triangle.getCircumcircle().center;
@@ -71,14 +72,7 @@ public class VoronoiGenerator : MonoBehaviour
             }
         }
         
-        // Dungon graph
-        List<Room> rooms = new List<Room>();
-        dungonGraph = new DungeonGraph();
-        for (int id = 0; id < _debugPoints.Count; id++)
-        {
-            Room room = new Room(id, _debugPoints[id]);
-            rooms.Add(room);
-        }
+        List<Room> rooms = BuildRoomGraph();
         
         // Assign the type of the rooms
         rooms = roomTypeAssignment(rooms);
@@ -86,12 +80,15 @@ public class VoronoiGenerator : MonoBehaviour
         foreach (Room room in rooms)
         {
             room.AddNeighbors(rooms, GetNeighbors(room.id, room));
-            dungonGraph.AddRoom(room);
+            dungeonGraph.AddRoom(room);
         }
         
         buildDungeon();
         buildVoronoi(_debugVoronoi);
-        placePillars(_debugTriangles); 
+        placePillars(_debugTriangles);
+        
+        Debug.Log($"Door Dict Count: {dungeonGraph.idDoorDict.Count}");
+        
         #endregion DEBUG VERSION
     }
     
@@ -128,6 +125,20 @@ public class VoronoiGenerator : MonoBehaviour
         
         return points;
     }
+    
+    private List<Room> BuildRoomGraph()
+    {
+        // Dungeon graph
+        dungeonGraph = new DungeonGraph();
+        List<Room> rooms = new List<Room>();
+        for (int id = 0; id < _debugPoints.Count; id++)
+        {
+            Room room = new Room(id, _debugPoints[id]);
+            rooms.Add(room);
+        }
+        
+        return rooms;
+    }
 
     /// <summary>
     /// Builds the dungeon walls and the dungeon floor
@@ -143,10 +154,10 @@ public class VoronoiGenerator : MonoBehaviour
             }
         }
         // Create outside walls of the dungeon
-        CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0));
-        CreateWall(new Vector3(size, 0, 0), new Vector3(size, 0, size));
-        CreateWall(new Vector3(size, 0, size), new Vector3(0, 0, size));
-        CreateWall(new Vector3(0, 0, size), new Vector3(0, 0, 0));
+        CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0), -1);
+        CreateWall(new Vector3(size, 0, 0), new Vector3(size, 0, size), -2);
+        CreateWall(new Vector3(size, 0, size), new Vector3(0, 0, size), -3);
+        CreateWall(new Vector3(0, 0, size), new Vector3(0, 0, 0), -4);
     }
 
     /// <summary>
@@ -180,7 +191,7 @@ public class VoronoiGenerator : MonoBehaviour
     {
         foreach (Edge e in voronoi)
         {
-            CreateWall(new Vector3(e.A.x,0,e.A.y),new Vector3(e.B.x,0,e.B.y));
+            CreateWall(new Vector3(e.A.x,0,e.A.y),new Vector3(e.B.x,0,e.B.y), e.Id);
         }
     }
 
@@ -189,28 +200,54 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     /// <param name="start">Beginning of the wall</param>
     /// <param name="end">End of the wall</param>
-    void CreateWall(Vector3 start, Vector3 end)
+    void CreateWall(Vector3 start, Vector3 end, int edgeId)
     {
-        // Size of the prefab (in our case its 2 units wide)
+        // Prefab width and number of segments
         int widthOfPrefab = 2;
-
-        int numberOfSegments = (int)Vector3.Distance(start, end) / widthOfPrefab;
-        
-        // Set number of segments to 1 if the wall is to short
-        if (numberOfSegments < 1)
-        {
-            numberOfSegments = 1;
-        }
-
-        // The factor by which the segment is scaled
+        int numberOfSegments = Mathf.Max(1, (int)(Vector3.Distance(start, end) / widthOfPrefab));
         float scaleOfSegment = (Vector3.Distance(start, end) / widthOfPrefab) / numberOfSegments;
+        Vector3 step = (end - start) / numberOfSegments;
 
-        // A Vector to keep track of how far we have to place the centers of each segment apart
-        Vector3 segmentStep = (end - start) / numberOfSegments;
+        // Detect whether this entire edge is an exterior wall
+        bool isBoundary =
+            (Mathf.Approximately(start.z, 0f)   && Mathf.Approximately(end.z, 0f))    ||    // lower edge
+            (Mathf.Approximately(start.z, size) && Mathf.Approximately(end.z, size))  ||    // top edge
+            (Mathf.Approximately(start.x, 0f)   && Mathf.Approximately(end.x, 0f))    ||    // left edge
+            (Mathf.Approximately(start.x, size) && Mathf.Approximately(end.x, size));       // right edge
+
+        // Which segment is in the middle
+        int midIndex = numberOfSegments / 2;
+        int doorId = 0;
+        
+        // ---- DOORS -----
+        foreach (var room in dungeonGraph.rooms)
+        { 
+            if (room.walls.Contains(edgeId))
+            {
+                doorId = edgeId + 1;
+                room.doors.Add(doorId);
+            }
+        }
 
         for (int i = 0; i < numberOfSegments; i++)
         {
-            CreateWallSegment(start + (i * segmentStep), start + ((i + 1) * segmentStep), scaleOfSegment);
+            Vector3 segStart = start + step * i;
+            Vector3 segEnd   = start + step * (i + 1);
+
+            // Door only if not exterior wall and exactly the middle segment
+            if (!isBoundary && i == midIndex)
+            {
+                Vector3 mid = (segStart + segEnd) * 0.5f;
+                Quaternion rot = Quaternion.FromToRotation(Vector3.right, segEnd - segStart);
+                var doorObj = Instantiate(door, mid, rot, transform);
+                doorObj.transform.localScale = new Vector3(scaleOfSegment, 1f, 1f);
+                //dungeonGraph.idDoorDict.Add(doorId, doorObj);
+            }
+            else
+            {
+                // otherwise continue the normal wall segment
+                CreateWallSegment(segStart, segEnd, scaleOfSegment);
+            }
         }
     }
 
@@ -614,6 +651,17 @@ public class VoronoiGenerator : MonoBehaviour
     }
     
     
+    // ---- DOORS -----
+    //foreach (var room in dungeonGraph.rooms)
+    //{ 
+        //if (room.walls.Contains(edgeId))
+        //{
+            //room.doors.Add(edgeId++);
+        //}
+    //}
+    
+    
+    
     #region ONLY FOR DEBUGGING
     private void OnDrawGizmos()
     {
@@ -633,7 +681,7 @@ public class VoronoiGenerator : MonoBehaviour
                 
                 GUIStyle style = new GUIStyle();
                 style.normal.textColor = Color.white;
-                Room room = dungonGraph.GetRoomByID(i);
+                Room room = dungeonGraph.GetRoomByID(i);
                 Color labelColor = Color.white;
 
                 switch (room.type)
@@ -695,7 +743,6 @@ public class VoronoiGenerator : MonoBehaviour
                 DrawLine(edge.A, edge.B);
                 Handles.Label(new Vector3((edge.A.x + edge.B.x) / 2, 0, (edge.A.y + edge.B.y) / 2), $"\nEdge {edge.Id}");
             }
-
         }
         
         // BISEKTOREN (MAGENTA)

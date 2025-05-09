@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Geometry;
+using UnityEngine;
 
 /// <summary>
 /// Represents the graph structure of all rooms and their connections in the dungeon.
@@ -7,6 +8,7 @@ using Geometry;
 public class DungeonGraph
 {
     public List<Room> rooms = new List<Room>();
+    public Dictionary<int, GameObject> idDoorDict = new Dictionary<int, GameObject>();
     private Dictionary<Point, Room> roomDict = new Dictionary<Point, Room>();
     private Dictionary<int, Room> idDict = new Dictionary<int, Room>();
 
@@ -216,6 +218,7 @@ public class Room
     public Point center;
     public List<Room> neighbors = new List<Room>();
     public HashSet<int> walls = new HashSet<int>();
+    public HashSet<int> doors = new HashSet<int>();
     public bool visited = false;
     public RoomType type = RoomType.Normal;
 
