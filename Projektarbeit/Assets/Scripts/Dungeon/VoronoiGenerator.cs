@@ -70,13 +70,6 @@ public class VoronoiGenerator : MonoBehaviour
                 _debugCenters.Add(center);
             }
         }
-
-        
-        buildDungeon();
-        buildVoronoi(_debugVoronoi);
-        placePillars(_debugTriangles); 
-        
-        
         
         // Dungon graph
         List<Room> rooms = new List<Room>();
@@ -119,15 +112,18 @@ public class VoronoiGenerator : MonoBehaviour
 
         foreach (Room room in rooms)
         {
-            room.AddNeighbors(rooms, GetNeighbors(room.id));
+            room.AddNeighbors(rooms, GetNeighbors(room.id, room));
             dungonGraph.AddRoom(room);
         }
 
-        foreach (Room room in dungonGraph.GetAllEnemyRooms())
+        foreach (int wallID in dungonGraph.GetRoomByID(4).walls)
         {
-            Debug.Log(room.id);
+            Debug.Log(wallID);
         }
-
+        
+        buildDungeon();
+        buildVoronoi(_debugVoronoi);
+        placePillars(_debugTriangles); 
         #endregion DEBUG VERSION
     }
     
@@ -203,7 +199,7 @@ public class VoronoiGenerator : MonoBehaviour
             // Only Centers within the map
             if (center.x < 0 || center.x > size || center.y < 0 || center.y > size)
                 continue;
-            
+
             Instantiate(pillar, new Vector3(center.x, 0, center.y), Quaternion.identity, transform);
         }
     }
@@ -262,12 +258,20 @@ public class VoronoiGenerator : MonoBehaviour
 
         // Position the location of the prefab to the middle between start and end
         cube.transform.position = (start + end) / 2;
-
         // Scale the wall accordingly
         cube.transform.localScale = new Vector3(scale, 1f, 1f);
 
         // Rotate the wall correctly
         cube.transform.rotation = Quaternion.FromToRotation(Vector3.right, end - start);
+        foreach (Room room in dungonGraph.rooms)
+        {
+            foreach (Edge wallEdge in _debugVoronoi)
+            {
+                if (room.walls.Contains((wallEdge.Id)))
+                    Instantiate(door, new Vector3((wallEdge.A.x + wallEdge.B.x)/2, 0, (wallEdge.A.y + wallEdge.B.y)/2), 
+                        Quaternion.FromToRotation(Vector3.right, end - start), transform);
+            }
+        }
     }
 
     /// <summary>
@@ -562,7 +566,7 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     /// <param name="pointID">Index of the target point in _debugPoints</param>
     /// <returns>A HashSet of indices representing all neighboring points</returns>
-    public HashSet<int> GetNeighbors(int pointID)
+    public HashSet<int> GetNeighbors(int pointID, Room room)
     {
         Point target = _debugPoints[pointID];
         HashSet<int> neighbors = new HashSet<int>();
@@ -579,7 +583,6 @@ public class VoronoiGenerator : MonoBehaviour
 
                     Point neighbor1 = t.points[next1];
                     Point neighbor2 = t.points[next2];
-
                     int index1 = _debugPoints.FindIndex(p =>
                         Mathf.Approximately(p.x, neighbor1.x) && Mathf.Approximately(p.y, neighbor1.y));
                     int index2 = _debugPoints.FindIndex(p =>
@@ -588,6 +591,22 @@ public class VoronoiGenerator : MonoBehaviour
                     if (index1 != -1) neighbors.Add(index1);
                     if (index2 != -1) neighbors.Add(index2);
 
+                    Edge edge1 = new Edge(target, neighbor1);
+                    foreach (Edge edge in _debugVoronoi){
+                        if (edge1.Intersect(edge))
+                        {
+                            room.AddWallEdge(edge.Id);
+                        }
+                    }
+                    
+                    Edge edge2 = new Edge(target, neighbor2);
+                    foreach (Edge edge in _debugVoronoi){
+                        if (edge2.Intersect(edge))
+                        {
+                            room.AddWallEdge(edge.Id);
+                        }
+                    }
+                    
                     break; // Found the point in this triangle; no need to keep looping i
                 }
             }
@@ -673,11 +692,12 @@ public class VoronoiGenerator : MonoBehaviour
         // VORONOI TRIANGULATION (YELLOW)
         if (showVoronoi && _debugVoronoi != null)
         {
-            Gizmos.color = Color.yellow;
             foreach (Edge edge in _debugVoronoi)
             {
                 DrawLine(edge.A, edge.B);
+                Handles.Label(new Vector3((edge.A.x + edge.B.x) / 2, 0, (edge.A.y + edge.B.y) / 2), $"\nEdge {edge.Id}");
             }
+
         }
         
         // BISEKTOREN (MAGENTA)
