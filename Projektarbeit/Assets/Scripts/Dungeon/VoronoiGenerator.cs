@@ -30,7 +30,7 @@ public class VoronoiGenerator : MonoBehaviour
     [SerializeField]
     private int seed;
     
-    DungeonGraph dungonGraph = new DungeonGraph();
+    DungeonGraph dungonGraph;
     
     // ONLY FOR DEBUGGING
     [Header("Gizmos Debugging")]
@@ -73,52 +73,20 @@ public class VoronoiGenerator : MonoBehaviour
         
         // Dungon graph
         List<Room> rooms = new List<Room>();
+        dungonGraph = new DungeonGraph();
         for (int id = 0; id < _debugPoints.Count; id++)
         {
             Room room = new Room(id, _debugPoints[id]);
             rooms.Add(room);
         }
         
-        int total = rooms.Count;
-        System.Random rand = new System.Random();
-
-        // Shuffle indices to randomly assign types
-        List<int> indices = Enumerable.Range(0, total).OrderBy(x => rand.Next()).ToList();
-
-        // Assign 1 Start Room
-        rooms[indices[0]].type = RoomType.Start;
+        // Assign the type of the rooms
+        rooms = roomTypeAssignment(rooms);
         
-        // Assign 1 Boss Room
-        rooms[indices[1]].type = RoomType.Boss;
-
-        // Assign 2 Minigame Rooms
-        rooms[indices[2]].type = RoomType.MiniGame;
-        rooms[indices[3]].type = RoomType.MiniGame;
-
-        int itemRoomCount = (int)(0.2f * total);
-        int enemyRoomCount = (int)(0.2f * total);
-
-        // Assign Item Rooms
-        for (int i = 3; i < 3 + itemRoomCount; i++)
-        {
-            rooms[indices[i]].type = RoomType.Item;
-        }
-
-        // Assign Enemy Rooms
-        for (int i = 3 + itemRoomCount; i < 3 + itemRoomCount + enemyRoomCount; i++)
-        {
-            rooms[indices[i]].type = RoomType.Enemy;
-        }
-
         foreach (Room room in rooms)
         {
             room.AddNeighbors(rooms, GetNeighbors(room.id, room));
             dungonGraph.AddRoom(room);
-        }
-
-        foreach (int wallID in dungonGraph.GetRoomByID(4).walls)
-        {
-            Debug.Log(wallID);
         }
         
         buildDungeon();
@@ -263,17 +231,44 @@ public class VoronoiGenerator : MonoBehaviour
 
         // Rotate the wall correctly
         cube.transform.rotation = Quaternion.FromToRotation(Vector3.right, end - start);
-        foreach (Room room in dungonGraph.rooms)
-        {
-            foreach (Edge wallEdge in _debugVoronoi)
-            {
-                if (room.walls.Contains((wallEdge.Id)))
-                    Instantiate(door, new Vector3((wallEdge.A.x + wallEdge.B.x)/2, 0, (wallEdge.A.y + wallEdge.B.y)/2), 
-                        Quaternion.FromToRotation(Vector3.right, end - start), transform);
-            }
-        }
     }
 
+    List<Room> roomTypeAssignment(List<Room> rooms)
+    {
+        int total = rooms.Count;
+        System.Random rand = new System.Random();
+
+        // Shuffle indices to randomly assign types
+        List<int> indices = Enumerable.Range(0, total).OrderBy(x => rand.Next()).ToList();
+
+        // Assign 1 Start Room
+        rooms[indices[0]].type = RoomType.Start;
+        
+        // Assign 1 Boss Room
+        rooms[indices[1]].type = RoomType.Boss;
+
+        // Assign 2 Minigame Rooms
+        rooms[indices[2]].type = RoomType.MiniGame;
+        rooms[indices[3]].type = RoomType.MiniGame;
+
+        int itemRoomCount = (int)(0.2f * total);
+        int enemyRoomCount = (int)(0.2f * total);
+
+        // Assign Item Rooms
+        for (int i = 3; i < 3 + itemRoomCount; i++)
+        {
+            rooms[indices[i]].type = RoomType.Item;
+        }
+
+        // Assign Enemy Rooms
+        for (int i = 3 + itemRoomCount; i < 3 + itemRoomCount + enemyRoomCount; i++)
+        {
+            rooms[indices[i]].type = RoomType.Enemy;
+        }
+        return rooms;
+    }
+    
+    
     /// <summary>
     /// This Method generates the Voronoi-Diagram by drawing the bisectors of every triangle, joining matching edges and extending the border ones
     /// </summary>
@@ -321,6 +316,7 @@ public class VoronoiGenerator : MonoBehaviour
                 if (Point.equals(bisectors[i].B, bisectors[j].B))
                 {
                     Edge longEdge = new Edge(bisectors[i].A, bisectors[j].A);
+                    longEdge.giveID();
                     voronoi.Add(longEdge);
                     toRemove.Add(i);
                     toRemove.Add(j);
@@ -369,6 +365,7 @@ public class VoronoiGenerator : MonoBehaviour
                         Point inter = FindIntersectionWithMapBoundary(e, size);
                         _debugVoronoiIntersections.Add(inter);
                         Edge newEdge = new Edge(e.A, inter);
+                        newEdge.giveID();
                         voronoi.Add(newEdge);
                     }
                     else if (!PointOutTriangle(new Point(e.B.x - shortend[0], e.B.y - shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
@@ -376,6 +373,7 @@ public class VoronoiGenerator : MonoBehaviour
                         Point inter = FindIntersectionWithMapBoundary(e, size);
                         _debugVoronoiIntersections.Add(inter);
                         Edge newEdge = new Edge(e.A, inter);
+                        newEdge.giveID();
                         voronoi.Add(newEdge);
                     }
 
