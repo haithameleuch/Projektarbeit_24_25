@@ -19,8 +19,6 @@ public class VoronoiGenerator : MonoBehaviour
     private GameObject floor;
     [SerializeField]
     private GameObject door;
-    [SerializeField]
-    private GameObject light;
     
     [Header("Dungeon Settings")]
     [SerializeField]
@@ -29,6 +27,8 @@ public class VoronoiGenerator : MonoBehaviour
     private int numPoints = 5;
     [SerializeField]
     private int seed;
+    [SerializeField] 
+    private float minDoorEdgeLength = 4f;
     
     DungeonGraph dungeonGraph;
     
@@ -37,6 +37,7 @@ public class VoronoiGenerator : MonoBehaviour
     [SerializeField] private bool showPoints = true;
     [SerializeField] private bool showCenters = true;
     [SerializeField] private bool showTriangles = true;
+    [SerializeField] private bool showDoorEdgeID = true;
     [SerializeField] private bool showVoronoi = true;
     [SerializeField] private bool showBisectors = true;
     [SerializeField] private bool showVoronoiIntersections = true;
@@ -59,37 +60,18 @@ public class VoronoiGenerator : MonoBehaviour
         _debugPoints = generatePoints(numPoints, 6.0f, size);
         _debugTriangles = BowyerWatson(_debugPoints);
         _debugVoronoi = generateVoronoi(_debugTriangles);
-        _debugCenters = new List<Point>();
+        _debugCenters  = _debugTriangles
+            .Select(t => t.getCircumcircle().center)
+            .Where(c => c.x >= 0 && c.x <= size && c.y >= 0 && c.y <= size)
+            .ToList();
+        #endregion DEBUG VERSION
         
-        foreach (Triangle triangle in _debugTriangles)
-        {
-            Point center = triangle.getCircumcircle().center;
-
-            // only add valid centers (inside the map)
-            if (center.x >= 0 && center.x <= size && center.y >= 0 && center.y <= size)
-            {
-                _debugCenters.Add(center);
-            }
-        }
-        
-        List<Room> rooms = BuildRoomGraph();
-        
-        // Assign the type of the rooms
-        rooms = roomTypeAssignment(rooms);
-        
-        foreach (Room room in rooms)
-        {
-            room.AddNeighbors(rooms, GetNeighbors(room.id, room));
-            dungeonGraph.AddRoom(room);
-        }
+        BuildAndPopulateGraph();
+        AssignRoomTypes();
         
         buildDungeon();
         buildVoronoi(_debugVoronoi);
         placePillars(_debugTriangles);
-        
-        Debug.Log($"Door Dict Count: {dungeonGraph.idDoorDict.Count}");
-        
-        #endregion DEBUG VERSION
     }
     
     public List<Point> generatePoints(int count, float radius, float size)
@@ -124,6 +106,17 @@ public class VoronoiGenerator : MonoBehaviour
         }
         
         return points;
+    }
+    
+    private void BuildAndPopulateGraph()
+    {
+        dungeonGraph = new DungeonGraph();
+        var rooms = BuildRoomGraph();
+        foreach (var room in rooms)
+        {
+            room.AddNeighbors(rooms, GetNeighbors(room.id, room));
+            dungeonGraph.AddRoom(room);
+        }
     }
     
     private List<Room> BuildRoomGraph()
@@ -215,19 +208,10 @@ public class VoronoiGenerator : MonoBehaviour
             (Mathf.Approximately(start.x, 0f)   && Mathf.Approximately(end.x, 0f))    ||    // left edge
             (Mathf.Approximately(start.x, size) && Mathf.Approximately(end.x, size));       // right edge
 
+        bool longEnoughForDoor = Vector3.Distance(start, end) >= minDoorEdgeLength;
+        
         // Which segment is in the middle
         int midIndex = numberOfSegments / 2;
-        int doorId = 0;
-        
-        // ---- DOORS -----
-        foreach (var room in dungeonGraph.rooms)
-        { 
-            if (room.walls.Contains(edgeId))
-            {
-                doorId = edgeId + 1;
-                room.doors.Add(doorId);
-            }
-        }
 
         for (int i = 0; i < numberOfSegments; i++)
         {
@@ -235,13 +219,18 @@ public class VoronoiGenerator : MonoBehaviour
             Vector3 segEnd   = start + step * (i + 1);
 
             // Door only if not exterior wall and exactly the middle segment
-            if (!isBoundary && i == midIndex)
+            if (!isBoundary && i == midIndex && longEnoughForDoor)
             {
                 Vector3 mid = (segStart + segEnd) * 0.5f;
                 Quaternion rot = Quaternion.FromToRotation(Vector3.right, segEnd - segStart);
                 var doorObj = Instantiate(door, mid, rot, transform);
                 doorObj.transform.localScale = new Vector3(scaleOfSegment, 1f, 1f);
-                //dungeonGraph.idDoorDict.Add(doorId, doorObj);
+                
+                foreach (var room in dungeonGraph.rooms.Where(room => room.walls.Contains(edgeId)))
+                    room.doors.Add(edgeId);
+                
+                // Save the id and the door object in the dictionary
+                dungeonGraph.idDoorDict[edgeId] = doorObj;
             }
             else
             {
@@ -270,41 +259,53 @@ public class VoronoiGenerator : MonoBehaviour
         cube.transform.rotation = Quaternion.FromToRotation(Vector3.right, end - start);
     }
 
-    List<Room> roomTypeAssignment(List<Room> rooms)
+    private void AssignRoomTypes()
     {
-        int total = rooms.Count;
-        System.Random rand = new System.Random();
+        var rng = new System.Random();
 
-        // Shuffle indices to randomly assign types
-        List<int> indices = Enumerable.Range(0, total).OrderBy(x => rand.Next()).ToList();
+        // Starting room
+        int startIndex = rng.Next(dungeonGraph.rooms.Count);
+        var startRoom = dungeonGraph.rooms[startIndex];
+        startRoom.type    = RoomType.Start;
+        startRoom.visited = true;
 
-        // Assign 1 Start Room
-        rooms[indices[0]].type = RoomType.Start;
-        
-        // Assign 1 Boss Room
-        rooms[indices[1]].type = RoomType.Boss;
+        // Boss room
+        var bossRoom = dungeonGraph.GetFarthestRoomFrom(startRoom);
+        bossRoom.type = RoomType.Boss;
 
-        // Assign 2 Minigame Rooms
-        rooms[indices[2]].type = RoomType.MiniGame;
-        rooms[indices[3]].type = RoomType.MiniGame;
+        // Put all the remaining rooms that are still “Normal” into a list
+        var normals = dungeonGraph.rooms
+            .Where(r => r.type == RoomType.Normal)
+            .ToList();
 
-        int itemRoomCount = (int)(0.2f * total);
-        int enemyRoomCount = (int)(0.2f * total);
-
-        // Assign Item Rooms
-        for (int i = 3; i < 3 + itemRoomCount; i++)
+        // Minigame rooms
+        for (int i = 0; i < 2 && normals.Count > 0; i++)
         {
-            rooms[indices[i]].type = RoomType.Item;
+            int idx = rng.Next(normals.Count);
+            normals[idx].type = RoomType.MiniGame;
+            normals.RemoveAt(idx);
         }
 
-        // Assign Enemy Rooms
-        for (int i = 3 + itemRoomCount; i < 3 + itemRoomCount + enemyRoomCount; i++)
+        // Item rooms
+        int itemCount = Mathf.Max(1, (int)(0.2f * dungeonGraph.rooms.Count));
+        for (int i = 0; i < itemCount && normals.Count > 0; i++)
         {
-            rooms[indices[i]].type = RoomType.Enemy;
+            int idx = rng.Next(normals.Count);
+            normals[idx].type = RoomType.Item;
+            normals.RemoveAt(idx);
         }
-        return rooms;
+
+        // Enemy rooms
+        int enemyCount = Mathf.Max(1, (int)(0.2f * dungeonGraph.rooms.Count));
+        for (int i = 0; i < enemyCount && normals.Count > 0; i++)
+        {
+            int idx = rng.Next(normals.Count);
+            normals[idx].type = RoomType.Enemy;
+            normals.RemoveAt(idx);
+        }
+
+        // Rest are normal rooms
     }
-    
     
     /// <summary>
     /// This Method generates the Voronoi-Diagram by drawing the bisectors of every triangle, joining matching edges and extending the border ones
@@ -651,17 +652,6 @@ public class VoronoiGenerator : MonoBehaviour
     }
     
     
-    // ---- DOORS -----
-    //foreach (var room in dungeonGraph.rooms)
-    //{ 
-        //if (room.walls.Contains(edgeId))
-        //{
-            //room.doors.Add(edgeId++);
-        //}
-    //}
-    
-    
-    
     #region ONLY FOR DEBUGGING
     private void OnDrawGizmos()
     {
@@ -686,29 +676,17 @@ public class VoronoiGenerator : MonoBehaviour
 
                 switch (room.type)
                 {
-                    case RoomType.Boss:
-                        labelColor = Color.red;
-                        break;
-                    case RoomType.MiniGame:
-                        labelColor = Color.cyan;
-                        break;
-                    case RoomType.Item:
-                        labelColor = Color.yellow;
-                        break;
-                    case RoomType.Enemy:
-                        labelColor = Color.magenta;
-                        break;
-                    case RoomType.Normal:
-                        labelColor = Color.white;
-                        break;
-                    case RoomType.Start:
-                        labelColor = Color.blue;
-                        break;
+                    case RoomType.Boss:     labelColor = Color.red;     break;
+                    case RoomType.MiniGame: labelColor = Color.cyan;    break;
+                    case RoomType.Item:     labelColor = Color.yellow;  break;
+                    case RoomType.Enemy:    labelColor = Color.magenta; break;
+                    case RoomType.Start:    labelColor = Color.blue;    break;
+                    case RoomType.Normal:   labelColor = Color.white;   break;
                 }
 
                 //Set the color before drawing the label
                 style.normal.textColor = labelColor;
-                Handles.Label(pos + Vector3.up * 0.5f, $"\nPoint {i} : {room.type}", style);
+                Handles.Label(pos + Vector3.up * 0.5f, $"\nPoint {i} : {room.type}\nVisited: {room.visited}", style);
             }
         }
         
@@ -734,14 +712,31 @@ public class VoronoiGenerator : MonoBehaviour
                 DrawLine(triangle.points[2], triangle.points[0]);
             }
         }
+        
+        // DOOR + EDGE ID LABELS (WHITE)
+        if (showDoorEdgeID && dungeonGraph != null)
+        {
+            GUIStyle doorStyle = new GUIStyle();
+            doorStyle.normal.textColor = Color.white;
+            
+            foreach (var kvp in dungeonGraph.idDoorDict)
+            {
+                int id = kvp.Key;
+                GameObject doorObj = kvp.Value;
+                if (doorObj == null) continue;
+
+                Vector3 labelPos = doorObj.transform.position + Vector3.up * 0.5f;
+                Handles.Label(labelPos, $"Edge: {id}\nDoor: {id}", doorStyle);
+            }
+        }
 
         // VORONOI TRIANGULATION (YELLOW)
         if (showVoronoi && _debugVoronoi != null)
         {
+            Gizmos.color = Color.yellow;
             foreach (Edge edge in _debugVoronoi)
             {
                 DrawLine(edge.A, edge.B);
-                Handles.Label(new Vector3((edge.A.x + edge.B.x) / 2, 0, (edge.A.y + edge.B.y) / 2), $"\nEdge {edge.Id}");
             }
         }
         
