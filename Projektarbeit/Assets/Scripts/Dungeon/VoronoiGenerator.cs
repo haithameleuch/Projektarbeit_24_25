@@ -74,6 +74,11 @@ public class VoronoiGenerator : MonoBehaviour
         placePillars(_debugTriangles);
     }
     
+    public DungeonGraph GetDungeonGraph()
+    {
+        return dungeonGraph;
+    }
+    
     public List<Point> generatePoints(int count, float radius, float size)
     {
         List<Point> points = new List<Point>();

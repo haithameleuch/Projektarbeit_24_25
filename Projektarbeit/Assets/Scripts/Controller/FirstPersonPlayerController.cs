@@ -193,4 +193,10 @@ public class FirstPersonPlayerController : MonoBehaviour
         // Update the list of current interactables to reflect the new state
         _currentInteractables = newInteractables;
     }
+    
+    public void Init(GameInputManager inputManager)
+    {
+        this.gameInput = inputManager;
+    }
+
 }
