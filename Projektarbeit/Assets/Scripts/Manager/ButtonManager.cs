@@ -1,3 +1,4 @@
+using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,7 +19,13 @@ public class ButtonManager : MonoBehaviour
     public void exitGame()
     {
         Debug.Log("Exit");
-        Application.Quit();
+        #if UNITY_STANDALONE
+                Application.Quit();
+        #endif
+        #if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+
     }
 
     public void saveGame()
