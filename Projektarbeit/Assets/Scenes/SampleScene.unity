@@ -989,6 +989,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tmpText: {fileID: 1694553612}
   pause: {fileID: 569495315}
+  player: {fileID: 1561343253}
 --- !u!114 &661638788
 MonoBehaviour:
   m_ObjectHideFlags: 0
