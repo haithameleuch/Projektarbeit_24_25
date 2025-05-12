@@ -1,45 +1,139 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 
-public class GameManagerVoronoi : MonoBehaviour
+namespace Manager
 {
-    [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private VoronoiGenerator voronoiGenerator;
+    /// <summary>
+    /// Manages the core game logic for a Voronoi-based dungeon, including player spawning,
+    /// tracking the current room, and reacting to room transitions (e.g., boss triggers).
+    /// </summary>
+    public class GameManagerVoronoi : MonoBehaviour
+    {
+        /// <summary>
+        /// The prefab used to instantiate the player at the start of the game.
+        /// </summary>
+        [SerializeField] private GameObject playerPrefab;
     
-    void Start()
-    {
-        StartCoroutine(WaitForDungeon());
-    }
+        /// <summary>
+        /// Reference to the VoronoiGenerator responsible for dungeon generation.
+        /// </summary>
+        [SerializeField] private VoronoiGenerator voronoiGenerator;
+    
+        /// <summary>
+        /// Distance threshold used to determine when the player has left the current room.
+        /// </summary>
+        [SerializeField] private float roomSwitchThreshold = 5f;
 
-    private IEnumerator WaitForDungeon()
-    {
-        while (voronoiGenerator.GetDungeonGraph() == null || voronoiGenerator.GetDungeonGraph().GetStartRoom() == null)
+        private GameObject _player;
+        private DungeonGraph _dungeon;
+        private Room _currentRoom;
+
+        /// <summary>
+        /// Initializes the game by starting the dungeon wait coroutine.
+        /// </summary>
+        void Start()
         {
-            yield return null;
+            StartCoroutine(WaitForDungeon());
         }
 
-        SpawnPlayerAtStartRoom();
+        /// <summary>
+        /// Waits until the dungeon generation is complete before spawning the player.
+        /// </summary>
+        /// <returns>Coroutine enumerator.</returns>
+        private IEnumerator WaitForDungeon()
+        {
+            while (voronoiGenerator.GetDungeonGraph() is null || voronoiGenerator.GetDungeonGraph().GetStartRoom() is null)
+            {
+                yield return null;
+            }
+
+            _dungeon = voronoiGenerator.GetDungeonGraph();
+            SpawnPlayerAtStartRoom();
+        }
+
+        /// <summary>
+        /// Spawns the player in the start room and sets up all required references.
+        /// Also sets the initial current room and triggers the room entry logic.
+        /// </summary>
+        private void SpawnPlayerAtStartRoom()
+        {
+            var startRoom = _dungeon.GetStartRoom();
+            var spawnPosition = new Vector3(startRoom.center.x, 1f, startRoom.center.y);
+            _player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+
+            // Initialize references
+            var inputManager = FindFirstObjectByType<GameInputManager>();
+            var poolManager = FindFirstObjectByType<ObjectPoolManager>();
+
+            var controller = _player.GetComponent<FirstPersonPlayerController>();
+            if (controller is not null && inputManager is not null)
+                controller.Init(inputManager);
+
+            var shooter = _player.GetComponent<PlayerShooting>();
+            if (shooter is not null && poolManager is not null)
+                shooter.Init(poolManager);
+
+            _currentRoom = startRoom;
+            OnRoomEntered(_currentRoom);
+        }
+
+        /// <summary>
+        /// Called once per frame to track player behavior and transitions.
+        /// </summary>
+        void Update()
+        {
+            if (_player is null || _dungeon is null || _currentRoom is null) return;
+
+            TrackCurrentRoom();
+        }
+        
+        /// <summary>
+        /// Checks if the player has moved into a different room.
+        /// If so, updates the current room and triggers room entry logic.
+        /// </summary>
+        private void TrackCurrentRoom()
+        {
+            Vector2 playerPos = new Vector2(_player.transform.position.x, _player.transform.position.z);
+            float minDist = Vector2.Distance(playerPos, new Vector2(_currentRoom.center.x, _currentRoom.center.y));
+
+            if (minDist <= roomSwitchThreshold)
+                return;
+
+            Room closest = _currentRoom;
+
+            foreach (Room neighbor in _currentRoom.neighbors)
+            {
+                float dist = Vector2.Distance(playerPos, new Vector2(neighbor.center.x, neighbor.center.y));
+                if (dist < minDist)
+                {
+                    minDist = dist;
+                    closest = neighbor;
+                }
+            }
+
+            if (closest != _currentRoom)
+            {
+                _currentRoom = closest;
+                OnRoomEntered(_currentRoom);
+            }
+        }
+
+        /// <summary>
+        /// Called when the player enters a new room. Used to trigger room-specific game logic,
+        /// such as boss activation, enemy activation, or door locking.
+        /// </summary>
+        /// <param name="newRoom">The room that the player just entered.</param>
+        private void OnRoomEntered(Room newRoom)
+        {
+            Debug.Log($"[GameManager] Player entered room {newRoom.id} (Type: {newRoom.type})");
+            newRoom.visited = true;
+
+            // Example: trigger boss logic
+            if (newRoom.type == RoomType.Boss)
+            {
+                Debug.Log("Entered boss room! Prepare for battle...");
+                // TODO: Activate boss, lock doors, etc.
+            }
+        }
     }
-    
-    private void SpawnPlayerAtStartRoom()
-    {
-        DungeonGraph dungeon = voronoiGenerator.GetDungeonGraph();
-        Room startRoom = dungeon.GetStartRoom();
-
-        Vector3 spawnPosition = new Vector3(startRoom.center.x, 1f, startRoom.center.y);
-        GameObject player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
-
-        // Initialize references
-        var inputManager = FindFirstObjectByType<GameInputManager>();
-        var poolManager = FindFirstObjectByType<ObjectPoolManager>();
-
-        var controller = player.GetComponent<FirstPersonPlayerController>();
-        if (controller is not null && inputManager is not null)
-            controller.Init(inputManager);
-
-        var shooter = player.GetComponent<PlayerShooting>();
-        if (shooter is not null && poolManager is not null)
-            shooter.Init(poolManager);
-    }
-
 }
