@@ -1,0 +1,38 @@
+{
+    "My Behavior": {
+        "checkpoints": [
+            {
+                "steps": 199998,
+                "file_path": "results/HunterObstacle/My Behavior/My Behavior-199998.onnx",
+                "reward": 11.641681281003086,
+                "creation_time": 1746969035.0754259,
+                "auxillary_file_paths": [
+                    "results/HunterObstacle/My Behavior/My Behavior-199998.pt"
+                ]
+            },
+            {
+                "steps": 200032,
+                "file_path": "results/HunterObstacle/My Behavior/My Behavior-200032.onnx",
+                "reward": 11.687426857326342,
+                "creation_time": 1746969035.389595,
+                "auxillary_file_paths": [
+                    "results/HunterObstacle/My Behavior/My Behavior-200032.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 200032,
+            "file_path": "results/HunterObstacle/My Behavior.onnx",
+            "reward": 11.687426857326342,
+            "creation_time": 1746969035.389595,
+            "auxillary_file_paths": [
+                "results/HunterObstacle/My Behavior/My Behavior-200032.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.11.0+cu102"
+    }
+}

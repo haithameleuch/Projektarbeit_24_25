@@ -1,0 +1,38 @@
+{
+    "My Behavior": {
+        "checkpoints": [
+            {
+                "steps": 199982,
+                "file_path": "results/Shooter/My Behavior/My Behavior-199982.onnx",
+                "reward": 9.81618388183415,
+                "creation_time": 1747092980.2968333,
+                "auxillary_file_paths": [
+                    "results/Shooter/My Behavior/My Behavior-199982.pt"
+                ]
+            },
+            {
+                "steps": 200042,
+                "file_path": "results/Shooter/My Behavior/My Behavior-200042.onnx",
+                "reward": 9.88023079559207,
+                "creation_time": 1747092980.5752409,
+                "auxillary_file_paths": [
+                    "results/Shooter/My Behavior/My Behavior-200042.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 200042,
+            "file_path": "results/Shooter/My Behavior.onnx",
+            "reward": 9.88023079559207,
+            "creation_time": 1747092980.5752409,
+            "auxillary_file_paths": [
+                "results/Shooter/My Behavior/My Behavior-200042.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.11.0+cu102"
+    }
+}
