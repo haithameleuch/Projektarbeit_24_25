@@ -78,7 +78,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        //Check wether "ESC" is pressed to toggle the inventory
+        //Check wether "P" is pressed to toggle the pause menu
         if (Input.GetKeyDown(KeyCode.P))
         {
             if (isPauseVisible)
@@ -109,6 +109,18 @@ public class UIManager : MonoBehaviour
                 //Pause the game
                 Time.timeScale = 0;
                 isPauseVisible=true;
+            }
+        }
+        
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (!isInvVisible)
+            {
+                isInvVisible = true;
+            }
+            else
+            {
+                isInvVisible = false;
             }
         }
     }
