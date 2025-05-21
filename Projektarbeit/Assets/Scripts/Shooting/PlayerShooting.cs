@@ -44,4 +44,10 @@ public class PlayerShooting : MonoBehaviour
             projectile.SetActive(true);
         }
     }
+    
+    public void Init(ObjectPoolManager poolManager)
+    {
+        this.objectPoolManager = poolManager;
+    }
+
 }
