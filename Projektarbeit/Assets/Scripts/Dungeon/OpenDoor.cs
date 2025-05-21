@@ -23,6 +23,10 @@ public class OpenDoor : MonoBehaviour
         // Cache the parent Collider and the door child GameObject
         _parentCollider = GetComponent<Collider>();
         _doorChild = transform.GetChild(0).gameObject;
+        
+        // Disable the door child by default
+        _doorChild.SetActive(false);
+        _parentCollider.enabled = false;  
 
         // Subscribe to events from the EventManager
         EventManager.OnOpenDoors += Open;

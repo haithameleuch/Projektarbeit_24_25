@@ -120,19 +120,40 @@ namespace Manager
 
         /// <summary>
         /// Called when the player enters a new room. Used to trigger room-specific game logic,
-        /// such as boss activation, enemy activation, or door locking.
+        /// such as boss activation, enemy activation, item placement, or door locking.
         /// </summary>
         /// <param name="newRoom">The room that the player just entered.</param>
         private void OnRoomEntered(Room newRoom)
         {
             Debug.Log($"[GameManager] Player entered room {newRoom.id} (Type: {newRoom.type})");
+            
+            if (newRoom.visited)
+            {
+                return;
+            }
+
             newRoom.visited = true;
 
-            // Example: trigger boss logic
-            if (newRoom.type == RoomType.Boss)
+            switch (newRoom.type)
             {
-                Debug.Log("Entered boss room! Prepare for battle...");
-                // TODO: Activate boss, lock doors, etc.
+                case RoomType.Start:
+                    break;
+                case RoomType.Normal:
+                    break;
+                case RoomType.Item:
+                    break;
+                case RoomType.MiniGame:
+                    EventManager.Instance.TriggerCloseDoors();
+                    break;
+                case RoomType.Enemy:
+                    EventManager.Instance.TriggerCloseDoors();
+                    break;
+                case RoomType.Boss:
+                    EventManager.Instance.TriggerCloseDoors();
+                    break;
+                default:
+                    Debug.Log("Unknown room type");
+                    break;
             }
         }
     }
