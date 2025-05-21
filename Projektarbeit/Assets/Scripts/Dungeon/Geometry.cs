@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Geometry
@@ -229,11 +230,18 @@ namespace Geometry
     public class Edge
     {
         public Point A, B;
+        private static int _nextId = 0;
+        public int Id;
 
         public Edge(Point A, Point B)
         {
             this.A = A;
             this.B = B;
+        }
+
+        public void giveID()
+        {
+            Id = _nextId++;
         }
 
         public static bool equals(Edge e_1, Edge e_2)
@@ -251,6 +259,42 @@ namespace Geometry
                 return false;
             }
         }
+        public bool Intersect(Edge e2)
+        {
+            return DoLinesIntersect(this.A, this.B, e2.A, e2.B);
+        }
+        
+        private static bool DoLinesIntersect(Point p1, Point p2, Point q1, Point q2)
+        {
+            float orientation(Point a, Point b, Point c)
+            {
+                return (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
+            }
+
+            bool OnSegment(Point p, Point q, Point r)
+            {
+                return q.x <= Math.Max(p.x, r.x) && q.x >= Math.Min(p.x, r.x) &&
+                       q.y <= Math.Max(p.y, r.y) && q.y >= Math.Min(p.y, r.y);
+            }
+
+            float o1 = orientation(p1, p2, q1);
+            float o2 = orientation(p1, p2, q2);
+            float o3 = orientation(q1, q2, p1);
+            float o4 = orientation(q1, q2, p2);
+
+            // General case
+            if (o1 * o2 < 0 && o3 * o4 < 0)
+                return true;
+
+            // Special cases (colinear points)
+            if (o1 == 0 && OnSegment(p1, q1, p2)) return true;
+            if (o2 == 0 && OnSegment(p1, q2, p2)) return true;
+            if (o3 == 0 && OnSegment(q1, p1, q2)) return true;
+            if (o4 == 0 && OnSegment(q1, p2, q2)) return true;
+
+            return false;
+        }
+
     }
 
     public class Circle
