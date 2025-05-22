@@ -2,6 +2,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using System.Collections;
 
 namespace Enemy
 {
@@ -26,19 +27,41 @@ namespace Enemy
         private float _prevDistance;
         private Vector3 _lastPosition;
         private float _stuckTimer;
+        private bool isInitialized = false;
+        private float episodeTimeLimit = 20f; // 20 seconds time limit
+        private float episodeTimer = 0f;
+        private float stuckThreshold = 0.01f; // Distance threshold to consider agent stuck
+        private float stuckTimeLimit = 1f;   
+
+
 
         /// <summary>
         /// Initializes the agent: finds the player and locks unnecessary rigidbody movement.
         /// </summary>
         public override void Initialize()
         {
-            target = GameObject.FindWithTag("Player");
             _rb = GetComponent<Rigidbody>();
 
             // Prevent unwanted movement/rotation
             _rb.constraints = RigidbodyConstraints.FreezeRotationX | 
                              RigidbodyConstraints.FreezeRotationZ | 
                              RigidbodyConstraints.FreezePositionY;
+            // Start the coroutine to find the player
+            StartCoroutine(FindPlayerCoroutine());
+        }
+        
+        private IEnumerator FindPlayerCoroutine()
+        {
+            while (target == null)
+            {
+                target = GameObject.FindWithTag("Player");
+                if (target == null)
+                {
+                    yield return new WaitForSeconds(0.5f); 
+                }
+            }
+        
+            isInitialized = true;
         }
 
         /// <summary>
@@ -46,12 +69,22 @@ namespace Enemy
         /// </summary>
         public override void OnEpisodeBegin()
         {
-            // Randomize positions on both sides of the environment
-            float value1 = Random.value < 0.5f ? Random.Range(-1f, 1f) : Random.Range(6f, 8f);
-            float value2 = Random.value < 0.5f ? Random.Range(-1f, 1f) : Random.Range(-6f, -8f);
+            Vector3 a = new Vector3(7.5f, 1f, -3.5f);
+            Vector3 b = new Vector3(-7.5f, 1f, 3.5f);
+            Vector3 c = new Vector3(7.5f, 1f, 3.5f);
+            Vector3 d = new Vector3(-7.5f, 1f, -3.5f);
             
-            transform.localPosition = new Vector3(value1, 1, Random.Range(-4f, 4f));
-            target.transform.localPosition = new Vector3(value2, 1, Random.Range(-4f, 4f));
+            Vector3[] positions = { a, b, c, d };
+            transform.localPosition = positions[Random.Range(0, positions.Length)];
+            
+            Vector3 selectedPosition;
+            do {
+                selectedPosition = positions[Random.Range(0, positions.Length)];
+            } while (selectedPosition == transform.localPosition);
+
+            target.transform.localPosition = selectedPosition;
+
+            episodeTimer = 0f;
 
             _lastPosition = transform.localPosition;
             _stuckTimer = 0f;
@@ -93,10 +126,12 @@ namespace Enemy
             // Rotate around Y-axis
             transform.Rotate(Vector3.up, turnInput * 180f * Time.deltaTime);
 
-            // Distance progress reward
+            // Modified distance progress reward with scaling
             float currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
             float distanceDelta = _prevDistance - currentDistance;
-            AddReward(distanceDelta * 0.1f);
+            float distanceScale = Mathf.Max(1f, currentDistance / 5f); // Increase reward for progress when far away
+            AddReward(distanceDelta * 0.1f * distanceScale);
+
 
             // Facing reward (dot product ranges -1 to 1)
             float facingDot = Vector3.Dot(transform.forward, 
@@ -104,16 +139,30 @@ namespace Enemy
             AddReward((facingDot + 1) * 0.005f);
 
             // Time penalty to encourage faster pursuit
-            AddReward(-0.001f);
+            AddReward(-0.01f);
 
             _prevDistance = currentDistance;
+            
+            // Add at the beginning of the method
+            episodeTimer += Time.deltaTime;
+            if (episodeTimer >= episodeTimeLimit)
+            {
+                AddReward(-1f); // Penalty for timeout
+                //EndEpisode();
+                return;
+            }
 
             // Check if agent is stuck
             if (Vector3.Distance(transform.localPosition, _lastPosition) < 0.01f)
             {
                 _stuckTimer += Time.deltaTime;
-                if (_stuckTimer > 2f)
-                    EndEpisode();
+                if (_stuckTimer > stuckTimeLimit)
+                {
+                    AddReward(-0.5f);  // Reduced penalty
+                    //EndEpisode();
+                    return;
+                }
+
             }
             else
             {
@@ -132,12 +181,13 @@ namespace Enemy
             if (other.CompareTag("Player"))
             {
                 AddReward(10f);
+                Debug.Log("Player reached!");
                 EndEpisode();
             }
             else if (other.CompareTag("Wall") || other.CompareTag("Obstacle"))
             {
                 AddReward(-1f);
-                EndEpisode();
+                // EndEpisode();
             }
         }
 

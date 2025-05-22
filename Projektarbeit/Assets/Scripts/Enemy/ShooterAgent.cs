@@ -2,6 +2,7 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using System.Collections;
 
 namespace Enemy
 {
@@ -28,6 +29,7 @@ namespace Enemy
 
         private float _healthNormalized;
         private Rigidbody _rb;
+        private bool isInitialized = false;
 
         
         /// <summary>
@@ -35,12 +37,28 @@ namespace Enemy
         /// </summary>
         public override void Initialize()
         {
-            target = GameObject.FindWithTag("Player");
             _rb = GetComponent<Rigidbody>();
 
             // Freeze the agent so it doesn't move at all
             if (_rb != null)
                 _rb.constraints = RigidbodyConstraints.FreezeAll;
+            
+            // Start the coroutine to find the player
+            StartCoroutine(FindPlayerCoroutine());
+        }
+        
+        private IEnumerator FindPlayerCoroutine()
+        {
+            while (target == null)
+            {
+                target = GameObject.FindWithTag("Player");
+                if (target == null)
+                {
+                    yield return new WaitForSeconds(0.5f); 
+                }
+            }
+        
+            isInitialized = true;
         }
 
         /// <summary>
@@ -49,6 +67,7 @@ namespace Enemy
         /// </summary>
         public override void OnEpisodeBegin()
         {
+
         }
 
         /// <summary>
