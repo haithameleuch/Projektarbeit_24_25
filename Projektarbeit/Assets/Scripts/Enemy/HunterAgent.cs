@@ -2,6 +2,8 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using System.Collections;
+
 /// <summary>
 /// ML-Agents-based hunter that chases a target (the player).
 /// Learns to approach the player, avoid walls, and not get stuck.
@@ -25,20 +27,41 @@ namespace Enemy
         private float _stuckTimer;
         private Rigidbody _rb;
         private float _prevDistance;
+		private bool isInitialized = false;
+
 
         /// <summary>
         /// Called once at agent initialization. Assigns the player target and configures rigidbody constraints.
         /// </summary>
         public override void Initialize()
         {
-            target = GameObject.FindWithTag("Player");
+
             _rb = GetComponent<Rigidbody>();
 
             // Freeze rotation and vertical movement
             _rb.constraints = RigidbodyConstraints.FreezeRotationX |
                               RigidbodyConstraints.FreezeRotationZ |
                               RigidbodyConstraints.FreezePositionY;
+
+			// Start the coroutine to find the player
+        	StartCoroutine(FindPlayerCoroutine());
+
         }
+
+		private IEnumerator FindPlayerCoroutine()
+    	{
+        	while (target == null)
+        	{
+            	target = GameObject.FindWithTag("Player");
+            	if (target == null)
+            	{
+                	yield return new WaitForSeconds(0.5f); 
+            	}
+        	}
+        
+        	isInitialized = true;
+    	}
+
 
         /// <summary>
         /// Resets agent and player positions at the beginning of an episode.
