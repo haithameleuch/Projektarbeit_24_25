@@ -150,7 +150,7 @@ namespace Enemy
                 lastReward += 20f;
                 EndEpisodeWithStats();
             }
-            else if (other.CompareTag("Wall") || other.CompareTag("Obstacle"))
+            else if (other.CompareTag("Wall") || other.CompareTag("Obstacle") || other.CompareTag("Door"))
             {
                 collisionCount++;
                 AddReward(-1f);

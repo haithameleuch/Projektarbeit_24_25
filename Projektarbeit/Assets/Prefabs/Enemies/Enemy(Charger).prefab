@@ -167,7 +167,7 @@ PrefabInstance:
     - target: {fileID: 6671022129831243736, guid: 97ae222b8994a436e882b2cce5c8d4a1, type: 3}
       propertyPath: shootPoint
       value: 
-      objectReference: {fileID: 1313192953056394276}
+      objectReference: {fileID: 0}
     - target: {fileID: 7746715803647677698, guid: 97ae222b8994a436e882b2cce5c8d4a1, type: 3}
       propertyPath: m_Model
       value: 
@@ -218,11 +218,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 97ae222b8994a436e882b2cce5c8d4a1, type: 3}
---- !u!4 &1313192953056394276 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 597695268637885850, guid: 97ae222b8994a436e882b2cce5c8d4a1, type: 3}
-  m_PrefabInstance: {fileID: 1905610497159281086}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7284101671780198990 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9179538108329661424, guid: 97ae222b8994a436e882b2cce5c8d4a1, type: 3}
