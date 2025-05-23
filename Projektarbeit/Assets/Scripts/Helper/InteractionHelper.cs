@@ -16,7 +16,7 @@ public static class InteractionHelper
     /// <param name="player">The GameObject, passed to interaction methods.</param>
     public static void HandleInteractions(RaycastHit[] hits, List<GameObject> newInteractables, List<GameObject> currentInteractables, GameObject player)
     {
-        // Loop through all detected hits to check if any objects are interactable
+        /*// Loop through all detected hits to check if any objects are interactable
         foreach (RaycastHit hit in hits)
         {
             GameObject interactableObject = hit.collider.gameObject;
@@ -44,7 +44,7 @@ public static class InteractionHelper
                     Debug.Log("SINGLE FRAME");
                 }
             }
-        }
+        }*/
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public static class InteractionHelper
     /// <param name="player">The GameObject, passed to interaction exit methods.</param>
     public static void HandleExits(List<GameObject> newInteractables, List<GameObject> currentInteractables, GameObject player)
     {
-        // Loop through the current interactables in reverse to safely remove elements
+        /*// Loop through the current interactables in reverse to safely remove elements
         for (int i = currentInteractables.Count - 1; i >= 0; i--)
         {
             GameObject obj = currentInteractables[i];
@@ -78,6 +78,6 @@ public static class InteractionHelper
                 }
                 currentInteractables.RemoveAt(i);
             }
-        }
+        }*/
     }
 }
