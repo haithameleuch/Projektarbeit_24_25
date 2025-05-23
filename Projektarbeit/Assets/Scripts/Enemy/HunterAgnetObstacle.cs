@@ -3,166 +3,136 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Enemy
 {
-    /// <summary>
-    /// ML-Agents hunter agent with obstacles in the environment.
-    /// Learns to navigate toward the player while avoiding obstacles and walls.
-    /// </summary>
     public class HunterAgentObstacle : Agent
     {
-        /// <summary>
-        /// Movement speed of the agent.
-        /// </summary>
-        [SerializeField] private float movementSpeed = 4f;
-
-        /// <summary>
-        /// The target GameObject (e.g., the player).
-        /// </summary>
+        public float movementSpeed = 8f;
         public GameObject target;
 
-        // Internal state tracking
         private Rigidbody _rb;
         private float _prevDistance;
         private Vector3 _lastPosition;
         private float _stuckTimer;
+        private float stuckThreshold = 0.01f;
+        private float stuckTimeLimit = 0.3f;
+        private float lastReward = 0f;
         private bool isInitialized = false;
-        private float episodeTimeLimit = 20f; // 20 seconds time limit
-        private float episodeTimer = 0f;
-        private float stuckThreshold = 0.01f; // Distance threshold to consider agent stuck
-        private float stuckTimeLimit = 1f;   
 
+        // Statistik-Tracking
+        private List<float> episodeRewards = new List<float>();
+        private float episodeStartTime;
+        private int episodeCount = 0;
+        private const int STATS_INTERVAL = 50;
+        private int collisionCount = 0;
 
-
-        /// <summary>
-        /// Initializes the agent: finds the player and locks unnecessary rigidbody movement.
-        /// </summary>
         public override void Initialize()
         {
             _rb = GetComponent<Rigidbody>();
-
-            // Prevent unwanted movement/rotation
             _rb.constraints = RigidbodyConstraints.FreezeRotationX | 
-                             RigidbodyConstraints.FreezeRotationZ | 
-                             RigidbodyConstraints.FreezePositionY;
-            // Start the coroutine to find the player
+                            RigidbodyConstraints.FreezeRotationZ | 
+                            RigidbodyConstraints.FreezePositionY;
             StartCoroutine(FindPlayerCoroutine());
         }
         
         private IEnumerator FindPlayerCoroutine()
         {
-            while (target == null)
+            while (!target)
             {
                 target = GameObject.FindWithTag("Player");
-                if (target == null)
+                if (!target)
                 {
                     yield return new WaitForSeconds(0.5f); 
                 }
             }
-        
             isInitialized = true;
         }
 
-        /// <summary>
-        /// Called at the beginning of each episode to randomize agent and target positions.
-        /// </summary>
         public override void OnEpisodeBegin()
         {
-            Vector3 a = new Vector3(7.5f, 1f, -3.5f);
-            Vector3 b = new Vector3(-7.5f, 1f, 3.5f);
-            Vector3 c = new Vector3(7.5f, 1f, 3.5f);
-            Vector3 d = new Vector3(-7.5f, 1f, -3.5f);
+            /*
+            Vector3[] corner1 = { 
+                new Vector3(7.5f, 1f, -3.5f),
+                new Vector3(-7.5f, 1f, 3.5f)
+            };
             
-            Vector3[] positions = { a, b, c, d };
-            transform.localPosition = positions[Random.Range(0, positions.Length)];
+            Vector3[] corner2 = {
+                new Vector3(7.5f, 1f, 3.5f),
+                new Vector3(-7.5f, 1f, -3.5f)
+            };
+
+            Vector3[] selectedPair = Random.value < 0.5f ? corner1 : corner2;
             
-            Vector3 selectedPosition;
-            do {
-                selectedPosition = positions[Random.Range(0, positions.Length)];
-            } while (selectedPosition == transform.localPosition);
-
-            target.transform.localPosition = selectedPosition;
-
-            episodeTimer = 0f;
+            if (Random.value < 0.5f)
+            {
+                transform.localPosition = selectedPair[0];
+                target.transform.localPosition = selectedPair[1];
+            }
+            else
+            {
+                transform.localPosition = selectedPair[1];
+                target.transform.localPosition = selectedPair[0];
+            }
+            */
 
             _lastPosition = transform.localPosition;
             _stuckTimer = 0f;
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
+            
+            episodeStartTime = Time.time;
+            lastReward = 0f;
+            collisionCount = 0;
         }
 
-        /// <summary>
-        /// Collects spatial and motion-related observations:
-        /// - Agent and target positions
-        /// - Direction to target
-        /// - Current velocity direction
-        /// - Forward facing direction
-        /// </summary>
-        /// <param name="sensor">Sensor used to collect observations.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
-            sensor.AddObservation(transform.localPosition); // 3: Agent position
-            sensor.AddObservation(target.transform.localPosition); // 3: Target position
-            sensor.AddObservation((target.transform.position - transform.position).normalized); // 3: Direction to target
-            sensor.AddObservation(_rb.linearVelocity.normalized); // 3: Velocity direction
-            sensor.AddObservation(transform.forward); // 3: Facing direction
-
-            // Total = 15 observations
+            sensor.AddObservation(transform.localPosition);
+            sensor.AddObservation(target.transform.localPosition);
+            sensor.AddObservation((target.transform.position - transform.position).normalized);
+            sensor.AddObservation(_rb.linearVelocity.normalized);
+            sensor.AddObservation(transform.forward);
         }
 
-        /// <summary>
-        /// Processes movement and rotation actions and calculates rewards based on progress and orientation.
-        /// </summary>
-        /// <param name="actions">Action buffer with 2 continuous actions: move and turn.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
-            float moveInput = Mathf.Clamp(actions.ContinuousActions[0], 0f, 1f); // Forward only
-            float turnInput = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f); // Full rotation allowed
+            float moveInput = Mathf.Clamp(actions.ContinuousActions[0], 0f, 1f);
+            float turnInput = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
 
-            // Move forward
             Vector3 movement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
             _rb.MovePosition(_rb.position + movement);
+            transform.Rotate(Vector3.up, turnInput * 300f * Time.deltaTime);
 
-            // Rotate around Y-axis
-            transform.Rotate(Vector3.up, turnInput * 180f * Time.deltaTime);
-
-            // Modified distance progress reward with scaling
             float currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
             float distanceDelta = _prevDistance - currentDistance;
-            float distanceScale = Mathf.Max(1f, currentDistance / 5f); // Increase reward for progress when far away
-            AddReward(distanceDelta * 0.1f * distanceScale);
 
+            float distanceScale = Mathf.Max(1f, currentDistance / 2f);
+            float progressReward = distanceDelta * distanceScale * 2f;
+            
+            Vector3 directionToTarget = (target.transform.position - transform.position).normalized;
+            float movementAlignment = Vector3.Dot(_rb.linearVelocity.normalized, directionToTarget);
+            float alignmentReward = movementAlignment * 0.2f;
 
-            // Facing reward (dot product ranges -1 to 1)
-            float facingDot = Vector3.Dot(transform.forward, 
-                                          (target.transform.position - transform.position).normalized);
-            AddReward((facingDot + 1) * 0.005f);
+            float facingDot = Vector3.Dot(transform.forward, directionToTarget);
+            float facingReward = Mathf.Pow(facingDot, 2) * 0.4f;
 
-            // Time penalty to encourage faster pursuit
-            AddReward(-0.01f);
+            float totalReward = progressReward + alignmentReward + facingReward;
+            AddReward(totalReward);
+            lastReward += totalReward;
 
             _prevDistance = currentDistance;
-            
-            // Add at the beginning of the method
-            episodeTimer += Time.deltaTime;
-            if (episodeTimer >= episodeTimeLimit)
-            {
-                AddReward(-1f); // Penalty for timeout
-                //EndEpisode();
-                return;
-            }
 
-            // Check if agent is stuck
-            if (Vector3.Distance(transform.localPosition, _lastPosition) < 0.01f)
+            if (Vector3.Distance(transform.localPosition, _lastPosition) < stuckThreshold)
             {
                 _stuckTimer += Time.deltaTime;
                 if (_stuckTimer > stuckTimeLimit)
                 {
-                    AddReward(-0.5f);  // Reduced penalty
-                    //EndEpisode();
+                    AddReward(-0.5f);
+                    lastReward += -0.5f;
+                    EndEpisodeWithStats();
                     return;
                 }
-
             }
             else
             {
@@ -172,35 +142,75 @@ namespace Enemy
             _lastPosition = transform.localPosition;
         }
 
-        /// <summary>
-        /// Handles reward and termination logic on collision with player, walls, or obstacles.
-        /// </summary>
-        /// <param name="other">Collider that was entered.</param>
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
             {
-                AddReward(10f);
-                Debug.Log("Player reached!");
-                EndEpisode();
+                AddReward(20f);
+                lastReward += 20f;
+                EndEpisodeWithStats();
             }
             else if (other.CompareTag("Wall") || other.CompareTag("Obstacle"))
             {
+                collisionCount++;
                 AddReward(-1f);
-                // EndEpisode();
+                lastReward += -1f;
+                EndEpisodeWithStats();
             }
         }
 
-        /// <summary>
-        /// Draws visual debugging aids in the editor: red line to target, blue ray forward.
-        /// </summary>
+        private void EndEpisodeWithStats()
+        {
+            episodeRewards.Add(lastReward);
+            episodeCount++;
+
+            if (episodeCount % STATS_INTERVAL == 0)
+            {
+                float mean = 0f;
+                float sumSquaredDiff = 0f;
+
+                for (int i = episodeRewards.Count - STATS_INTERVAL; i < episodeRewards.Count; i++)
+                {
+                    mean += episodeRewards[i];
+                }
+                mean /= STATS_INTERVAL;
+
+                for (int i = episodeRewards.Count - STATS_INTERVAL; i < episodeRewards.Count; i++)
+                {
+                    float diff = episodeRewards[i] - mean;
+                    sumSquaredDiff += diff * diff;
+                }
+                float standardDeviation = Mathf.Sqrt(sumSquaredDiff / STATS_INTERVAL);
+
+                float episodeDuration = Time.time - episodeStartTime;
+                Debug.Log($"==========================================");
+                Debug.Log($"Statistiken für Episode {episodeCount}:");
+                Debug.Log($"Mittelwert der Belohnungen: {mean:F2}");
+                Debug.Log($"Standardabweichung: {standardDeviation:F2}");
+                Debug.Log($"Episodendauer: {episodeDuration:F2} Sekunden");
+                Debug.Log($"Durchschnittliche Distanz zum Ziel: {_prevDistance:F2}");
+                Debug.Log($"Kollisionen mit Hindernissen: {collisionCount}");
+                Debug.Log($"==========================================");
+
+                if (episodeRewards.Count > STATS_INTERVAL * 2)
+                {
+                    episodeRewards.RemoveRange(0, episodeRewards.Count - STATS_INTERVAL);
+                }
+            }
+
+            EndEpisode();
+        }
+
         private void OnDrawGizmos()
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawLine(transform.position, target.transform.position);
+            if (target != null)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawLine(transform.position, target.transform.position);
 
-            Gizmos.color = Color.blue;
-            Gizmos.DrawRay(transform.position, transform.forward * 2f);
+                Gizmos.color = Color.blue;
+                Gizmos.DrawRay(transform.position, transform.forward * 2f);
+            }
         }
     }
 }
