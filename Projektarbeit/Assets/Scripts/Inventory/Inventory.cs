@@ -14,7 +14,10 @@ public class Inventory : MonoBehaviour
     /// </summary>
     [SerializeField]
     private List<ItemInstance> items = new List<ItemInstance>();
-    
+
+    [SerializeField]
+    private ItemInstance[] equipment = new ItemInstance[6];
+
     /// <summary>
     /// Maximum number of different items the inventory is allowed to hold.
     /// </summary>
@@ -92,6 +95,11 @@ public class Inventory : MonoBehaviour
     public List<ItemInstance> getInventory()
     {
         return items; 
+    }
+
+    public ItemInstance[] getEquipment()
+    {
+        return equipment;
     }
 
     /// <summary>
