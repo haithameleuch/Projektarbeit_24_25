@@ -263,17 +263,26 @@ public class UIManager : MonoBehaviour
 
         GameObject equipslots = equip.transform.Find("EquipmentSlots").gameObject;
 
-        TMP_Text stats = equip.transform.Find("Stats").gameObject.transform.Find("StatDetails").GetComponent<TMP_Text>();
-
-        stats.SetText("Health:10\nDamage:10\nSpeed:10");
-
+        ItemInstance[] playerEquip = player.GetComponent<Inventory>().getEquipment(); 
         for (int i = 0; i < 3; i++)
         {
             GameObject row = Instantiate(rowPrefab, equipslots.transform);
             for (int j = 0; j < 2; j++)
             {
-                GameObject slot = Instantiate(emptyPrefab, row.transform);
+                if (playerEquip[j + i * 2] != null)
+                {
+                    GameObject slot = Instantiate(slotPrefab, row.transform);
+                    slot.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = playerInv[(j + i * 5)].itemData.spawnSprite;
+                    slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText(playerInv[(j + i * 5)].itemData.spawnName);
+                }
+                else
+                {
+                    GameObject slot = Instantiate(emptyPrefab, row.transform);
+                }
             }
         }
+
+        TMP_Text stats = equip.transform.Find("Stats").gameObject.transform.Find("StatDetails").GetComponent<TMP_Text>();
+        stats.SetText("Health:10\nDamage:10\nSpeed:10");
     }
 }
