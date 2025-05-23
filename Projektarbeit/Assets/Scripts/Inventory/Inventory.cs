@@ -18,7 +18,7 @@ public class Inventory : MonoBehaviour
     /// <summary>
     /// Maximum number of different items the inventory is allowed to hold.
     /// </summary>
-    private int maxSlots = 16;
+    private int maxSlots = 20;
 
     /// <summary>
     /// This method adds an item to the inventory either by adding it to a stack of already present items, or to a new stack if the space is available.

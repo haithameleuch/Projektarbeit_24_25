@@ -1,6 +1,8 @@
+using System.Collections.Generic;
 using TMPro; // Import TextMeshPro namespace for using TMP_Text components
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Manages the UI elements, including panels and text updates.
@@ -88,76 +90,86 @@ public class UIManager : MonoBehaviour
         //Check wether "P" is pressed to toggle the pause menu
         if (Input.GetKeyDown(KeyCode.P))
         {
-            if (isPauseVisible)
-            {
-                //player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                player.SetActive(true);
-                pause.gameObject.SetActive(false);
-
-                //Lock Cursor in the game view
-                UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-                UnityEngine.Cursor.visible = false;
-
-                //Resume time to normal value
-                Time.timeScale = 1;
-                isPauseVisible=false;
-            }
-            else
-            {
-                //player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                player.SetActive(false);
-                HidePanel();
-                pause.gameObject.SetActive(true);
-
-                //Make the cursor moveable within the game window
-                UnityEngine.Cursor.lockState = CursorLockMode.Confined;
-                UnityEngine.Cursor.visible = true;
-
-                //Pause the game
-                Time.timeScale = 0;
-                isPauseVisible=true;
-            }
-        }
-        
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            GameObject inv = gameObject.transform.Find("Inventory").gameObject;
-
             if (!isInvVisible)
             {
-                HidePanel();
+                if (isPauseVisible)
+                {
+                    player.GetComponent<FirstPersonPlayerController>().enabled = true;
+                    player.GetComponent<PlayerShooting>().enabled = true;
 
-                player.SetActive(false);
+                    pause.gameObject.SetActive(false);
 
-                renderInv(inv);
-                inv.SetActive(true);
+                    //Lock Cursor in the game view
+                    UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+                    UnityEngine.Cursor.visible = false;
 
-                //Make the cursor moveable within the game window
-                UnityEngine.Cursor.lockState = CursorLockMode.Confined;
-                UnityEngine.Cursor.visible = true;
+                    //Resume time to normal value
+                    Time.timeScale = 1;
+                    isPauseVisible = false;
+                }
+                else
+                {
+                    player.GetComponent<FirstPersonPlayerController>().enabled = false;
+                    player.GetComponent<PlayerShooting>().enabled = false;
 
-                //Pause the game
-                Time.timeScale = 0;
+                    HidePanel();
+                    pause.gameObject.SetActive(true);
 
-                isInvVisible = true;
+                    //Make the cursor moveable within the game window
+                    UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+                    UnityEngine.Cursor.visible = true;
+
+                    //Pause the game
+                    Time.timeScale = 0;
+                    isPauseVisible = true;
+                }
             }
-            else
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (!isPauseVisible)
             {
+                GameObject inv = gameObject.transform.Find("Inventory").gameObject;
 
-                player.SetActive(true);
+                if (!isInvVisible)
+                {
+                    HidePanel();
 
-                inv.SetActive(false);
+                    player.GetComponent<FirstPersonPlayerController>().enabled = false;
+                    player.GetComponent<PlayerShooting>().enabled = false;
 
-                deRenderInv(inv);
+                    renderInv(inv);
+                    inv.SetActive(true);
 
-                //Make the cursor unmoveable within the game window
-                UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-                UnityEngine.Cursor.visible = false;
+                    //Make the cursor moveable within the game window
+                    UnityEngine.Cursor.lockState = CursorLockMode.Confined;
+                    UnityEngine.Cursor.visible = true;
 
-                //Pause the game
-                Time.timeScale = 1;
+                    //Pause the game
+                    Time.timeScale = 0;
 
-                isInvVisible = false;
+                    isInvVisible = true;
+                }
+                else
+                {
+
+                    player.GetComponent<FirstPersonPlayerController>().enabled = true;
+                    player.GetComponent<PlayerShooting>().enabled = true;
+
+                    inv.SetActive(false);
+
+                    deRenderInv(inv);
+
+                    //Make the cursor unmoveable within the game window
+                    UnityEngine.Cursor.lockState = CursorLockMode.Locked;
+                    UnityEngine.Cursor.visible = false;
+
+                    //Pause the game
+                    Time.timeScale = 1;
+
+                    isInvVisible = false;
+                }
             }
         }
     }
@@ -180,13 +192,34 @@ public class UIManager : MonoBehaviour
 
     private void renderInv(GameObject inv)
     {
+        List<ItemInstance> playerInv = player.GetComponent<Inventory>().getInventory();
+
         GameObject items = inv.transform.Find("Items").gameObject;
+
+        int numberOfItems = playerInv.Count;
+
         for (int i = 0; i < 4; i++)
         {
             GameObject row = Instantiate(rowPrefab,items.transform);
             for (int j=0; j<5;j++)
             {
-                GameObject slot = Instantiate(emptyPrefab, row.transform);
+                if ((j + i*5) < numberOfItems)
+                {
+                    GameObject slot = Instantiate(slotPrefab, row.transform);
+                    slot.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = playerInv[(j + i * 5)].itemData.spawnSprite;
+                    if (playerInv[(j + i * 5)].itemQuantity>1)
+                    {
+                        slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText(playerInv[(j+i*5)].itemData.spawnName + "(" + playerInv[(j + i * 5)].itemQuantity+")");
+                    }
+                    else
+                    {
+                        slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText(playerInv[(j + i * 5)].itemData.spawnName);
+                    }
+                }
+                else
+                {
+                    GameObject slot = Instantiate(emptyPrefab, row.transform);
+                }
             }
         }
 
