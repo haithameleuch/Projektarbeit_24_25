@@ -1,0 +1,65 @@
+{
+    "My Behavior": {
+        "checkpoints": [
+            {
+                "steps": 499984,
+                "file_path": "results\\Dodger\\My Behavior\\My Behavior-499984.onnx",
+                "reward": 1.3708092273573655,
+                "creation_time": 1748086007.3883631,
+                "auxillary_file_paths": [
+                    "results\\Dodger\\My Behavior\\My Behavior-499984.pt"
+                ]
+            },
+            {
+                "steps": 999995,
+                "file_path": "results\\Dodger\\My Behavior\\My Behavior-999995.onnx",
+                "reward": 2.7243877093706814,
+                "creation_time": 1748087640.586882,
+                "auxillary_file_paths": [
+                    "results\\Dodger\\My Behavior\\My Behavior-999995.pt"
+                ]
+            },
+            {
+                "steps": 1499982,
+                "file_path": "results\\Dodger\\My Behavior\\My Behavior-1499982.onnx",
+                "reward": 3.2897418783941577,
+                "creation_time": 1748089291.2190394,
+                "auxillary_file_paths": [
+                    "results\\Dodger\\My Behavior\\My Behavior-1499982.pt"
+                ]
+            },
+            {
+                "steps": 1999979,
+                "file_path": "results\\Dodger\\My Behavior\\My Behavior-1999979.onnx",
+                "reward": 3.3613961381847197,
+                "creation_time": 1748090944.3294802,
+                "auxillary_file_paths": [
+                    "results\\Dodger\\My Behavior\\My Behavior-1999979.pt"
+                ]
+            },
+            {
+                "steps": 2000046,
+                "file_path": "results\\Dodger\\My Behavior\\My Behavior-2000046.onnx",
+                "reward": 3.3631408066589894,
+                "creation_time": 1748090944.393201,
+                "auxillary_file_paths": [
+                    "results\\Dodger\\My Behavior\\My Behavior-2000046.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2000046,
+            "file_path": "results\\Dodger\\My Behavior.onnx",
+            "reward": 3.3631408066589894,
+            "creation_time": 1748090944.393201,
+            "auxillary_file_paths": [
+                "results\\Dodger\\My Behavior\\My Behavior-2000046.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.13.1+cpu"
+    }
+}

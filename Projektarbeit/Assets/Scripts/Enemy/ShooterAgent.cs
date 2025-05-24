@@ -30,6 +30,8 @@ namespace Enemy
         private float _healthNormalized;
         private Rigidbody _rb;
         private bool isInitialized = false;
+        private float _fireRate = 0.5f; // Zeit in Sekunden zwischen den Schüssen
+        private float _nextFireTime = 0f; // Zeitpunkt, wann der nächste Schuss möglich ist
 
         
         /// <summary>
@@ -125,6 +127,13 @@ namespace Enemy
         /// </summary>
         private void FireProjectile()
         {
+            // Prüfen, ob genug Zeit seit dem letzten Schuss vergangen ist
+            if (Time.time < _nextFireTime)
+                return;
+    
+            // Nächsten Schusszeitpunkt setzen
+            _nextFireTime = Time.time + _fireRate;
+    
             // Get an inactive projectile from the object pool
             GameObject projectile = objectPoolManager.GetPooledObject();
             if (projectile is not null)
@@ -139,5 +148,3 @@ namespace Enemy
         }
     }
 }
-
-
