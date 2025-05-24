@@ -7,6 +7,9 @@ TagManager:
   - Wall
   - CanvCamera
   - Enemy
+  - Projectile
+  - Obstacle
+  - Door
   layers:
   - Default
   - TransparentFX
