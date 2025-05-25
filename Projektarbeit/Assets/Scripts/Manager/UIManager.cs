@@ -311,6 +311,14 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
                         .SetText(playerInventory[i,j].itemData.name + " (x"+ playerInventory[i,j].itemQuantity+")");
                 }
+                else
+                {
+                    // Set Icon
+                    itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = false;
+                    // Set Name and Quantity
+                    itemUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
+                        .SetText("");
+                }
             }
         }
 
@@ -328,6 +336,14 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                     // Set Name and Quantity
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
                         .SetText(playerInventory[i, j].itemData.name + " (x" + playerInventory[i, j].itemQuantity + ")");
+                }
+                else
+                {
+                    // Set Icon
+                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = false;
+                    // Set Name and Quantity
+                    equipUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
+                        .SetText("");
                 }
             }
         }
