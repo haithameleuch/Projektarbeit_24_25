@@ -1,14 +1,13 @@
-using System.Collections.Generic;
 using TMPro; // Import TextMeshPro namespace for using TMP_Text components
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
 /// Manages the UI elements, including panels and text updates.
 /// Provides methods for showing and hiding UI panels, and updates text dynamically.
 /// </summary>
-public class UIManager : MonoBehaviour
+public class UIManager : MonoBehaviour, IPointerClickHandler
 {
     /// <summary>
     /// Singleton instance of the UIManager, ensuring there is only one instance in the scene.
@@ -22,17 +21,25 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private RectTransform pause; // Reference to the pause screen
 
-    // Needed to check wether the pause screen is displayed
+    // Toggle bools for UIs
     bool isPauseVisible = false;
     
     private GameObject _player;
+    bool isInvVisible = false;
 
+    // Reference to important onjects
+    private ItemInstance[,] playerInventory;
+    private ItemInstance[,] playerEquipment;
+    private GameObject itemUI;
+    private GameObject equipUI;
+    private TMP_Text statText;
+    private (int, int) selectedSlot = (-1, -1);
+
+    // UI-Prefabs
     [SerializeField]
     private GameObject rowPrefab;
-
     [SerializeField]
     private GameObject slotPrefab;
-
     [SerializeField]
     private GameObject emptyPrefab;
 
@@ -57,6 +64,17 @@ public class UIManager : MonoBehaviour
     public void SetPlayer(GameObject newPlayer)
     {
         _player = newPlayer;
+    }
+    
+    private void Start()
+    {
+        player = GameObject.Find("Player");
+        playerInventory = player.GetComponent<InventoryV2>().getInventory();
+        playerEquipment = player.GetComponent<InventoryV2>().getEquipment();
+        itemUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Items").gameObject;
+        equipUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("EquipmentSlots").gameObject;
+        statText = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("DetailPanel").transform.Find("StatDetails").gameObject.GetComponent<TMP_Text>();
+        setupUI();
     }
 
     /// <summary>
@@ -134,6 +152,7 @@ public class UIManager : MonoBehaviour
                     player.GetComponent<PlayerShooting>().enabled = true;
 
                     pause.gameObject.SetActive(false);
+                    updateUI();
 
                     //Lock Cursor in the game view
                     UnityEngine.Cursor.lockState = CursorLockMode.Locked;
@@ -162,12 +181,10 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.I))
         {
             if (!isPauseVisible)
             {
-                GameObject inv = gameObject.transform.Find("Inventory").gameObject;
-
                 if (!isInvVisible)
                 {
                     HidePanel();
@@ -175,8 +192,8 @@ public class UIManager : MonoBehaviour
                     player.GetComponent<FirstPersonPlayerController>().enabled = false;
                     player.GetComponent<PlayerShooting>().enabled = false;
 
-                    renderInv(inv);
-                    inv.SetActive(true);
+                    updateUI();
+                    itemUI.transform.parent.gameObject.SetActive(true);
 
                     //Make the cursor moveable within the game window
                     UnityEngine.Cursor.lockState = CursorLockMode.Confined;
@@ -193,9 +210,7 @@ public class UIManager : MonoBehaviour
                     player.GetComponent<FirstPersonPlayerController>().enabled = true;
                     player.GetComponent<PlayerShooting>().enabled = true;
 
-                    inv.SetActive(false);
-
-                    deRenderInv(inv);
+                    itemUI.transform.parent.gameObject.SetActive(false);
 
                     //Make the cursor unmoveable within the game window
                     UnityEngine.Cursor.lockState = CursorLockMode.Locked;
@@ -208,81 +223,135 @@ public class UIManager : MonoBehaviour
                 }
             }
         }
-    }
-
-    private void deRenderInv(GameObject inv)
-    {
-        GameObject items = inv.transform.Find("Items").gameObject;
-        foreach (Transform child in items.transform)
+        
+        if (selectedSlot.Item1 != -1)
         {
-            Destroy(child.gameObject);
-        }
-
-        GameObject equipslots = inv.transform.Find("Equipment").gameObject.transform.Find("EquipmentSlots").gameObject;
-
-        foreach (Transform child in equipslots.transform)
-        {
-            Destroy(child.gameObject);
-        }
-    }
-
-    private void renderInv(GameObject inv)
-    {
-        List<ItemInstance> playerInv = player.GetComponent<Inventory>().getInventory();
-
-        GameObject items = inv.transform.Find("Items").gameObject;
-
-        int numberOfItems = playerInv.Count;
-
-        for (int i = 0; i < 4; i++)
-        {
-            GameObject row = Instantiate(rowPrefab,items.transform);
-            for (int j=0; j<5;j++)
-            {
-                if ((j + i*5) < numberOfItems)
+            if (isInvVisible) {
+                if (Input.GetKeyDown(KeyCode.E)) { }
+                if (Input.GetKeyDown(KeyCode.O))
                 {
-                    GameObject slot = Instantiate(slotPrefab, row.transform);
-                    slot.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = playerInv[(j + i * 5)].itemData.spawnSprite;
-                    if (playerInv[(j + i * 5)].itemQuantity>1)
-                    {
-                        slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText(playerInv[(j+i*5)].itemData.spawnName + "(" + playerInv[(j + i * 5)].itemQuantity+")");
+                    if (selectedSlot.Item1 < 4) {
+                        player.GetComponent<InventoryV2>().removeItem(selectedSlot.Item1, selectedSlot.Item2);
                     }
                     else
                     {
-                        slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText(playerInv[(j + i * 5)].itemData.spawnName);
+                        player.GetComponent<InventoryV2>().removeEquip(selectedSlot.Item1 - 4, selectedSlot.Item2);
                     }
-                }
-                else
-                {
-                    GameObject slot = Instantiate(emptyPrefab, row.transform);
+                    updateUI();
                 }
             }
         }
+    }
 
-        GameObject equip = inv.transform.Find("Equipment").gameObject;
-
-        GameObject equipslots = equip.transform.Find("EquipmentSlots").gameObject;
-
-        ItemInstance[] playerEquip = player.GetComponent<Inventory>().getEquipment(); 
-        for (int i = 0; i < 3; i++)
+    public void setupUI()
+    {
+        // Create the item UI
+        for (int i = 0; i < playerInventory.GetLength(0); i++)
         {
-            GameObject row = Instantiate(rowPrefab, equipslots.transform);
-            for (int j = 0; j < 2; j++)
+            // Create a new row
+            GameObject row = Instantiate(rowPrefab,itemUI.transform);
+
+            // Create the slots of a row
+            for(int j = 0; j < playerInventory.GetLength(1); j++)
             {
-                if (playerEquip[j + i * 2] != null)
+                GameObject slot = Instantiate(slotPrefab, row.transform);
+                slot.transform.Find("Icon").gameObject.GetComponent<Image>().enabled = false;
+                slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText("");
+                slot.GetComponent<ItemSlotNumber>().row = i;
+                slot.GetComponent<ItemSlotNumber>().col = j;
+            }
+        }
+
+        // Create the equip UI
+        for (int i = 0; i < playerEquipment.GetLength(0); i++)
+        {
+            // Create a new row
+            GameObject row = Instantiate(rowPrefab, equipUI.transform);
+
+            // Create the slots of a row
+            for (int j = 0; j < playerEquipment.GetLength(1); j++)
+            {
+                GameObject slot = Instantiate(slotPrefab, row.transform);
+                slot.transform.Find("Icon").gameObject.GetComponent<Image>().enabled = false;
+                slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText("");
+                slot.GetComponent<ItemSlotNumber>().row = i+4;
+                slot.GetComponent<ItemSlotNumber>().col = j;
+            }
+        }
+
+        // Set stat Text
+        statText.SetText("Health:10\nDamage:10\nSpeed:10");
+    }
+
+    private void updateUI()
+    {
+        // Set the info of the items
+        for (int i = 0; i < playerInventory.GetLength(0); i++)
+        {
+            for(int j = 0;j < playerInventory.GetLength(1); j++)
+            {
+                if (playerInventory[i,j] != null)
                 {
-                    GameObject slot = Instantiate(slotPrefab, row.transform);
-                    slot.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = playerInv[(j + i * 5)].itemData.spawnSprite;
-                    slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText(playerInv[(j + i * 5)].itemData.spawnName);
-                }
-                else
-                {
-                    GameObject slot = Instantiate(emptyPrefab, row.transform);
+                    // Set Icon
+                    itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i,j].itemData.spawnSprite;
+                    itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
+
+                    // Set Name and Quantity
+                    itemUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
+                        .SetText(playerInventory[i,j].itemData.name + " (x"+ playerInventory[i,j].itemQuantity+")");
                 }
             }
         }
 
-        TMP_Text stats = equip.transform.Find("Stats").gameObject.transform.Find("StatDetails").GetComponent<TMP_Text>();
-        stats.SetText("Health:10\nDamage:10\nSpeed:10");
+        // Set Equipment slots
+        for (int i = 0;i < playerEquipment.GetLength(0); i++)
+        {
+            for( int j = 0; j < playerEquipment.GetLength(1); j++)
+            {
+                if (playerEquipment[i, j] != null)
+                {
+                    // Set Icon
+                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i, j].itemData.spawnSprite;
+                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
+
+                    // Set Name and Quantity
+                    equipUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
+                        .SetText(playerInventory[i, j].itemData.name + " (x" + playerInventory[i, j].itemQuantity + ")");
+                }
+            }
+        }
+
+        // Set new Stat text
+        // Todo calculate
+        statText.SetText("Health:10\nDamage:10\nSpeed:10");
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            if (selectedSlot.Item1 != -1)
+            {
+                if (selectedSlot.Item1 < 4)
+                {
+                    itemUI.transform.GetChild(selectedSlot.Item1).GetChild(selectedSlot.Item2).GetComponent<Image>().color = new Color32(0x00, 0x8E, 0x11, 100);
+                }
+                else
+                {
+                    equipUI.transform.GetChild(selectedSlot.Item1-4).GetChild(selectedSlot.Item2).GetComponent<Image>().color = new Color32(0x00, 0x8E, 0x11, 100);
+                }
+            }
+
+            GameObject clickedObject = eventData.pointerCurrentRaycast.gameObject;
+            if (clickedObject.name == "ItemSlot(Clone)")
+            {
+                clickedObject.GetComponent<Image>().color = new Color32(0x28, 0xB6, 0x39, 100);
+                selectedSlot = (clickedObject.GetComponent<ItemSlotNumber>().row, clickedObject.GetComponent<ItemSlotNumber>().col);
+            }
+            else
+            {
+                selectedSlot = (-1,-1);
+            }
+        }
     }
 }
