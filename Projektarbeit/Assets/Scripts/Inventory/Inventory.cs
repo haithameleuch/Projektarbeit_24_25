@@ -11,7 +11,6 @@ public class Inventory : MonoBehaviour
     {
         if (toAdd.itemQuantity<1)
         {
-            Debug.Log("Empty Item!");
             return false;
         }
 
@@ -19,11 +18,12 @@ public class Inventory : MonoBehaviour
         {
             for (int j = 0; j < inventory.GetLength(1); j++)
             {
-                if (toAdd == inventory[i,j])
-                {
-                    inventory[i, j].itemQuantity += toAdd.itemQuantity;
-                    Debug.Log("Added quantity!");
-                    return true;
+                if (inventory[i, j] != null) {
+                    if (toAdd.itemData.name == inventory[i, j].itemData.name)
+                    {
+                        inventory[i, j].itemQuantity += toAdd.itemQuantity;
+                        return true;
+                    }
                 }
             }
         }
@@ -34,14 +34,12 @@ public class Inventory : MonoBehaviour
             {
                 if (inventory[i, j] == null)
                 {
-                    Debug.Log("Added Item!");
                     inventory[i, j] = toAdd;
                     return true;
                 }
             }
         }
 
-        Debug.Log("Inventory full!");
         return false;
     }
 
@@ -52,11 +50,9 @@ public class Inventory : MonoBehaviour
             if (inventory[row,col] != null)
             {
                 inventory[row, col].itemQuantity -= 1;
-                Debug.Log("One removed!");
                 if (inventory[row, col].itemQuantity < 1)
                 {
-                    inventory[row, col] = null;
-                    Debug.Log("Item removed!");               
+                    inventory[row, col] = null;              
                 }
                 return true;
             }
@@ -73,17 +69,14 @@ public class Inventory : MonoBehaviour
                 if (inventory[i, j] == toRemove)
                 {
                     inventory[i, j].itemQuantity -= 1;
-                    Debug.Log("One removed!");
                     if (inventory[i, j].itemQuantity<1)
                     {
-                        inventory[i, j] = null;
-                        Debug.Log("Item removed!");     
+                        inventory[i, j] = null;     
                     }
                     return true;
                 }
             }
         }
-        Debug.Log("Item not found!");
         return false;
     }
     // DEBUG: show the inventory to the console
@@ -121,11 +114,9 @@ public class Inventory : MonoBehaviour
             if (equipment[row, col] != null)
             {
                 equipment[row, col].itemQuantity -= 1;
-                Debug.Log("One removed!");
                 if (equipment[row, col].itemQuantity < 1)
                 {
                     equipment[row, col] = null;
-                    Debug.Log("Item removed!");
                 }
                 return true;
             }
