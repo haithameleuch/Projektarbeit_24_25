@@ -69,8 +69,8 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
     private void Start()
     {
         player = GameObject.Find("Player");
-        playerInventory = player.GetComponent<InventoryV2>().getInventory();
-        playerEquipment = player.GetComponent<InventoryV2>().getEquipment();
+        playerInventory = player.GetComponent<Inventory>().getInventory();
+        playerEquipment = player.GetComponent<Inventory>().getEquipment();
         itemUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Items").gameObject;
         equipUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("EquipmentSlots").gameObject;
         statText = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("DetailPanel").transform.Find("StatDetails").gameObject.GetComponent<TMP_Text>();
@@ -231,22 +231,22 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 {
                     if (selectedSlot.Item1 < 4)
                     {
-                        player.GetComponent<InventoryV2>().removeItem(selectedSlot.Item1, selectedSlot.Item2);
+                        player.GetComponent<Inventory>().removeItem(selectedSlot.Item1, selectedSlot.Item2);
                     }
                     else
                     {
-                        player.GetComponent<InventoryV2>().removeEquip(selectedSlot.Item1 - 4, selectedSlot.Item2);
+                        player.GetComponent<Inventory>().removeEquip(selectedSlot.Item1 - 4, selectedSlot.Item2);
                     }
                     updateUI();
                 }
                 if (Input.GetKeyDown(KeyCode.O))
                 {
                     if (selectedSlot.Item1 < 4) {
-                        player.GetComponent<InventoryV2>().removeItem(selectedSlot.Item1, selectedSlot.Item2);
+                        player.GetComponent<Inventory>().removeItem(selectedSlot.Item1, selectedSlot.Item2);
                     }
                     else
                     {
-                        player.GetComponent<InventoryV2>().removeEquip(selectedSlot.Item1 - 4, selectedSlot.Item2);
+                        player.GetComponent<Inventory>().removeEquip(selectedSlot.Item1 - 4, selectedSlot.Item2);
                     }
                     updateUI();
                 }
