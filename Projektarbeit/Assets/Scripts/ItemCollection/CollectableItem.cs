@@ -11,10 +11,10 @@ public class CollectibleItem : MonoBehaviour, IInteractable
     public void Interact(GameObject interactor)
     {
         //füge hier das item zum inventory hinzu
-        Inventory inv = interactor.GetComponent<Inventory>();
+        InventoryV2 inv = interactor.GetComponent<InventoryV2>();
         if (inv != null)
         {
-            if (inv.AddItem(item))
+            if (inv.addItem(item))
             {
                 Renderer rend = GetComponent<Renderer>();
                 Collider collider = GetComponent<Collider>();
