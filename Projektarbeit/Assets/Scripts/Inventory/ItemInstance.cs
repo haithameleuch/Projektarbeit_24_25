@@ -30,4 +30,24 @@ public class ItemInstance
     public ItemInstance()
     {
     }
+
+    public Color32 getRarityColor()
+    {
+        if (itemData.spawnProbability < 25)
+        {
+            return new Color32(255,255,0,100);
+        }
+        else if (itemData.spawnProbability < 50)
+        {
+            return new Color32(255,0,255,100);
+        }
+        else if(itemData.spawnProbability < 75)
+        {
+            return new Color32(0,0,255,100);
+        }
+        else
+        {
+            return new Color32(0,255,0,100);
+        }
+    }
 }

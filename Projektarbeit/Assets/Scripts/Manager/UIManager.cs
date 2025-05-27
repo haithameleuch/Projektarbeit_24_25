@@ -262,7 +262,8 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
             {
                 if (playerInventory[i,j] != null)
                 {
-                    itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().enabled = true;
+                    // Set Background
+                    itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerInventory[i,j].getRarityColor();
                     // Set Icon
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i,j].itemData.spawnSprite;
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
@@ -273,7 +274,8 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 }
                 else
                 {
-                    itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().enabled =false;
+                    // Disabled background
+                    itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = new Color32(125,125,125,100);
                     // Set Icon
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = false;
                     // Set Name and Quantity
@@ -290,6 +292,8 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
             {
                 if (playerEquipment[i, j] != null)
                 {
+                    // Set Background
+                    equipUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerInventory[i, j].getRarityColor();
                     // Set Icon
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i, j].itemData.spawnSprite;
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
@@ -300,6 +304,8 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 }
                 else
                 {
+                    // Disabled background
+                    equipUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = new Color32(125, 125, 125, 100);
                     // Set Icon
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = false;
                     // Set Name and Quantity
@@ -322,19 +328,25 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
             {
                 if (selectedSlot.Item1 < 4)
                 {
-                    itemUI.transform.GetChild(selectedSlot.Item1).GetChild(selectedSlot.Item2).GetComponent<Image>().color = new Color32(0x00, 0x8E, 0x11, 100);
+                    Color32 tmp = itemUI.transform.GetChild(selectedSlot.Item1).GetChild(selectedSlot.Item2).GetComponent<Image>().color;
+                    tmp.a = (byte)100;
+                    itemUI.transform.GetChild(selectedSlot.Item1).GetChild(selectedSlot.Item2).GetComponent<Image>().color = tmp;
                 }
                 else
                 {
-                    equipUI.transform.GetChild(selectedSlot.Item1-4).GetChild(selectedSlot.Item2).GetComponent<Image>().color = new Color32(0x00, 0x8E, 0x11, 100);
+                    Color32 tmp = equipUI.transform.GetChild(selectedSlot.Item1-4).GetChild(selectedSlot.Item2).GetComponent<Image>().color;
+                    tmp.a = (byte)100;
+                    equipUI.transform.GetChild(selectedSlot.Item1-4).GetChild(selectedSlot.Item2).GetComponent<Image>().color = tmp;
                 }
             }
 
             GameObject clickedObject = eventData.pointerCurrentRaycast.gameObject;
             if (clickedObject.name == "ItemSlot(Clone)")
             {
-                clickedObject.GetComponent<Image>().color = new Color32(0x28, 0xB6, 0x39, 100);
                 selectedSlot = (clickedObject.GetComponent<ItemSlotNumber>().row, clickedObject.GetComponent<ItemSlotNumber>().col);
+                Color32 tmp = clickedObject.GetComponent<Image>().color;
+                tmp.a = (byte)255;
+                clickedObject.GetComponent<Image>().color = tmp;
             }
             else
             {
