@@ -303,6 +303,7 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
             {
                 if (playerInventory[i,j] != null)
                 {
+                    itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().enabled = true;
                     // Set Icon
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i,j].itemData.spawnSprite;
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
@@ -313,6 +314,7 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 }
                 else
                 {
+                    itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().enabled =false;
                     // Set Icon
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = false;
                     // Set Name and Quantity
