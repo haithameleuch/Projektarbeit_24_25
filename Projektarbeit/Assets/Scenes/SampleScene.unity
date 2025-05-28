@@ -1059,6 +1059,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tmpText: {fileID: 1694553612}
   pause: {fileID: 569495315}
+  helmet: {fileID: 21300000, guid: e96007aff5ad3cd4191a19282e4a9ade, type: 3}
+  body: {fileID: 21300000, guid: a714d4bb98badfe40b6b6f10ad4ccfbc, type: 3}
+  legs: {fileID: 21300000, guid: fedd437e52625354a800bfde6a7f63b2, type: 3}
+  boots: {fileID: 21300000, guid: 8d2ec8ae17f502e48b1273aa8e64f764, type: 3}
+  rightHand: {fileID: 21300000, guid: 169dea20b51f72c4eac840ae5ef03954, type: 3}
+  leftHand: {fileID: 21300000, guid: 456a6f8ac95e22841b551c72f2ca47bb, type: 3}
   rowPrefab: {fileID: 537439485919983965, guid: 508a221589879b642829b2bbe08e9aac, type: 3}
   slotPrefab: {fileID: 8864310544714852560, guid: 0d1b1455782d12b4ea6db3e26570623c, type: 3}
   emptyPrefab: {fileID: 3823725215152487871, guid: 800b877bb65a9aa4789ea78916918d50, type: 3}

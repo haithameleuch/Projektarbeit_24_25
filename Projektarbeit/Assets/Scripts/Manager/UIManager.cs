@@ -2,6 +2,7 @@ using TMPro; // Import TextMeshPro namespace for using TMP_Text components
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 /// <summary>
 /// Manages the UI elements, including panels and text updates.
@@ -33,6 +34,15 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
     private GameObject equipUI;
     private TMP_Text statText;
     private (int, int) selectedSlot = (-1, -1);
+
+    // Dummy sprites for equipment
+    [SerializeField] private Sprite helmet;
+    [SerializeField] private Sprite body;
+    [SerializeField] private Sprite legs;
+    [SerializeField] private Sprite boots;
+    [SerializeField] private Sprite rightHand;
+    [SerializeField] private Sprite leftHand;
+    private Sprite[,] dummies = new Sprite[3,2];
 
     // UI-Prefabs
     [SerializeField]
@@ -68,6 +78,12 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
         itemUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Items").gameObject;
         equipUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("EquipmentSlots").gameObject;
         statText = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("DetailPanel").transform.Find("StatDetails").gameObject.GetComponent<TMP_Text>();
+        dummies[0, 0] = helmet;
+        dummies[0, 1] = body;
+        dummies[1, 0] = legs;
+        dummies[1, 1] = boots;
+        dummies[2, 0] = rightHand;
+        dummies[2, 1] = leftHand;
         setupUI();
     }
 
@@ -242,9 +258,9 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
             for (int j = 0; j < playerEquipment.GetLength(1); j++)
             {
                 GameObject slot = Instantiate(slotPrefab, row.transform);
-                slot.transform.Find("Icon").gameObject.GetComponent<Image>().enabled = false;
+                slot.transform.Find("Icon").gameObject.GetComponent<Image>().sprite = dummies[i,j];
                 slot.transform.Find("Name").gameObject.transform.Find("Name").GetComponent<TMP_Text>().SetText("");
-                slot.GetComponent<ItemSlotNumber>().row = i+4;
+                slot.GetComponent<ItemSlotNumber>().row = i + 4;
                 slot.GetComponent<ItemSlotNumber>().col = j;
             }
         }
@@ -307,7 +323,7 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                     // Disabled background
                     equipUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = new Color32(125, 125, 125, 100);
                     // Set Icon
-                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = false;
+                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = dummies[i, j];
                     // Set Name and Quantity
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
                         .SetText("");
