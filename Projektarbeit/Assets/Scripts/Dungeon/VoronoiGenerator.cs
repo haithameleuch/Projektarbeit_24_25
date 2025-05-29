@@ -19,6 +19,8 @@ public class VoronoiGenerator : MonoBehaviour
     private GameObject floor;
     [SerializeField]
     private GameObject door;
+    [SerializeField]
+    private GameObject destroyableWall;
     
     [Header("Dungeon Settings")]
     [SerializeField]
