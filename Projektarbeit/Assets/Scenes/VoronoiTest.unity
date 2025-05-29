@@ -443,7 +443,7 @@ MonoBehaviour:
   door: {fileID: 187169917318524780, guid: 64a0a6f873e11ae469a7caaa22514fc0, type: 3}
   destroyableWall: {fileID: 2725483830217079802, guid: 2ee0bf17ebf372e41ab59a0b15d9ea4a, type: 3}
   size: 40
-  numPoints: 5
+  numPoints: 10
   seed: 42
   minDoorEdgeLength: 4
   showPoints: 1
