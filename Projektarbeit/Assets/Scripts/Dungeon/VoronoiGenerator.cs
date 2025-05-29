@@ -74,6 +74,9 @@ public class VoronoiGenerator : MonoBehaviour
         buildDungeon();
         buildVoronoi(_debugVoronoi);
         placePillars(_debugTriangles);
+        
+        // ONLY FOR DEBUGGING
+        PrintBossRoomDoorInfo();
     }
     
     public DungeonGraph GetDungeonGraph()
@@ -658,6 +661,34 @@ public class VoronoiGenerator : MonoBehaviour
         return neighbors;
     }
     
+    // ONLY FOR DEBUGGING
+    private void PrintBossRoomDoorInfo()
+    {
+        var bossRoom = dungeonGraph.GetBossRoom();
+        if (bossRoom == null)
+        {
+            Debug.LogError("Boss room not found!");
+            return;
+        }
+
+        Debug.Log($"[BossRoom] ID: {bossRoom.id} has {bossRoom.doors.Count} door(s)");
+        Debug.Log($"[BossRoom] ID: {bossRoom.id} has {bossRoom.neighbors.Count} neighbor(s)");
+
+        string neighborIds = string.Join(", ", bossRoom.neighbors.Select(n => n.id));
+        Debug.Log($"[BossRoom] Neighbor IDs: {neighborIds}");
+
+        foreach (int edgeId in bossRoom.doors)
+        {
+            string isInstantiated = dungeonGraph.idDoorDict.ContainsKey(edgeId) ? "✅ Door exists in dict" : "❌ Not in dict";
+            Debug.Log($"[BossRoom] Door EdgeID: {edgeId} — {isInstantiated}");
+        }
+
+        Debug.Log("[BossRoom] All wall edges:");
+        foreach (int wallId in bossRoom.walls)
+        {
+            Debug.Log($"[BossRoom] Wall EdgeID: {wallId}");
+        }
+    }
     
     #region ONLY FOR DEBUGGING
     private void OnDrawGizmos()
