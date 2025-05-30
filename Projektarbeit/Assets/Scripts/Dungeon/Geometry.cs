@@ -233,6 +233,9 @@ namespace Geometry
         private static int _nextId = 0;
         public int Id;
 
+        public Point Room1;
+        public Point Room2;
+
         public Edge(Point A, Point B)
         {
             this.A = A;
