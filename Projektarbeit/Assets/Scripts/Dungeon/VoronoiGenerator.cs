@@ -194,6 +194,12 @@ public class VoronoiGenerator : MonoBehaviour
     {
         foreach (Edge e in voronoi)
         {
+            Room r1 = dungeonGraph.GetRoomByPoint(e.Room1);
+            Room r2 = dungeonGraph.GetRoomByPoint(e.Room2);
+            
+            if (r1 != null) r1.walls.Add(e.Id);
+            if (r2 != null) r2.walls.Add(e.Id);
+            
             CreateWall(new Vector3(e.A.x,0,e.A.y),new Vector3(e.B.x,0,e.B.y), e.Id);
         }
     }
@@ -205,6 +211,9 @@ public class VoronoiGenerator : MonoBehaviour
     /// <param name="end">End of the wall</param>
     void CreateWall(Vector3 start, Vector3 end, int edgeId)
     {
+        // Get all rooms that are touching this edge
+        var roomsWithEdge = dungeonGraph.rooms.Where(r => r.walls.Contains(edgeId));
+        
         // Prefab width and number of segments
         int widthOfPrefab = 2;
         int numberOfSegments = Mathf.Max(1, (int)(Vector3.Distance(start, end) / widthOfPrefab));
@@ -236,7 +245,7 @@ public class VoronoiGenerator : MonoBehaviour
                 var doorObj = Instantiate(door, mid, rot, transform);
                 doorObj.transform.localScale = new Vector3(scaleOfSegment, 1f, 1f);
                 
-                foreach (var room in dungeonGraph.rooms.Where(room => room.walls.Contains(edgeId)))
+                foreach (var room in roomsWithEdge)
                     room.doors.Add(edgeId);
                 
                 // Save the id and the door object in the dictionary
@@ -346,7 +355,10 @@ public class VoronoiGenerator : MonoBehaviour
             // Add bisectors to a list for later use
             foreach (Edge edge in triangle.edges)
             {
-                bisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
+                Edge eTmp = new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2)));
+                eTmp.Room1 = edge.A;
+                eTmp.Room2 = edge.B;
+                bisectors.Add(eTmp);
                 
                 // ONLY FOR DEBUGGING
                 _debugBisectors.Add(new Edge(center, new Point(((edge.A.x + edge.B.x) / 2), ((edge.A.y + edge.B.y) / 2))));
@@ -364,6 +376,8 @@ public class VoronoiGenerator : MonoBehaviour
                 if (Point.equals(bisectors[i].B, bisectors[j].B))
                 {
                     Edge longEdge = new Edge(bisectors[i].A, bisectors[j].A);
+                    longEdge.Room1 = bisectors[i].Room1;
+                    longEdge.Room2 = bisectors[i].Room2;
                     longEdge.giveID();
                     voronoi.Add(longEdge);
                     toRemove.Add(i);
@@ -413,6 +427,8 @@ public class VoronoiGenerator : MonoBehaviour
                         Point inter = FindIntersectionWithMapBoundary(e, size);
                         _debugVoronoiIntersections.Add(inter);
                         Edge newEdge = new Edge(e.A, inter);
+                        newEdge.Room1 = e.Room1;
+                        newEdge.Room2 = e.Room2;
                         newEdge.giveID();
                         voronoi.Add(newEdge);
                     }
@@ -421,6 +437,8 @@ public class VoronoiGenerator : MonoBehaviour
                         Point inter = FindIntersectionWithMapBoundary(e, size);
                         _debugVoronoiIntersections.Add(inter);
                         Edge newEdge = new Edge(e.A, inter);
+                        newEdge.Room1 = e.Room1;
+                        newEdge.Room2 = e.Room2;
                         newEdge.giveID();
                         voronoi.Add(newEdge);
                     }
@@ -621,47 +639,25 @@ public class VoronoiGenerator : MonoBehaviour
         {
             for (int i = 0; i < 3; i++)
             {
-                Point current = t.points[i];
-                if (Mathf.Approximately(current.x, target.x) && Mathf.Approximately(current.y, target.y))
-                {
-                    int next1 = (i + 1) % 3;
-                    int next2 = (i + 2) % 3;
+                if (!Point.equals(t.points[i], target)) continue;
 
-                    Point neighbor1 = t.points[next1];
-                    Point neighbor2 = t.points[next2];
-                    int index1 = _debugPoints.FindIndex(p =>
-                        Mathf.Approximately(p.x, neighbor1.x) && Mathf.Approximately(p.y, neighbor1.y));
-                    int index2 = _debugPoints.FindIndex(p =>
-                        Mathf.Approximately(p.x, neighbor2.x) && Mathf.Approximately(p.y, neighbor2.y));
+                int n1 = (i + 1) % 3;
+                int n2 = (i + 2) % 3;
 
-                    if (index1 != -1) neighbors.Add(index1);
-                    if (index2 != -1) neighbors.Add(index2);
+                int idx1 = _debugPoints.FindIndex(p => Point.equals(p, t.points[n1]));
+                int idx2 = _debugPoints.FindIndex(p => Point.equals(p, t.points[n2]));
 
-                    Edge edge1 = new Edge(target, neighbor1);
-                    foreach (Edge edge in _debugVoronoi){
-                        if (edge1.Intersect(edge))
-                        {
-                            room.AddWallEdge(edge.Id);
-                        }
-                    }
-                    
-                    Edge edge2 = new Edge(target, neighbor2);
-                    foreach (Edge edge in _debugVoronoi){
-                        if (edge2.Intersect(edge))
-                        {
-                            room.AddWallEdge(edge.Id);
-                        }
-                    }
-                    
-                    break; // Found the point in this triangle; no need to keep looping i
-                }
+                if (idx1 != -1) neighbors.Add(idx1);
+                if (idx2 != -1) neighbors.Add(idx2);
+
+                break;
             }
         }
 
         return neighbors;
     }
     
-    // ONLY FOR DEBUGGING
+    #region ONLY FOR DEBUGGING
     private void PrintBossRoomDoorInfo()
     {
         var bossRoom = dungeonGraph.GetBossRoom();
@@ -690,7 +686,6 @@ public class VoronoiGenerator : MonoBehaviour
         }
     }
     
-    #region ONLY FOR DEBUGGING
     private void OnDrawGizmos()
     {
         // RANDOM POINTS (GREEN)
@@ -767,7 +762,23 @@ public class VoronoiGenerator : MonoBehaviour
                 Handles.Label(labelPos, $"Edge: {id}\nDoor: {id}", doorStyle);
             }
         }
-
+        
+        // ALL EDGE ID THAT DO NOT HAVE A DOOR (ORANGE) 
+        if (showDoorEdgeID && _debugVoronoi != null && dungeonGraph != null)
+        {
+            GUIStyle wallStyle = new GUIStyle();
+            wallStyle.normal.textColor = new Color(1f, 0.5f, 0f);
+    
+            foreach (Edge edge in _debugVoronoi)
+            {
+                if (!dungeonGraph.idDoorDict.ContainsKey(edge.Id))
+                {
+                    Vector3 labelPos = new Vector3((edge.A.x + edge.B.x) * 0.5f, 0.5f, (edge.A.y + edge.B.y) * 0.5f);
+                    Handles.Label(labelPos, $"Edge: {edge.Id}\n(Wall)", wallStyle);
+                }
+            }
+        }
+        
         // VORONOI TRIANGULATION (YELLOW)
         if (showVoronoi && _debugVoronoi != null)
         {
