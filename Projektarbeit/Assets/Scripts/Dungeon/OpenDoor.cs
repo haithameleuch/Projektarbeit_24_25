@@ -14,6 +14,11 @@ public class OpenDoor : MonoBehaviour
     /// The child GameObject representing the actual door to enable or disable.
     /// </summary>
     private GameObject _doorChild;
+    
+    /// <summary>
+    /// Flag to check a boss door
+    /// </summary>
+    public bool isBossDoor = false;
 
     /// <summary>
     /// Subscribes to the open and close door events and initializes references to the collider and door child.
@@ -24,13 +29,25 @@ public class OpenDoor : MonoBehaviour
         _parentCollider = GetComponent<Collider>();
         _doorChild = transform.GetChild(0).gameObject;
         
-        // Disable the door child by default
-        _doorChild.SetActive(false);
-        _parentCollider.enabled = false;  
+        if (isBossDoor)
+        {                     
+            // Boss door starting disabled
+            _doorChild.SetActive(true);
+            _parentCollider.enabled = true;
 
-        // Subscribe to events from the EventManager
-        EventManager.OnOpenDoors += Open;
-        EventManager.OnCloseDoors += Close;
+            EventManager.OnOpenBossDoors  += Open;
+            EventManager.OnCloseBossDoors += Close;
+        }
+        else
+        {
+            // Disable the door child by default
+            _doorChild.SetActive(false);
+            _parentCollider.enabled = false;
+
+            // Subscribe to events from the EventManager
+            EventManager.OnOpenDoors += Open;
+            EventManager.OnCloseDoors += Close;
+        }
     }
 
     /// <summary>
@@ -38,8 +55,16 @@ public class OpenDoor : MonoBehaviour
     /// </summary>
     private void OnDestroy()
     {
-        EventManager.OnOpenDoors -= Open;
-        EventManager.OnCloseDoors -= Close;
+        if (isBossDoor)
+        {
+            EventManager.OnOpenBossDoors  -= Open;
+            EventManager.OnCloseBossDoors -= Close;
+        }
+        else
+        {
+            EventManager.OnOpenDoors  -= Open;
+            EventManager.OnCloseDoors -= Close;
+        }
     }
 
     /// <summary>
