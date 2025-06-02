@@ -149,7 +149,7 @@ namespace Manager
                     EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Boss:
-                    EventManager.Instance.TriggerCloseDoors();
+                    EventManager.Instance.TriggerCloseBossDoors();
                     break;
                 default:
                     Debug.Log("Unknown room type");

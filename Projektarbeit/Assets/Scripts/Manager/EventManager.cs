@@ -23,6 +23,18 @@ public class EventManager : MonoBehaviour
     /// Other scripts can subscribe to this event to perform actions when doors need to be closed.
     /// </summary>
     public static event Action OnCloseDoors;
+    
+    /// <summary>
+    /// Event triggered to open Boss doors.
+    /// Other scripts can subscribe to this event to perform actions when doors need to be closed.
+    /// </summary>
+    public static event Action OnOpenBossDoors;
+    
+    /// <summary>
+    /// Event triggered to close Boss doors.
+    /// Other scripts can subscribe to this event to perform actions when doors need to be closed.
+    /// </summary>
+    public static event Action OnCloseBossDoors;
 
     /// <summary>
     /// Event triggered to activate the Canvas View.
@@ -63,6 +75,9 @@ public class EventManager : MonoBehaviour
         {
             OnCloseDoors?.Invoke(); // Safely invoke the event if there are subscribers
         }
+        
+        //  Press K to Open Boss a door (only for debugging)
+        if (Input.GetKeyDown(KeyCode.K)) OnOpenBossDoors?.Invoke();
     }
 
     /// <summary>
@@ -90,4 +105,7 @@ public class EventManager : MonoBehaviour
     {
         OnOpenDoors?.Invoke();
     }
+    
+    public void TriggerCloseBossDoors()  => OnCloseBossDoors?.Invoke();
+    public void TriggerOpenBossDoors()   => OnOpenBossDoors?.Invoke();
 }

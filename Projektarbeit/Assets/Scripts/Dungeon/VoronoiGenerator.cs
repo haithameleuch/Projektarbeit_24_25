@@ -245,6 +245,23 @@ public class VoronoiGenerator : MonoBehaviour
                 var doorObj = Instantiate(door, mid, rot, transform);
                 doorObj.transform.localScale = new Vector3(scaleOfSegment, 1f, 1f);
                 
+                // ------------------------------------------------------------------
+                // Boss-Door
+                bool isBossDoor = roomsWithEdge.Any(r => r.type == RoomType.Boss);
+                if (isBossDoor)
+                {
+                    var openDoor = doorObj.GetComponent<OpenDoor>();
+                    
+                    if (openDoor == null)
+                        openDoor = doorObj.GetComponentInChildren<OpenDoor>(true);
+                    
+                    if (openDoor == null)
+                        openDoor = doorObj.AddComponent<OpenDoor>();
+
+                    openDoor.isBossDoor = true;
+                }
+                // ------------------------------------------------------------------
+                
                 foreach (var room in roomsWithEdge)
                     room.doors.Add(edgeId);
                 
