@@ -116,11 +116,30 @@ public class Inventory : MonoBehaviour
                 equipment[row, col].itemQuantity -= 1;
                 if (equipment[row, col].itemQuantity < 1)
                 {
+                    addItem(equipment[row, col]);
                     equipment[row, col] = null;
                 }
                 return true;
             }
         }
         return false;
+    }
+
+    public ItemInstance getItemByIndex(int row, int col)
+    {
+        return inventory[row, col];
+    }
+
+    public void useItem(int row, int col)
+    {
+        inventory[row, col].use();
+        if (row<4)
+        {
+            removeItem(row, col);
+        }
+        else
+        {
+            removeEquip(row, col);
+        }
     }
 }

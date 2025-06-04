@@ -55,4 +55,9 @@ public class ItemInstance
             return new Color32(0,255,0,100);
         }
     }
+
+    public void use()
+    {
+        Debug.Log("Used: "+itemData.spawnName);
+    }
 }
