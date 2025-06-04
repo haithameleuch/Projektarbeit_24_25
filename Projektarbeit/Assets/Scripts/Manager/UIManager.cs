@@ -206,11 +206,17 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 {
                     if (selectedSlot.Item1 < 4)
                     {
-                        player.GetComponent<Inventory>().removeItem(selectedSlot.Item1, selectedSlot.Item2);
+                        if (playerInventory[selectedSlot.Item1,selectedSlot.Item2] !=null) {
+                            player.GetComponent<Inventory>().useItem(selectedSlot.Item1, selectedSlot.Item2);
+                        }
+                        
                     }
                     else
                     {
-                        player.GetComponent<Inventory>().removeEquip(selectedSlot.Item1 - 4, selectedSlot.Item2);
+                        if (playerEquipment[selectedSlot.Item1-4, selectedSlot.Item2] != null)
+                        {
+                            player.GetComponent<Inventory>().useItem(selectedSlot.Item1 - 4, selectedSlot.Item2);
+                        }                      
                     }
                     updateUI();
                 }
@@ -307,9 +313,7 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
             for( int j = 0; j < playerEquipment.GetLength(1); j++)
             {
                 if (playerEquipment[i, j] != null)
-                {
-                    // Set Background
-                    equipUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerInventory[i, j].getRarityColor();
+                {                   
                     // Set Icon
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i, j].itemData.spawnSprite;
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
@@ -330,7 +334,21 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 }
             }
         }
-
+        if (selectedSlot.Item1 > -1)
+        {
+            if (selectedSlot.Item1 < 4)
+            {
+                Color32 tmp = itemUI.transform.GetChild(selectedSlot.Item1).GetChild(selectedSlot.Item2).GetComponent<Image>().color;
+                tmp.a = (byte)255;
+                itemUI.transform.GetChild(selectedSlot.Item1).GetChild(selectedSlot.Item2).GetComponent<Image>().color = tmp;
+            }
+            else
+            {
+                Color32 tmp = equipUI.transform.GetChild(selectedSlot.Item1-4).GetChild(selectedSlot.Item2).GetComponent<Image>().color;
+                tmp.a = (byte)255;
+                equipUI.transform.GetChild(selectedSlot.Item1-4).GetChild(selectedSlot.Item2).GetComponent<Image>().color = tmp;
+            }
+        }
         // Set new Stat text
         // Todo calculate
         statText.SetText("Health:10\nDamage:10\nSpeed:10");
@@ -369,5 +387,10 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 selectedSlot = (-1,-1);
             }
         }
+    }
+
+    public void clearSelection()
+    {
+
     }
 }
