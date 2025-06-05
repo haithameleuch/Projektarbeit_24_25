@@ -11,43 +11,64 @@ using System.Collections.Generic;
 public class CanvasDraw : MonoBehaviour
 {
     // Drawing-related variables
+    // Camera used to render the canvas (e.g., for capturing input or displaying the canvas)
     private GameObject _canvasCamera;
+
+    // Brush color for drawing on the canvas
     private readonly Color _brushColor = Color.black;
+
+    // Tracks whether the mouse/finger was pressed in the last frame (for detecting drag)
     private bool _pressedLastFrame;
 
-    private int _lastX,
-        _lastY;
+    // Stores last recorded pixel position to interpolate lines while drawing
+    private int _lastX, _lastY;
 
-    private int _xPixel,
-        _yPixel;
+    // Current pixel position where the brush will draw
+    private int _xPixel, _yPixel;
 
-    private float _xMult,
-        _yMult;
+    // Multipliers used to convert world/screen coordinates to canvas pixel coordinates
+    private float _xMult, _yMult;
 
-    
+    // Color array representing the pixel data of the canvas texture
     private Color[] _colorMap;
+
+    // The texture that gets updated while drawing (e.g., for digit recognition)
     public Texture2D generatedTexture;
-    
+
+    // Flag to indicate if the glyph mode is enabled (e.g., for digit input mode)
     [SerializeField] public bool glyph = true;
 
-    // Public settings for the canvas size and brush
+    // Canvas dimensions in pixels
     [SerializeField] public int totalXPixels = 200;
-    
     [SerializeField] public int totalYPixels = 200;
 
+    // Brush radius/size in pixels
     [SerializeField] public int brushSize = 10;
 
+    // TextMeshPro element to display the predicted output (e.g., digit classifier result)
     [SerializeField] public TextMeshPro predictionText;
 
+    // TextMeshPro element to display a randomly generated number (e.g., for verification tasks)
     [SerializeField] public TextMeshPro randNumberText;
 
-
+    // Flag that controls whether drawing should occur (e.g., set from UI or logic)
     public static bool ToDraw;
+
+    // Shader property ID for the base texture of a material (used when updating canvas material)
     private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
+
+    // Whether to use interpolation between brush points (to make strokes smoother)
     public bool useInterpolation = true;
+
+    // Reference to the top-left corner of the drawing area in world space
     public Transform topLeftCorner;
+
+    // Reference to the bottom-right corner of the drawing area in world space
     public Transform bottomRightCorner;
+
+    // Transform that represents the input point (e.g., touch/mouse position in world space)
     public Transform point;
+
 
     [FormerlySerializedAs("classifierDigits")] [SerializeField] private Classifier classifier;
 
@@ -389,14 +410,14 @@ public class CanvasDraw : MonoBehaviour
             Debug.Log(_keyDigits);
 
         }
-        
-
-        
     }
 
 
+    // Returns the corresponding glyph name for a given digit.
+    // If the digit is not found in the dictionary, returns "Unknown".
     private string ValidGlyph(int digit)
     {
+        // Mapping of digits to symbolic glyph names
         Dictionary<int, string> digitToString = new Dictionary<int, string>
         {
             { 0, "air" },
@@ -408,10 +429,13 @@ public class CanvasDraw : MonoBehaviour
             { 6, "time" },
             { 7, "water" },
         };
+
+        // Retrieve the corresponding glyph name, or return "Unknown" if the digit is invalid
         string text = digitToString.ContainsKey(digit) ? digitToString[digit] : "Unknown";
 
         return text;
     }
+
 
     /// <summary>
     /// Updates the random digit display and checks if the correct digits are entered by the player.
