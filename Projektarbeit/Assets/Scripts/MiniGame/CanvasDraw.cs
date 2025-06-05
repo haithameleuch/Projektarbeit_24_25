@@ -54,6 +54,7 @@ public class CanvasDraw : MonoBehaviour
     // Flag that controls whether drawing should occur (e.g., set from UI or logic)
     public static bool ToDraw;
 
+    
     // Shader property ID for the base texture of a material (used when updating canvas material)
     private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
 
