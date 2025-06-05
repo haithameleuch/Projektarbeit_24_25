@@ -24,8 +24,11 @@ public class CanvasDraw : MonoBehaviour
     private float _xMult,
         _yMult;
 
+    
     private Color[] _colorMap;
     public Texture2D generatedTexture;
+    
+    [SerializeField] public bool glyph = true;
 
     // Public settings for the canvas size and brush
     [SerializeField] public int totalXPixels = 200;
@@ -67,7 +70,7 @@ public class CanvasDraw : MonoBehaviour
     {
         // UIManager.Instance.HidePanel();
         // Generate 4 Digit number randomly
-        GenerateRandomDigit();
+        GenerateRandomDigit(glyph);
         // Initialize color map based on the canvas dimensions
         _colorMap = new Color[totalXPixels * totalYPixels];
 
@@ -124,10 +127,18 @@ public class CanvasDraw : MonoBehaviour
                 // Preprocess the image to resize it for prediction
                 Texture2D preprocessedTexture = Preprocessing(generatedTexture, 28, 28);
                 (int predictedDigit, string text) = classifier.Predict(preprocessedTexture); // Call the Predict method
-                predictionText.text = text;
+                
                 ToDraw = true;
-                Debug.Log(ValidGlyph(predictedDigit));
-                UpdateRandomDigit(predictedDigit);
+                
+                if (glyph)
+                {
+                    predictionText.text = text + ValidGlyph(predictedDigit);
+                }
+                else
+                {
+                    UpdateRandomDigit(predictedDigit);
+                    predictionText.text = text;
+                }
             }
         }
     }
@@ -324,12 +335,27 @@ public class CanvasDraw : MonoBehaviour
 
                 // Invert the color
                 Color originalColor = pixels[x + y * rowLength];
-                Color invertedColor = new Color(
-                    1.0f - originalColor.r,
-                    1.0f - originalColor.g,
-                    1.0f - originalColor.b,
-                    originalColor.a
-                );
+                Color invertedColor;
+                if (glyph)
+                {
+                    invertedColor = new Color(
+                        originalColor.r,
+                        originalColor.g,
+                        originalColor.b,
+                        originalColor.a
+                    );
+                    
+                }
+                else
+                {
+                    invertedColor = new Color(
+                                        1- originalColor.r,
+                                        1- originalColor.g,
+                                        1- originalColor.b,
+                                        originalColor.a
+                                    );
+                }
+                
 
                 // Set the flipped and inverted pixel
                 flippedPixels[flippedIndex] = invertedColor;
@@ -350,13 +376,22 @@ public class CanvasDraw : MonoBehaviour
     /// <summary>
     /// Generates a random 4-digit number to be used for unlocking the door.
     /// </summary>
-    private void GenerateRandomDigit()
+    private void GenerateRandomDigit(bool glyph)
     {
-        // Generate a random 4-digit number (between 1000 and 9999) as the keyDigits
-        _keyDigits = UnityEngine.Random.Range(1000, 10000);
+        if (!glyph)
+        {
+            // Generate a random 4-digit number (between 1000 and 9999) as the keyDigits
+            _keyDigits = UnityEngine.Random.Range(1000, 10000);
+        }
+        else
+        {
+            _keyDigits = UnityEngine.Random.Range(0, classifier.outputSize);
+            Debug.Log(_keyDigits);
 
-        // Display the generated number in the UI
-        randNumberText.text = _keyDigits.ToString();
+        }
+        
+
+        
     }
 
 
@@ -366,8 +401,12 @@ public class CanvasDraw : MonoBehaviour
         {
             { 0, "air" },
             { 1, "earth" },
-            { 2, "fire" },
-            { 3, "water" },
+            { 2, "energy" },
+            { 3, "fire" },
+            { 4, "light" },
+            { 5, "power" },
+            { 6, "time" },
+            { 7, "water" },
         };
         string text = digitToString.ContainsKey(digit) ? digitToString[digit] : "Unknown";
 
