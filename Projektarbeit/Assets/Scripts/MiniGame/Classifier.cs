@@ -9,7 +9,7 @@ public class Classifier: MonoBehaviour
     private static readonly BackendType BackendType = BackendType.CPU;
 
     // input tensor
-    private Tensor<float> _outputTensor;
+    public Tensor<float> _outputTensor;
     
     [SerializeField]
     public ModelAsset modelAsset;
