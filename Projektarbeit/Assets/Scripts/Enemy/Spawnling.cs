@@ -4,14 +4,9 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using System.Collections;
 
-
-/// <summary>
-/// ML-Agents-based hunter that chases a target (the player).
-/// Learns to approach the player, avoid walls, and not get stuck.
-/// </summary>
 namespace Enemy
 {
-    public class HunterAgent : Agent
+    public class Spawnling : Agent
     {
         /// <summary>
         /// Reference to the player GameObject (assigned via tag).
@@ -28,7 +23,24 @@ namespace Enemy
         private float _stuckTimer;
         private Rigidbody _rb;
         private float _prevDistance;
-		private bool isInitialized = false;
+        private bool isInitialized = false;
+
+        /// <summary>
+        /// Time interval between spawns, default 10 seconds.
+        /// </summary>
+        [SerializeField, Tooltip("Time interval in seconds between each spawn. Default is 10.")]
+        private float spawnInterval = 10f;
+
+        /// <summary>
+        /// Prefab to spawn.
+        /// </summary>
+        [SerializeField, Tooltip("Prefab GameObject to spawn.")]
+        private GameObject prefabToSpawn;
+
+        /// <summary>
+        /// Timer to track spawn cooldown.
+        /// </summary>
+        private float spawnTimer;
 
 
         /// <summary>
@@ -44,51 +56,41 @@ namespace Enemy
                               RigidbodyConstraints.FreezeRotationZ |
                               RigidbodyConstraints.FreezePositionY;
 
-			// Start the coroutine to find the player
-        	StartCoroutine(FindPlayerCoroutine());
+            // Start the coroutine to find the player
+            StartCoroutine(FindPlayerCoroutine());
+
+            // Initialize spawn timer to spawn immediately at start
+            spawnTimer = spawnInterval;
 
         }
 
-		private IEnumerator FindPlayerCoroutine()
-    	{
-        	while (target == null)
-        	{
-            	target = GameObject.FindWithTag("Player");
-            	if (target == null)
-            	{
-                	yield return new WaitForSeconds(0.5f); 
-            	}
-        	}
-        
-        	isInitialized = true;
-    	}
+        private IEnumerator FindPlayerCoroutine()
+        {
+            while (target == null)
+            {
+                target = GameObject.FindWithTag("Player");
+                if (target == null)
+                {
+                    yield return new WaitForSeconds(0.5f);
+                }
+            }
+
+            isInitialized = true;
+        }
 
 
         /// <summary>
         /// Resets agent and player positions at the beginning of an episode.
+        /// Resets spawn timer as well.
         /// </summary>
         public override void OnEpisodeBegin()
         {
-            // Randomize hunter position
-            //transform.localPosition = new Vector3(
-            //    Random.Range(-8, 8f),
-            //    1,
-            //    Random.Range(-4f, 4f)
-            //);
-
-            // Randomize target (player) position
-            // target.transform.localPosition = new Vector3(
-            //     Random.Range(-8f, 8),
-            //     1,
-            //     Random.Range(-4f, 4f)
-            // );
-
-            // Reset tracking variables
-            // _lastPosition = transform.localPosition;
             _stuckTimer = 0f;
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
-        }
 
+            // Reset spawn timer
+            spawnTimer = spawnInterval;
+        }
         /// <summary>
         /// Collects observations for the agent to make decisions:
         /// - Direction to target
@@ -174,5 +176,63 @@ namespace Enemy
                 AddReward(-2f);
             }
         }
+
+        /// <summary>
+        /// Called every frame to handle spawning logic and other updates.
+        /// </summary>
+        private void Update()
+        {
+            if (!isInitialized) return;
+
+            // Countdown spawn timer
+            spawnTimer -= Time.deltaTime;
+
+            // When timer reaches zero, spawn a prefab instance
+            if (spawnTimer <= 0f)
+            {
+                SpawnPrefab();
+                spawnTimer = spawnInterval; // Reset timer
+            }
+        }
+
+        /// <summary>
+        /// Instantiates the prefab at the current position and rotation.
+        /// </summary>
+        private void SpawnPrefab()
+        {
+            if (prefabToSpawn != null)
+            {
+                Instantiate(prefabToSpawn, transform.position, transform.rotation);
+            }
+            else
+            {
+                Debug.LogWarning("Prefab to spawn is not assigned in Spawnling.");
+            }
+        }
     }
 }
+      
+
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+        
+
+       

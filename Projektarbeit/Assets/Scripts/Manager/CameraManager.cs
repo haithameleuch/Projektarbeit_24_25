@@ -126,7 +126,7 @@ public class CameraManager : MonoBehaviour
         firstPersonPlayerController.enabled = false;
         topDownShooting.enabled = true;
         firstPersonShooting.enabled = false;
-        CanvasDraw.draw = false;
+        CanvasDraw.ToDraw = false;
 
         shootPoint.localPosition = topDownShootPointOffset;
     }
@@ -147,7 +147,7 @@ public class CameraManager : MonoBehaviour
         firstPersonPlayerController.enabled = true;
         topDownShooting.enabled = false;
         firstPersonShooting.enabled = true;
-        CanvasDraw.draw = false;
+        CanvasDraw.ToDraw = false;
 
         shootPoint.localPosition = firstPersonShootPointOffset;
     }
@@ -168,7 +168,7 @@ public class CameraManager : MonoBehaviour
         firstPersonPlayerController.enabled = false;
         topDownShooting.enabled = false;
         firstPersonShooting.enabled = false;
-        CanvasDraw.draw = true;
+        CanvasDraw.ToDraw = true;
 
         shootPoint.localPosition = Vector3.zero;
     }

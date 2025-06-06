@@ -90,7 +90,7 @@ Transform:
   m_GameObject: {fileID: 3457199341520886201}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.657, y: -0.00999999, z: 0.94727683}
+  m_LocalPosition: {x: 0.657, y: -0.00999999, z: 0.167}
   m_LocalScale: {x: 0.70000005, y: 0.9, z: 0.040792}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -291,11 +291,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 3566467820305062814}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7facd82ff6b487349b9d609364d4d154, type: 3}
+  m_Script: {fileID: 11500000, guid: 9090fd122099ece6a82c9607ad22af04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   generatedTexture: {fileID: 0}
-  glyph: 0
+  glyph: 1
   totalXPixels: 200
   totalYPixels: 200
   brushSize: 10
@@ -306,7 +306,7 @@ MonoBehaviour:
   bottomRightCorner: {fileID: 6604535307600350289}
   point: {fileID: 1193384284662399472}
   classifier: {fileID: 7280668662910417032}
-  material: {fileID: 2100000, guid: d963498b3fdda51db83758f6763dcf74, type: 2}
+  material: {fileID: 2100000, guid: a00013af81304728b2be1f4309ee2433, type: 2}
 --- !u!114 &7358265712868455665
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -316,7 +316,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3566467820305062814}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b438db4a4ccc31b08dbbc7507431d86, type: 3}
+  m_Script: {fileID: 11500000, guid: d8cf4b9903068a38d9d99edb884949c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &7280668662910417032
