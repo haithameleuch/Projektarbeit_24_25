@@ -2,16 +2,16 @@ using UnityEngine;
 
 public class CollectibleItem : MonoBehaviour, IInteractable
 {
-    public ItemInstance item;
+    public Item item;
 
-    public void Initialize(ItemInstance item)
+    public void Initialize(Item item)
     {
         this.item = item;
     }
     public void Interact(GameObject interactor)
     {
         //füge hier das item zum inventory hinzu
-        Inventory inv = interactor.GetComponent<Inventory>();
+        Inventory_V3 inv = interactor.GetComponent<Inventory_V3>();
         if (inv != null)
         {
             if (inv.addItem(item))

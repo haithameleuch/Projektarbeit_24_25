@@ -29,8 +29,10 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
     bool isInvVisible = false;
 
     // Reference to important onjects
-    private ItemInstance[,] playerInventory;
-    private ItemInstance[,] playerEquipment;
+    //private ItemInstance[,] playerInventory;
+    private Item[,] playerInventory;
+    //private ItemInstance[,] playerEquipment;
+    private Item[,] playerEquipment;
     private GameObject itemUI;
     private GameObject equipUI;
     private TMP_Text statText;
@@ -79,8 +81,8 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
     private void Start()
     {
         player = GameObject.Find("Player");
-        playerInventory = player.GetComponent<Inventory>().getInventory();
-        playerEquipment = player.GetComponent<Inventory>().getEquipment();
+        playerInventory = player.GetComponent<Inventory_V3>().getInventory();
+        playerEquipment = player.GetComponent<Inventory_V3>().getEquipment();
         itemUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Items").gameObject;
         equipUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("EquipmentSlots").gameObject;
         statText = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("DetailPanel").transform.Find("StatDetails").gameObject.GetComponent<TMP_Text>();
@@ -248,7 +250,7 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                     if (selectedSlot.Item1 < 4)
                     {
                         if (playerInventory[selectedSlot.Item1,selectedSlot.Item2] !=null) {
-                            player.GetComponent<Inventory>().useItem(selectedSlot.Item1, selectedSlot.Item2);
+                            player.GetComponent<Inventory_V3>().useItem(selectedSlot.Item1, selectedSlot.Item2);
                         }
                         
                     }
@@ -256,7 +258,7 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                     {
                         if (playerEquipment[selectedSlot.Item1-4, selectedSlot.Item2] != null)
                         {
-                            player.GetComponent<Inventory>().useItem(selectedSlot.Item1 - 4, selectedSlot.Item2);
+                            player.GetComponent<Inventory_V3>().useItem(selectedSlot.Item1, selectedSlot.Item2);
                         }                      
                     }
                     updateUI();
@@ -264,11 +266,11 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 if (Input.GetKeyDown(KeyCode.O))
                 {
                     if (selectedSlot.Item1 < 4) {
-                        player.GetComponent<Inventory>().removeItem(selectedSlot.Item1, selectedSlot.Item2);
+                        player.GetComponent<Inventory_V3>().removeItem(selectedSlot.Item1, selectedSlot.Item2);
                     }
                     else
                     {
-                        player.GetComponent<Inventory>().removeEquip(selectedSlot.Item1 - 4, selectedSlot.Item2);
+                        player.GetComponent<Inventory_V3>().removeEquip(selectedSlot.Item1 - 4, selectedSlot.Item2);
                     }
                     updateUI();
                 }
@@ -328,12 +330,12 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                     // Set Background
                     itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerInventory[i,j].getRarityColor();
                     // Set Icon
-                    itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i,j].itemData.spawnSprite;
+                    itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i,j].item_icon;
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
 
                     // Set Name and Quantity
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
-                        .SetText(playerInventory[i,j].itemData.name + " (x"+ playerInventory[i,j].itemQuantity+")");
+                        .SetText(playerInventory[i,j]._name + " (x"+ playerInventory[i,j].item_quantity+")");
                 }
                 else
                 {
@@ -356,12 +358,14 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 if (playerEquipment[i, j] != null)
                 {                   
                     // Set Icon
-                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i, j].itemData.spawnSprite;
+                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerEquipment[i, j].item_icon;
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
+
+                    equipUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerEquipment[i,j].getRarityColor();
 
                     // Set Name and Quantity
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
-                        .SetText(playerInventory[i, j].itemData.name + " (x" + playerInventory[i, j].itemQuantity + ")");
+                        .SetText(playerEquipment[i, j]._name + " (x" + playerEquipment[i, j].item_quantity + ")");
                 }
                 else
                 {
@@ -428,10 +432,5 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 selectedSlot = (-1,-1);
             }
         }
-    }
-
-    public void clearSelection()
-    {
-
     }
 }
