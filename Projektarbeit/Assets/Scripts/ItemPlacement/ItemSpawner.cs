@@ -62,7 +62,7 @@ public class ItemSpawner : ISpawner
             CollectibleItem collectible = spawnedItem.GetComponent<CollectibleItem>();
             if (collectible != null)
             {
-                collectible.item = item;
+                //collectible.item = item;
             }
             
             // item.itemData.spawnObject.transform.position = position;
