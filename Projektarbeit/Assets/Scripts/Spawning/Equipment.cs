@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class Equipment : Item
 {
     [SerializeField]
+    [Range(0, 5)]
     public int equip_slot = 0;
 
     [SerializeField]
@@ -15,8 +16,8 @@ public class Equipment : Item
     public override void use(Inventory_V3 inv)
     {
         Item[,] player_equip = inv.getEquipment();
-        int row = equip_slot % 2;
-        int col = equip_slot / 2;
+        int col = equip_slot % 2;
+        int row = equip_slot / 2;
         if (is_equipped)
         {
             Debug.Log(this._name+" was unequipped.");
