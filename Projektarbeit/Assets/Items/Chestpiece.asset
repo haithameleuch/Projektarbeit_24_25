@@ -17,6 +17,6 @@ MonoBehaviour:
   rarity: 4.3
   item_icon: {fileID: 21300000, guid: a714d4bb98badfe40b6b6f10ad4ccfbc, type: 3}
   item_quantity: 1
-  equip_slot: 2
+  equip_slot: 1
   stat_increases: 0f00000005000000fbffffff
   is_equipped: 0
