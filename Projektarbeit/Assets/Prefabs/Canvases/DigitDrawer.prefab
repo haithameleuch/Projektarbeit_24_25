@@ -295,7 +295,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   generatedTexture: {fileID: 0}
-  glyph: 1
+  glyph: 0
   totalXPixels: 200
   totalYPixels: 200
   brushSize: 10
