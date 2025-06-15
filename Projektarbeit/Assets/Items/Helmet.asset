@@ -19,4 +19,4 @@ MonoBehaviour:
   item_quantity: 1
   equip_slot: 0
   stat_increases: 0a00000005000000
-  is_equipped: 1
+  is_equipped: 0
