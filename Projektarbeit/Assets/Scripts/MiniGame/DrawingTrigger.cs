@@ -12,7 +12,6 @@ public class DrawingTrigger : MonoBehaviour, IInteractable
     {
         // Find the "Center" GameObject, which determines the camera's new position
         GameObject myObject = GameObject.Find("Center");
-		Debug.Log("drawing");
 
         // Find the Cinemachine camera using the "CanvCamera" tag
         GameObject cinemachineCamera = GameObject.FindWithTag("CanvCamera");
