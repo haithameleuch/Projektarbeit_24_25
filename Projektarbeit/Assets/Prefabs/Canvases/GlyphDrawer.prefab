@@ -908,7 +908,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f930e0fe90604c47b50262e08334dd95, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  modelAsset: {fileID: 5022602860645237092, guid: a24434c38a027283dbb51f4b1e5313e2, type: 3}
+  modelAsset: {fileID: 5022602860645237092, guid: af085051ce495061bb620b6e7fb5495c, type: 3}
   outputSize: 8
 --- !u!1 &9168972333784407452
 GameObject:
