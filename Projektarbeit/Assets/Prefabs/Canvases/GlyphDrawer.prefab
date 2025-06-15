@@ -868,14 +868,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 8737888502784650639}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7facd82ff6b487349b9d609364d4d154, type: 3}
+  m_Script: {fileID: 11500000, guid: 9090fd122099ece6a82c9607ad22af04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   generatedTexture: {fileID: 0}
   glyph: 1
   totalXPixels: 200
   totalYPixels: 200
-  brushSize: 8
+  brushSize: 10
   predictionText: {fileID: 1492789285776993353}
   randNumberText: {fileID: 3628978120255680295}
   useInterpolation: 1
@@ -893,7 +893,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8737888502784650639}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b438db4a4ccc31b08dbbc7507431d86, type: 3}
+  m_Script: {fileID: 11500000, guid: d8cf4b9903068a38d9d99edb884949c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &3258272182429552281
