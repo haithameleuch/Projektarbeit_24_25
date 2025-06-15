@@ -45,12 +45,12 @@ namespace Enemy
             if (_rb != null)
                 _rb.constraints = RigidbodyConstraints.FreezeAll;
             
+            // Start the coroutine to find the player
+            StartCoroutine(FindPlayerCoroutine());
             // Rotate shootPoint to look directly at the target on the Y-axis
             Vector3 directionToTarget = (target.transform.position - shootPoint.position).normalized;
             Debug.Log(directionToTarget);
             transform.forward = directionToTarget;
-            // Start the coroutine to find the player
-            StartCoroutine(FindPlayerCoroutine());
         }
         
         private IEnumerator FindPlayerCoroutine()
