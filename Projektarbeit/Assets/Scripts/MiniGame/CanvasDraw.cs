@@ -425,7 +425,7 @@ public class CanvasDraw : MonoBehaviour
             { 1, "earth" },
             { 2, "energy" },
             { 3, "fire" },
-            { 4, "light" },
+            { 4, "power" },
             { 5, "power" },
             { 6, "time" },
             { 7, "water" },
