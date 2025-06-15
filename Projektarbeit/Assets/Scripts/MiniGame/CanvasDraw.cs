@@ -69,6 +69,9 @@ public class CanvasDraw : MonoBehaviour
 
     // Transform that represents the input point (e.g., touch/mouse position in world space)
     public Transform point;
+    private Ray _debugRay;
+    private bool _rayHasHit;
+    private Vector3 _hitPoint;
 
 
     [FormerlySerializedAs("classifierDigits")] [SerializeField] private Classifier classifier;
@@ -201,10 +204,13 @@ public class CanvasDraw : MonoBehaviour
 
         // Cast a ray from the mouse position in 3D space
         var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+        _debugRay = ray; 
 
         // Check if the ray hits any object (such as the canvas)
         if (Physics.Raycast(ray, out var hit, Mathf.Infinity))
         {
+            _rayHasHit = true;
+            _hitPoint = hit.point;
             point.position = hit.point; // Move the pointer to the hit point
 
             // Convert world point to local space of the canvas
@@ -217,17 +223,36 @@ public class CanvasDraw : MonoBehaviour
             float normalizedX = (localPoint.x + width * 0.5f) / width;
             float normalizedY = (localPoint.y + height * 0.5f) / height;
 
-            _xPixel = Mathf.Clamp((int)(normalizedX * totalXPixels), 0, totalXPixels - 1);
-            _yPixel = Mathf.Clamp((int)(normalizedY * totalYPixels), 0, totalYPixels - 1);
+            _xPixel = (int)(normalizedX * totalXPixels);
+            _yPixel = (int)(normalizedY * totalYPixels);
 
             ChangePixelsAroundPoint();
         }
         else
         {
+            _rayHasHit = false;
             // If raycast doesn't hit the canvas, disable interpolation for next frame
             _pressedLastFrame = false;
         }
     }
+    
+    private void OnDrawGizmos()
+    {
+        if (!ToDraw) return; // Only draw when drawing is active
+
+        if (_debugRay.direction != Vector3.zero)
+        {
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawRay(_debugRay.origin, _debugRay.direction * 100f);
+
+            if (_rayHasHit)
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(_hitPoint, 0.05f);
+            }
+        }
+    }
+
 
     /// <summary>
     /// Applies brush strokes to the canvas, with optional interpolation between current and last position.
