@@ -1,0 +1,65 @@
+{
+    "My Behavior": {
+        "checkpoints": [
+            {
+                "steps": 999972,
+                "file_path": "results\\HunterObstacle\\My Behavior\\My Behavior-999972.onnx",
+                "reward": 339.0360697390687,
+                "creation_time": 1747996992.738805,
+                "auxillary_file_paths": [
+                    "results\\HunterObstacle\\My Behavior\\My Behavior-999972.pt"
+                ]
+            },
+            {
+                "steps": 1000036,
+                "file_path": "results\\HunterObstacle\\My Behavior\\My Behavior-1000036.onnx",
+                "reward": 339.0360697390687,
+                "creation_time": 1747996992.8006678,
+                "auxillary_file_paths": [
+                    "results\\HunterObstacle\\My Behavior\\My Behavior-1000036.pt"
+                ]
+            },
+            {
+                "steps": 1499987,
+                "file_path": "results\\HunterObstacle\\My Behavior\\My Behavior-1499987.onnx",
+                "reward": 368.90476737490724,
+                "creation_time": 1747997488.8251245,
+                "auxillary_file_paths": [
+                    "results\\HunterObstacle\\My Behavior\\My Behavior-1499987.pt"
+                ]
+            },
+            {
+                "steps": 1999956,
+                "file_path": "results\\HunterObstacle\\My Behavior\\My Behavior-1999956.onnx",
+                "reward": 376.22617483553677,
+                "creation_time": 1747997914.9603086,
+                "auxillary_file_paths": [
+                    "results\\HunterObstacle\\My Behavior\\My Behavior-1999956.pt"
+                ]
+            },
+            {
+                "steps": 2000020,
+                "file_path": "results\\HunterObstacle\\My Behavior\\My Behavior-2000020.onnx",
+                "reward": 376.22617483553677,
+                "creation_time": 1747997915.0211747,
+                "auxillary_file_paths": [
+                    "results\\HunterObstacle\\My Behavior\\My Behavior-2000020.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 2000020,
+            "file_path": "results\\HunterObstacle\\My Behavior.onnx",
+            "reward": 376.22617483553677,
+            "creation_time": 1747997915.0211747,
+            "auxillary_file_paths": [
+                "results\\HunterObstacle\\My Behavior\\My Behavior-2000020.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.13.1+cpu"
+    }
+}

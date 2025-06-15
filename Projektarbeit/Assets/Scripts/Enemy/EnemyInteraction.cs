@@ -1,8 +1,12 @@
 using UnityEngine;
+using TMPro;
 
 public class EnemyInteraction : MonoBehaviour, IInteractable
 {
     private bool canMove = true;
+    [SerializeField] private TextMeshPro LifeText;
+    private Color currentColor;
+
     public void Interact(GameObject interactor)
     {
         Health health = interactor.GetComponent<Health>();
@@ -14,7 +18,6 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
             if(interactor.name.Equals("Player"))
             {
                 health._currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, currentHealth);
-                UIManager.Instance.ShowPanel(interactor.name + ": " + health._currentHealth + "/" + health._maxHealth);
             }
         }
     }
@@ -38,8 +41,40 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
         if (collision.gameObject.name.Equals("Projectile(Clone)"))
         {
             Health enemyHealth = GetComponent<Health>();
-            enemyHealth._currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, enemyHealth._currentHealth);
-            UIManager.Instance.ShowPanel(gameObject.name + ": " + enemyHealth._currentHealth + "/" + enemyHealth._maxHealth);
+            float currentHealth = enemyHealth._currentHealth;
+            float maxHealth = enemyHealth._maxHealth;
+            float healthPercent = Mathf.Clamp01(currentHealth / maxHealth);
+
+            // Bright glow colors: green (full) to red (low)
+            Color targetColor = Color.Lerp(Color.red, Color.green, healthPercent);
+
+            // Smooth transition
+            currentColor = Color.Lerp(currentColor, targetColor, Time.deltaTime * 8f);
+            LifeText.color = currentColor;
+
+            // Update text
+            LifeText.text = $"{currentHealth:0}";
+
+			/**
+            // Optional pulse at low HP
+            if (healthPercent < 0.2f)
+            {
+                float pulse = Mathf.PingPong(Time.time * 4f, 0.2f) + 0.9f;
+                LifeText.transform.localScale = Vector3.one * pulse;
+            }
+            else
+            {
+                LifeText.transform.localScale = Vector3.one;
+            }
+			**/
+            
+            enemyHealth._currentHealth = HealthManager.damageAbsolute(0.5f, HealthManager.DamageType.Normal, enemyHealth._currentHealth);
+
+            if (enemyHealth._currentHealth <= 0f)
+            {
+                Destroy(gameObject);
+            }
         }
     }
+
 }
