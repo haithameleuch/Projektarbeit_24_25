@@ -441,8 +441,9 @@ MonoBehaviour:
   wall: {fileID: 3945106619950341444, guid: 192a01b192036874da1674510280fd14, type: 3}
   floor: {fileID: 1204103256114764629, guid: 9062586baf2b3e54cbab89aa957afd90, type: 3}
   door: {fileID: 187169917318524780, guid: 64a0a6f873e11ae469a7caaa22514fc0, type: 3}
+  destroyableWall: {fileID: 2725483830217079802, guid: 2ee0bf17ebf372e41ab59a0b15d9ea4a, type: 3}
   size: 40
-  numPoints: 5
+  numPoints: 10
   seed: 42
   minDoorEdgeLength: 4
   showPoints: 1
@@ -462,7 +463,7 @@ Transform:
   m_GameObject: {fileID: 1621557365}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 36.553566, y: 11.229872, z: 30.082691}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
