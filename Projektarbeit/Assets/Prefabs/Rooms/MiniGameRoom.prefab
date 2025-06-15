@@ -2615,6 +2615,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
 --- !u!65 &8725134173251497741
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3917,6 +3918,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
 --- !u!65 &2744920645855152818
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4401,6 +4403,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
 --- !u!65 &4504409939551960302
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -6135,6 +6138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
 --- !u!65 &2729555722060229741
 BoxCollider:
   m_ObjectHideFlags: 0
