@@ -1,0 +1,29 @@
+{
+    "My Behavior": {
+        "checkpoints": [
+            {
+                "steps": 192,
+                "file_path": "results/Boss/My Behavior/My Behavior-192.onnx",
+                "reward": null,
+                "creation_time": 1747176200.1422963,
+                "auxillary_file_paths": [
+                    "results/Boss/My Behavior/My Behavior-192.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 192,
+            "file_path": "results/Boss/My Behavior.onnx",
+            "reward": null,
+            "creation_time": 1747176200.1422963,
+            "auxillary_file_paths": [
+                "results/Boss/My Behavior/My Behavior-192.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.30.0",
+        "torch_version": "1.11.0+cu102"
+    }
+}
