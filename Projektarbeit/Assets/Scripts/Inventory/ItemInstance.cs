@@ -12,7 +12,6 @@ public class ItemInstance
     public SpawnableData itemData;
     [Range(0,100)]
     public int itemQuantity = 1;
-    // public SpawnableData itemData;
 
     public ItemInstance(SpawnableData itemData)
     {
@@ -25,6 +24,12 @@ public class ItemInstance
         itemData.spawnProbability = probability;
         itemData.spawnSprite = icon;
         itemQuantity = quantity;
+    }
+
+    public ItemInstance(ItemInstance item)
+    {
+        this.itemData = item.itemData;
+        this.itemQuantity = item.itemQuantity;
     }
 
     public ItemInstance()
