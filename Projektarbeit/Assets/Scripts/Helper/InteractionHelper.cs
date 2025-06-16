@@ -14,35 +14,47 @@ public static class InteractionHelper
     /// <param name="newInteractables">List to store objects that are interactable in the current frame.</param>
     /// <param name="currentInteractables">List of objects that were interactable in the previous frame.</param>
     /// <param name="player">The GameObject, passed to interaction methods.</param>
-    public static void HandleInteractions(RaycastHit[] hits, List<GameObject> newInteractables, List<GameObject> currentInteractables, GameObject player)
+    public static void HandleInteractions(RaycastHit[] hits, List<GameObject> newInteractables, List<GameObject> currentInteractables, GameObject player) 
     {
+        // Create a set of IDs for all interactables that were already interacted with in the previous frame
+        HashSet<int> currentIds = new HashSet<int>();
+        foreach (var obj in currentInteractables)
+        {
+            if (obj != null)
+                currentIds.Add(obj.GetInstanceID());
+        }
+
+        // Track which interactables have already been processed this frame to avoid duplicates
+        HashSet<int> processedIds = new HashSet<int>();
+
         // Loop through all detected hits to check if any objects are interactable
         foreach (RaycastHit hit in hits)
         {
-            GameObject interactableObject = hit.collider.gameObject;
-            // Attempt to get the IInteractable component from the object that was hit
-            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
-            
+            // Always get the object that holds the IInteractable component (might not be the collider itself)
+            IInteractable interactable = hit.collider.GetComponentInParent<IInteractable>();
+            if (interactable == null) continue;
 
-            // If the object implements the IInteractable interface, interact with it
-            if (interactable != null)
+            GameObject interactableObject = ((MonoBehaviour)interactable).gameObject;
+            int id = interactableObject.GetInstanceID();
+
+            // Avoid processing the same interactable multiple times per frame
+            if (processedIds.Contains(id)) continue;
+            processedIds.Add(id);
+
+            // Add the interactable object to the new list
+            newInteractables.Add(interactableObject);
+
+            if (interactable.ShouldRepeat())
             {
-                Debug.Log("interactable object name: " + interactableObject);
-                Debug.Log("interactable: " + interactable);
-                newInteractables.Add(interactableObject);
-
-                if (interactable.ShouldRepeat())
-                {
-                    // Call Interact for every frame
-                    interactable.Interact(player);
-                    // Debug.Log("EVERY FRAME");
-                }
-                else if (!currentInteractables.Contains(interactableObject))
-                {
-                    // Call Interact only once
-                    interactable.Interact(player);
-                    // Debug.Log("SINGLE FRAME");
-                }
+                // Call Interact every frame if the interactable is repeatable
+                interactable.Interact(player);
+                //Debug.Log("EVERY FRAME");
+            }
+            else if (!currentIds.Contains(id))
+            {
+                // Call Interact only once if the interactable was not interacted with in the previous frame
+                interactable.Interact(player);
+                //Debug.Log("SINGLE FRAME");
             }
         }
     }

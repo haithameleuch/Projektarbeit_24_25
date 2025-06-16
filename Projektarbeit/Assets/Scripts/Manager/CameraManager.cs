@@ -11,6 +11,8 @@ public class CameraManager : MonoBehaviour
     /// </summary>
     public static CameraManager Instance { get; private set; }
     
+    public static CanvasDraw ActiveCanvasDraw { get; private set; }
+    
     /// <summary>
     /// The key used to toggle between views (for debugging only).
     /// </summary>
@@ -49,6 +51,11 @@ public class CameraManager : MonoBehaviour
         {
             SetFirstPersonView();
         }
+    }
+    
+    public void SetActiveCanvas(CanvasDraw canvas)
+    {
+        ActiveCanvasDraw = canvas;
     }
     
     /// <summary>
@@ -108,6 +115,22 @@ public class CameraManager : MonoBehaviour
             if (renderer is not null)
                 renderer.enabled = visible;
         }
+    }
+    
+    /// <summary>
+    /// Moves and orients the canvas camera to a specific target (e.g., the drawing center).
+    /// </summary>
+    public void SetCanvasTarget(Transform target)
+    {
+        if (target == null)
+        {
+            Debug.LogWarning("SetCanvasTarget called with null target.");
+            return;
+        }
+
+        Vector3 offset = -target.forward * 2f;
+        canvCamera.transform.position = target.position + offset;
+        canvCamera.transform.LookAt(target);
     }
 
     /// <summary>
