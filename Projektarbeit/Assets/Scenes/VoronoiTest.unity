@@ -1137,13 +1137,6 @@ MonoBehaviour:
   playerPrefab: {fileID: 3632200126607871566, guid: b495a179cb427e841bb31c93d69a0a54, type: 3}
   voronoiGenerator: {fileID: 1621557366}
   roomSwitchThreshold: 5
-  items:
-  - itemData: {fileID: 11400000, guid: 8d18fdbdf4503514ba7a3f36eb03cc3d, type: 2}
-    itemQuantity: 1
-  - itemData: {fileID: 11400000, guid: 361d2623144dc3743ae393867f44375a, type: 2}
-    itemQuantity: 2
-  - itemData: {fileID: 11400000, guid: 36ae0ca13c0017b4a9f57d43f8e0592f, type: 2}
-    itemQuantity: 3
 --- !u!4 &1582340271
 Transform:
   m_ObjectHideFlags: 0
@@ -1754,13 +1747,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2011819181}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2011819185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1853,7 +1846,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2064156100
 MonoBehaviour:
   m_ObjectHideFlags: 0
