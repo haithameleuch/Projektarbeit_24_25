@@ -77,6 +77,9 @@ public class CameraManager : MonoBehaviour
     private void SetFirstPersonView()
     {
         GameInputManager.Instance.MouseLocked(true);
+        
+        if (canvCamera.gameObject.activeSelf)
+            canvCamera.gameObject.SetActive(false);
 
         _firstPersonCamera.Priority = 10;
         canvCamera.Priority = 5;
@@ -92,6 +95,9 @@ public class CameraManager : MonoBehaviour
     private void SetCanvView()
     {
         GameInputManager.Instance.MouseLocked(false);
+        
+        if (!canvCamera.gameObject.activeSelf)
+            canvCamera.gameObject.SetActive(true);
 
         _firstPersonCamera.Priority = 5;
         canvCamera.Priority = 10;
@@ -127,6 +133,10 @@ public class CameraManager : MonoBehaviour
             Debug.LogWarning("SetCanvasTarget called with null target.");
             return;
         }
+        
+        // activate the canvas camera if it is disabled
+        if (!canvCamera.gameObject.activeSelf)
+            canvCamera.gameObject.SetActive(true);
 
         Vector3 offset = -target.forward * 2f;
         canvCamera.transform.position = target.position + offset;
