@@ -135,7 +135,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
         float distItemCenterToRoom = roomRadius - itemRadius;
         float xCoord = center.x + distItemCenterToRoom * Mathf.Cos(angle * Mathf.Deg2Rad);
         float zCoord = center.y + distItemCenterToRoom * Mathf.Sin(angle * Mathf.Deg2Rad);
-        return new Vector3(xCoord,0,zCoord);
+        return new Vector3(xCoord, 0.5f, zCoord);
     }
 
     private float blockedAngleRange(float itemRadius, float roomRadius)
