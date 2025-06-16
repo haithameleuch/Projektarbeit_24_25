@@ -191,7 +191,8 @@ public class FirstPersonPlayerController : MonoBehaviour
         InteractionHelper.HandleExits(newInteractables, _currentInteractables, gameObject);
 
         // Update the list of current interactables to reflect the new state
-        _currentInteractables = newInteractables;
+        _currentInteractables.Clear();
+        _currentInteractables.AddRange(newInteractables);
     }
     
     public void Init(GameInputManager inputManager)
