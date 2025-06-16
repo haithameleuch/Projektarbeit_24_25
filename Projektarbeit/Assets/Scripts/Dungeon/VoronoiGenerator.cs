@@ -122,8 +122,16 @@ public class VoronoiGenerator : MonoBehaviour
         List<Room> rooms = new List<Room>();
         for (int id = 0; id < _debugPoints.Count; id++)
         {
-            Room room = new Room(id, _debugPoints[id]);
+            Point roomCenter = _debugPoints[id];
+            Room room = new Room(id, roomCenter);
             rooms.Add(room);
+            for (int i = 0; i < 4; i++)
+            {
+                //i want to check the distance to the walls, not the corner points of the dungeon
+                float xCoord = (i == 1) ? size : (i > 1 ? roomCenter.x : 0f);
+                float yCoord = (i == 3) ? size : (i < 2 ? roomCenter.y : 0f);
+                room.setIncircleRadius(Point.getDistance(roomCenter, new Point(xCoord, yCoord)));
+            }
         }
         return rooms;
     }
