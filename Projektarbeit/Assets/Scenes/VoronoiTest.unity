@@ -393,6 +393,13 @@ MonoBehaviour:
   playerPrefab: {fileID: 3632200126607871566, guid: b495a179cb427e841bb31c93d69a0a54, type: 3}
   voronoiGenerator: {fileID: 1621557366}
   roomSwitchThreshold: 5
+  items:
+  - itemData: {fileID: 11400000, guid: 8d18fdbdf4503514ba7a3f36eb03cc3d, type: 2}
+    itemQuantity: 1
+  - itemData: {fileID: 11400000, guid: 361d2623144dc3743ae393867f44375a, type: 2}
+    itemQuantity: 2
+  - itemData: {fileID: 11400000, guid: 36ae0ca13c0017b4a9f57d43f8e0592f, type: 2}
+    itemQuantity: 3
 --- !u!4 &1582340271
 Transform:
   m_ObjectHideFlags: 0
@@ -449,6 +456,7 @@ MonoBehaviour:
   showPoints: 1
   showCenters: 1
   showTriangles: 1
+  showShortestItemPath: 1
   showDoorEdgeID: 1
   showVoronoi: 1
   showBisectors: 1
