@@ -22,9 +22,8 @@ public class UIManager : MonoBehaviour
 
     // Needed to check wether the pause screen is displayed
     bool isPauseVisible = false;
-
-    [SerializeField]
-    private GameObject player;
+    
+    private GameObject _player;
 
 
     /// <summary>
@@ -43,6 +42,11 @@ public class UIManager : MonoBehaviour
         Instance = this; // Assign this instance as the singleton.
 
         DontDestroyOnLoad(gameObject); // Ensure this GameObject persists across scenes.
+    }
+
+    public void SetPlayer(GameObject newPlayer)
+    {
+        _player = newPlayer;
     }
 
     /// <summary>
@@ -80,7 +84,7 @@ public class UIManager : MonoBehaviour
             if (isPauseVisible)
             {
                 //player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                player.SetActive(true);
+                _player.SetActive(true);
                 pause.gameObject.SetActive(false);
 
                 //Lock Cursor in the game view
@@ -94,7 +98,7 @@ public class UIManager : MonoBehaviour
             else
             {
                 //player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                player.SetActive(false);
+                _player.SetActive(false);
                 HidePanel();
                 pause.gameObject.SetActive(true);
 
