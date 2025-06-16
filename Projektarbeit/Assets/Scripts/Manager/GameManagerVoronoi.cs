@@ -1,4 +1,6 @@
 using System.Collections;
+using System.Collections.Generic;
+using Spawning;
 using UnityEngine;
 
 namespace Manager
@@ -23,10 +25,15 @@ namespace Manager
         /// Distance threshold used to determine when the player has left the current room.
         /// </summary>
         [SerializeField] private float roomSwitchThreshold = 5f;
+        
+        [SerializeField] private List<ItemInstance> items;
+
 
         private GameObject _player;
         private DungeonGraph _dungeon;
         private Room _currentRoom;
+        
+        private List<ISpawnerVoronoi> _spawners;
 
         /// <summary>
         /// Initializes the game by starting the dungeon wait coroutine.
@@ -48,6 +55,12 @@ namespace Manager
             }
 
             _dungeon = voronoiGenerator.GetDungeonGraph();
+            List<Room> rooms = _dungeon.GetAllItemRooms();
+            _spawners = new List<ISpawnerVoronoi>()
+            {
+                new ItemSpawnerVoronoi(items, rooms)
+            };
+            PopulateDungeon();
             SpawnPlayerAtStartRoom();
         }
 
@@ -154,6 +167,14 @@ namespace Manager
                 default:
                     Debug.Log("Unknown room type");
                     break;
+            }
+        }
+
+        private void PopulateDungeon()
+        {
+            foreach (var spawner in _spawners)
+            {
+                spawner.SpawnInRoom();
             }
         }
     }

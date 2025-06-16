@@ -221,6 +221,7 @@ public class Room
     public HashSet<int> doors = new HashSet<int>();
     public bool visited = false;
     public RoomType type = RoomType.Normal;
+    public float incircleRadius = Mathf.Infinity;
 
     public Room(int id, Point center)
     {
@@ -231,6 +232,22 @@ public class Room
     public void AddWallEdge(int edge)
     {
         walls.Add(edge);
+    }
+
+    /// <summary>
+    /// sets the radius of 
+    /// </summary>
+    /// <param name="incircleRadius"></param>
+    public void setIncircleRadius(float incircleRadius)
+    {
+        this.incircleRadius *= 0.95f;
+        if (incircleRadius < 0.0 || incircleRadius > this.incircleRadius) return;
+        this.incircleRadius = incircleRadius;
+    }
+
+    public float getIncircleRadius()
+    {
+        return incircleRadius;
     }
     
     /// <summary>
@@ -245,6 +262,8 @@ public class Room
             if (index >= 0 && index < allRooms.Count && allRooms[index] != this && !neighbors.Contains(allRooms[index]))
             {
                 neighbors.Add(allRooms[index]);
+                Point newNeighborCenter = allRooms[index].center;
+                setIncircleRadius(Point.getDistance(center, newNeighborCenter)/2);
             }
         }
     }

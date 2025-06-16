@@ -20,8 +20,6 @@ public class CollectibleItem : MonoBehaviour, IInteractable
                 Collider collider = GetComponent<Collider>();
                 if (collider != null) collider.enabled = false;
                 if (rend != null) rend.enabled = false;
-                
-                item.itemData.spawnObject.SetActive(false);
             }
         }
     
