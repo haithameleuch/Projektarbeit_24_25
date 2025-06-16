@@ -88,6 +88,9 @@ namespace Manager
 
             _currentRoom = startRoom;
             OnRoomEntered(_currentRoom);
+            
+            UIManager.Instance?.SetPlayer(_player);
+            CameraManager.Instance?.SetPlayer(_player);
         }
 
         /// <summary>
