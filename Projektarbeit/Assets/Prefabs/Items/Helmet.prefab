@@ -122,3 +122,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   item: {fileID: 11400000, guid: 10fb8d034f8e6e842935171eebfae62c, type: 2}
+  amount: 1

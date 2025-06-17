@@ -2,7 +2,10 @@ using UnityEngine;
 
 public class CollectibleItem : MonoBehaviour, IInteractable
 {
+    [SerializeField]
     public Item item;
+    [SerializeField]
+    public int amount;
 
     public void Initialize(Item item)
     {
@@ -14,7 +17,7 @@ public class CollectibleItem : MonoBehaviour, IInteractable
         Inventory_V3 inv = interactor.GetComponent<Inventory_V3>();
         if (inv != null)
         {
-            if (inv.addItem(item))
+            if (inv.addItem(new ItemStack(item,amount)))
             {
                 Renderer rend = GetComponent<Renderer>();
                 Collider collider = GetComponent<Collider>();

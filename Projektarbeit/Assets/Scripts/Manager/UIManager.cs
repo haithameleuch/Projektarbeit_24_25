@@ -30,9 +30,9 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
 
     // Reference to important onjects
     //private ItemInstance[,] playerInventory;
-    private Item[,] playerInventory;
+    private ItemStack[,] playerInventory;
     //private ItemInstance[,] playerEquipment;
-    private Item[,] playerEquipment;
+    private ItemStack[,] playerEquipment;
     private GameObject itemUI;
     private GameObject equipUI;
     private TMP_Text statText;
@@ -328,14 +328,14 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 if (playerInventory[i,j] != null)
                 {
                     // Set Background
-                    itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerInventory[i,j].getRarityColor();
+                    itemUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerInventory[i,j].item.getRarityColor();
                     // Set Icon
-                    itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i,j].item_icon;
+                    itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerInventory[i,j].item.item_icon;
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
 
                     // Set Name and Quantity
                     itemUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
-                        .SetText(playerInventory[i,j]._name + " (x"+ playerInventory[i,j].item_quantity+")");
+                        .SetText(playerInventory[i,j].item._name + " (x"+ playerInventory[i,j].amount+")");
                 }
                 else
                 {
@@ -358,14 +358,14 @@ public class UIManager : MonoBehaviour, IPointerClickHandler
                 if (playerEquipment[i, j] != null)
                 {                   
                     // Set Icon
-                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerEquipment[i, j].item_icon;
+                    equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().sprite = playerEquipment[i, j].item.item_icon;
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(0).GetComponent<Image>().enabled = true;
 
-                    equipUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerEquipment[i,j].getRarityColor();
+                    equipUI.transform.GetChild(i).GetChild(j).GetComponent<Image>().color = playerEquipment[i,j].item.getRarityColor();
 
                     // Set Name and Quantity
                     equipUI.transform.GetChild(i).GetChild(j).GetChild(1).GetChild(0).GetComponent<TMP_Text>()
-                        .SetText(playerEquipment[i, j]._name + " (x" + playerEquipment[i, j].item_quantity + ")");
+                        .SetText(playerEquipment[i, j].item._name + " (x" + playerEquipment[i, j].amount + ")");
                 }
                 else
                 {
