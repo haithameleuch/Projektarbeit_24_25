@@ -1,15 +1,16 @@
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
 
 public class Inventory_V3 : MonoBehaviour
 {
     [SerializeField]
-    private Item[,] inventory = new Item[4,5];
+    private ItemStack[,] inventory = new ItemStack[4,5];
     [SerializeField]
-    private Item[,] equipment = new Item[3,2];
+    private ItemStack[,] equipment = new ItemStack[3,2];
 
-    public bool addItem(Item toAdd)
+    public bool addItem(ItemStack toAdd)
     {
-        if (toAdd.item_quantity<1)
+        if (toAdd.amount<1)
         {
             return false;
         }
@@ -19,9 +20,9 @@ public class Inventory_V3 : MonoBehaviour
             for (int j = 0; j < inventory.GetLength(1); j++)
             {
                 if (inventory[i, j] != null) {
-                    if (toAdd._name == inventory[i, j]._name)
+                    if (toAdd.item == inventory[i, j].item)
                     {
-                        inventory[i, j].item_quantity += toAdd.item_quantity;
+                        inventory[i, j].amount += toAdd.amount;
                         return true;
                     }
                 }
@@ -49,8 +50,8 @@ public class Inventory_V3 : MonoBehaviour
         {
             if (inventory[row,col] != null)
             {
-                inventory[row, col].item_quantity -= 1;
-                if (inventory[row, col].item_quantity < 1)
+                inventory[row, col].amount -= 1;
+                if (inventory[row, col].amount < 1)
                 {
                     inventory[row, col] = null;              
                 }
@@ -66,10 +67,16 @@ public class Inventory_V3 : MonoBehaviour
         {
             for (int j = 0; j < inventory.GetLength(1); j++)
             {
-                if (inventory[i, j] == toRemove)
-                {
-                    inventory[i, j] = null;     
-                    return true;
+                if (inventory[i,j] != null) {
+                    if (inventory[i, j].item == toRemove)
+                    {
+                        inventory[i, j].amount--;
+                        if (inventory[i, j].amount < 1)
+                        {
+                            inventory[i, j] = null;
+                        }
+                        return true;
+                    }
                 }
             }
         }
@@ -82,12 +89,12 @@ public class Inventory_V3 : MonoBehaviour
         Debug.Log("Inventar:");
         foreach (var item in inventory)
         {
-            Debug.Log($"{item._name} - Menge: {item.item_quantity}");
+            Debug.Log($"{item.item._name} - Menge: {item.amount}");
         }
     }
 
-    public Item[,] getInventory() { return inventory; }
-    public Item[,] getEquipment() { return equipment; }
+    public ItemStack[,] getInventory() { return inventory; }
+    public ItemStack[,] getEquipment() { return equipment; }
 
     public (int,int) getItemByName(string name)
     {
@@ -95,7 +102,7 @@ public class Inventory_V3 : MonoBehaviour
         {
             for (int j = 0; j < inventory.GetLength(1); j++)
             {
-                if (inventory[i, j]._name == name)
+                if (inventory[i, j].item._name == name)
                 {
                     return (i,j);
                 }
@@ -110,8 +117,8 @@ public class Inventory_V3 : MonoBehaviour
         {
             if (equipment[row, col] != null)
             {
-                equipment[row, col].item_quantity -= 1;
-                if (equipment[row, col].item_quantity < 1)
+                equipment[row, col].amount -= 1;
+                if (equipment[row, col].amount < 1)
                 {
                     addItem(equipment[row, col]);
                     equipment[row, col] = null;
@@ -122,14 +129,14 @@ public class Inventory_V3 : MonoBehaviour
         return false;
     }
 
-    public Item getItemByIndex(int row, int col)
+    public ItemStack getItemByIndex(int row, int col)
     {
         return inventory[row, col];
     }
 
     public void useItem(int row, int col)
     {
-        Item item;
+        ItemStack item;
         if (row<4)
         {
             item = inventory[row, col];
@@ -138,6 +145,6 @@ public class Inventory_V3 : MonoBehaviour
         {
             item = equipment[row-4,col];
         }
-        item.use(this);
+        item.item.use(this);
     }
 }
