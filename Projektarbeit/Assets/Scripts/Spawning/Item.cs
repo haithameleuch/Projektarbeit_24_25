@@ -6,8 +6,6 @@ public abstract class Item : Spawnable
 {
     [SerializeField]
     public Sprite item_icon = null;
-    [SerializeField]
-    public int item_quantity = 1;
 
     public Color32 getRarityColor()
     {
