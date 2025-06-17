@@ -11,40 +11,29 @@ public class Equipment : Item
     [SerializeField]
     public List<int> stat_increases = new List<int>();
 
-    public bool is_equipped = false;
-
     public override void use(Inventory_V3 inv)
     {
-        Item[,] player_equip = inv.getEquipment();
+        ItemStack[,] player_equip = inv.getEquipment();
         int col = equip_slot % 2;
         int row = equip_slot / 2;
-        if (is_equipped)
+        if (player_equip[row,col] != null)
         {
-            Debug.Log(this._name+" was unequipped.");
-            is_equipped = false;
-
-            if (inv.addItem(this))
+            if (player_equip[row,col].item == this)
             {
-                player_equip[row,col]= null;
+                inv.addItem(player_equip[row, col]);
+                player_equip[row, col] = null;
+            }
+            else
+            {
+                inv.addItem(player_equip[row, col]);
+                inv.removeItem(this);
+                player_equip[row, col] = new ItemStack(this, 1);
             }
         }
         else
         {
-            Debug.Log(this._name + " was equipped.");
-            is_equipped = true;
-            if (player_equip[row, col] == null)
-            {
-                inv.removeItem(this);
-                player_equip[row, col] = this;
-            }
-            else
-            {
-                if (inv.addItem(player_equip[row,col]))
-                {
-                    inv.removeItem(this);
-                    player_equip[row, col] = this;
-                }
-            }
+            player_equip[row, col] = new ItemStack(this,1);
+            inv.removeItem(this);
         }
     }
 }
