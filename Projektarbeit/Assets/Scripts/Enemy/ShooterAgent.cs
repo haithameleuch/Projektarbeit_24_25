@@ -1,3 +1,4 @@
+using System;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
@@ -16,6 +17,8 @@ namespace Enemy
         /// Reference to the target GameObject (e.g., the player).
         /// </summary>
         public GameObject target;
+        
+        public GameObject enemy;
 
         /// <summary>
         /// Reference to the object pool manager that manages pooled projectile objects.
@@ -41,31 +44,43 @@ namespace Enemy
         {
             _rb = GetComponent<Rigidbody>();
 
-            // Freeze the agent so it doesn't move at all
             if (_rb != null)
                 _rb.constraints = RigidbodyConstraints.FreezeAll;
-            
-            // Start the coroutine to find the player
-            StartCoroutine(FindPlayerCoroutine());
-            // Rotate shootPoint to look directly at the target on the Y-axis
-            Vector3 directionToTarget = (target.transform.position - shootPoint.position).normalized;
-            Debug.Log(directionToTarget);
-            transform.forward = directionToTarget;
+
+            StartCoroutine(InitializeAfterTargetFound());
         }
-        
-        private IEnumerator FindPlayerCoroutine()
+
+        public void Update()
         {
+            if (enemy != null && shootPoint != null)
+            {
+                // Sync enemy rotation to shootPoint's rotation
+                enemy.transform.rotation = Quaternion.Euler(0f, shootPoint.rotation.eulerAngles.y, 0f);
+            }
+        }
+
+
+
+        private IEnumerator InitializeAfterTargetFound()
+        {
+            // Try to find the player if not yet assigned
             while (target == null)
             {
                 target = GameObject.FindWithTag("Player");
                 if (target == null)
                 {
-                    yield return new WaitForSeconds(0.5f); 
+                    yield return new WaitForSeconds(0.5f);
                 }
             }
-        
+
             isInitialized = true;
+
+            // Now it's safe to use target
+            Vector3 directionToTarget = (target.transform.position - shootPoint.position).normalized;
+            Debug.Log(directionToTarget);
+            transform.forward = directionToTarget;
         }
+
 
         /// <summary>
         /// Called at the beginning of each new episode.
