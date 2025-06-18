@@ -18,16 +18,19 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
     /// list of item rooms to distribute items
     /// </summary>
     private List<Room> _rooms;
+    
+    private Transform _parent;
 
     /// <summary>
     /// Initializes a new instance of the ItemSpawner class.
     /// </summary>
     /// <param name="items">Array of item instance objects to spawn.</param>
     /// <param name="rooms">item rooms to work with for the distributor</param>
-    public ItemSpawnerVoronoi(List<ItemInstance> items, List<Room> rooms)
+    public ItemSpawnerVoronoi(List<ItemInstance> items, List<Room> rooms, Transform parent)
     {
         _itemsDistributor = new Distributor<ItemInstance>(items);
         _rooms = rooms;
+        _parent = parent;
     }
 
     /// <summary>
@@ -60,7 +63,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                 Quaternion randomRotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
                 Vector3 newPosition = calcNewPosition(room.center, firstItemRadius, roomRadius, firstPositionAngle);
                 
-                GameObject spawnedItem = GameObject.Instantiate(items[0].itemData.spawnObject, newPosition, randomRotation);
+                GameObject spawnedItem = GameObject.Instantiate(items[0].itemData.spawnObject, newPosition, randomRotation, _parent);
                 spawnedItem.SetActive(true);
                 
                 CollectibleItem collectible = spawnedItem.GetComponent<CollectibleItem>();
@@ -96,8 +99,8 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                 Vector3 firstItemPosition = calcNewPosition(room.center, firstItemRadius, roomRadius, firstPositionAngle);
                 Vector3 secondItemPosition = calcNewPosition(room.center, secondItemRadius, roomRadius, secondPositionAngle);
                 
-                GameObject spawnedFirstItem = GameObject.Instantiate(items[0].itemData.spawnObject, firstItemPosition, randomRotation);
-                GameObject spawnedSecondItem = GameObject.Instantiate(items[1].itemData.spawnObject, secondItemPosition, randomRotation);
+                GameObject spawnedFirstItem = GameObject.Instantiate(items[0].itemData.spawnObject, firstItemPosition, randomRotation, _parent);
+                GameObject spawnedSecondItem = GameObject.Instantiate(items[1].itemData.spawnObject, secondItemPosition, randomRotation, _parent);
                 spawnedFirstItem.SetActive(true);
                 spawnedSecondItem.SetActive(true);
                 
@@ -121,7 +124,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
     {
         Vector3 safeSpawnPosition = Vector3.zero;
         Quaternion safeSpawnRotation = Quaternion.identity;
-        GameObject tempItem = GameObject.Instantiate(item.itemData.spawnObject, safeSpawnPosition, safeSpawnRotation);
+        GameObject tempItem = GameObject.Instantiate(item.itemData.spawnObject, safeSpawnPosition, safeSpawnRotation, _parent);
         tempItem.SetActive(false);
         Renderer tempRenderer = tempItem.GetComponent<Renderer>();
         Bounds itemBounds = tempRenderer.bounds;

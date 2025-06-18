@@ -1144,6 +1144,15 @@ MonoBehaviour:
     itemQuantity: 2
   - itemData: {fileID: 11400000, guid: 36ae0ca13c0017b4a9f57d43f8e0592f, type: 2}
     itemQuantity: 3
+  minigamePrefabs:
+  - {fileID: 5611471497110757971, guid: 4da05c4d5e1d899408b0f2dddd9bc012, type: 3}
+  - {fileID: 424014852115387458, guid: 950c49bd7e0b271409e0132ec74d30d9, type: 3}
+  enemyPrefabs:
+  - {fileID: 4375913299302485504, guid: 1fba511d5c89af40aaf5ef1978bd7b4c, type: 3}
+  - {fileID: 8645800439622117225, guid: 8a996f45cfadf12fe84f4a0034fff505, type: 3}
+  - {fileID: 9203938796069245880, guid: 783bd9e680010e5eaa1a8ef450188dc6, type: 3}
+  - {fileID: 7346113392066664111, guid: c9e1b28ef2e43711790297c83e738ba5, type: 3}
+  - {fileID: 8042708415579397192, guid: 322986cd71b0efc9b97ecb95fdb0f49d, type: 3}
 --- !u!4 &1582340271
 Transform:
   m_ObjectHideFlags: 0
