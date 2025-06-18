@@ -28,12 +28,17 @@ namespace Manager
         
         [SerializeField] private List<ItemInstance> items;
 
+        [SerializeField] private List<GameObject> minigamePrefabs;
+        
+        [SerializeField] private List<GameObject> enemyPrefabs;
+
 
         private GameObject _player;
         private DungeonGraph _dungeon;
         private Room _currentRoom;
         
         private List<ISpawnerVoronoi> _spawners;
+        private EnemySpawnerVoronoi _enemySpawner;
 
         /// <summary>
         /// Initializes the game by starting the dungeon wait coroutine.
@@ -56,12 +61,19 @@ namespace Manager
 
             _dungeon = voronoiGenerator.GetDungeonGraph();
             List<Room> rooms = _dungeon.GetAllItemRooms();
+            List<Room> minigameRooms = _dungeon.GetAllMiniGameRooms();
+            List<Room> enemyRooms = _dungeon.GetAllEnemyRooms();
+            
             _spawners = new List<ISpawnerVoronoi>()
             {
-                new ItemSpawnerVoronoi(items, rooms)
+                new ItemSpawnerVoronoi(items, rooms, transform),
+                new MiniGameSpawnerVoronoi(minigameRooms, minigamePrefabs, transform)
             };
+            
+            
             PopulateDungeon();
             SpawnPlayerAtStartRoom();
+            _enemySpawner = new EnemySpawnerVoronoi(enemyRooms, enemyPrefabs, this.transform);
         }
 
         /// <summary>
@@ -162,6 +174,10 @@ namespace Manager
                     EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Enemy:
+                    //if (!newRoom.visited)
+                    {
+                        _enemySpawner.ActivateEnemyInRoom(newRoom);
+                    }
                     EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Boss:
