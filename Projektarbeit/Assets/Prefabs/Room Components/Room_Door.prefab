@@ -492,6 +492,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wall_Entrance
       objectReference: {fileID: 0}
+    - target: {fileID: 4463566038210007903, guid: 49a5f24a081cbbc44bd23d76c2869723, type: 3}
+      propertyPath: m_TagString
+      value: Wall
+      objectReference: {fileID: 0}
     - target: {fileID: 6966706505589406848, guid: 49a5f24a081cbbc44bd23d76c2869723, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -589,3 +593,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
