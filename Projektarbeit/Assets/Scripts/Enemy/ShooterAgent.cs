@@ -32,7 +32,7 @@ namespace Enemy
 
         private float _healthNormalized;
         private Rigidbody _rb;
-        private bool isInitialized = false;
+        //private bool isInitialized = false; // NOT USED!
         private float _fireRate = 0.5f; // Zeit in Sekunden zwischen den Schüssen
         private float _nextFireTime = 0f; // Zeitpunkt, wann der nächste Schuss möglich ist
 
@@ -73,7 +73,7 @@ namespace Enemy
                 }
             }
 
-            isInitialized = true;
+            // isInitialized = true; NOT USED!
 
             // Now it's safe to use target
             Vector3 directionToTarget = (target.transform.position - shootPoint.position).normalized;
