@@ -56,7 +56,6 @@ public class UIManager : MonoBehaviour
     
     private void Start()
     {
-        player = GameObject.Find("Player");
         itemUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Items").gameObject;
     }
 
@@ -131,8 +130,8 @@ public class UIManager : MonoBehaviour
             {
                 if (isPauseVisible)
                 {
-                    player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                    player.GetComponent<PlayerShooting>().enabled = true;
+                    _player.GetComponent<FirstPersonPlayerController>().enabled = true;
+                    _player.GetComponent<PlayerShooting>().enabled = true;
 
                     pause.gameObject.SetActive(false);
 
@@ -146,8 +145,8 @@ public class UIManager : MonoBehaviour
                 }
                 else
                 {
-                    player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                    player.GetComponent<PlayerShooting>().enabled = false;
+                    _player.GetComponent<FirstPersonPlayerController>().enabled = false;
+                    _player.GetComponent<PlayerShooting>().enabled = false;
 
                     HidePanel();
                     pause.gameObject.SetActive(true);
@@ -171,8 +170,8 @@ public class UIManager : MonoBehaviour
                 {
                     HidePanel();
 
-                    player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                    player.GetComponent<PlayerShooting>().enabled = false;
+                    _player.GetComponent<FirstPersonPlayerController>().enabled = false;
+                    _player.GetComponent<PlayerShooting>().enabled = false;
 
                     itemUI.transform.parent.gameObject.SetActive(true);
 
@@ -188,8 +187,8 @@ public class UIManager : MonoBehaviour
                 else
                 {
 
-                    player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                    player.GetComponent<PlayerShooting>().enabled = true;
+                    _player.GetComponent<FirstPersonPlayerController>().enabled = true;
+                    _player.GetComponent<PlayerShooting>().enabled = true;
 
                     itemUI.transform.parent.gameObject.SetActive(false);
 
