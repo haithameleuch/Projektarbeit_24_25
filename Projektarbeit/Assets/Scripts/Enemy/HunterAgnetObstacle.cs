@@ -19,7 +19,7 @@ namespace Enemy
         private float stuckThreshold = 0.01f;
         private float stuckTimeLimit = 0.3f;
         private float lastReward = 0f;
-        private bool isInitialized = false;
+        // private bool isInitialized = false;  // NOT USED!
 
         // Statistik-Tracking
         private List<float> episodeRewards = new List<float>();
@@ -47,7 +47,7 @@ namespace Enemy
                     yield return new WaitForSeconds(0.5f); 
                 }
             }
-            isInitialized = true;
+            // isInitialized = true; // NOT USED!
         }
 
         public override void OnEpisodeBegin()

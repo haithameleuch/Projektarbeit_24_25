@@ -101,10 +101,18 @@ public class CanvasDraw : MonoBehaviour
 
         // Create a new texture with the specified width and height
         generatedTexture =
-            new Texture2D(totalYPixels, totalXPixels, TextureFormat.RGBA32, false); // RGBA32 format for color
-        ResetColor(); // Reset the canvas to white
-        generatedTexture.filterMode = FilterMode.Point; // Pixelated look
-        material.SetTexture(BaseMap, generatedTexture); // Assign texture to the material
+            new Texture2D(totalYPixels, totalXPixels, TextureFormat.RGBA32, false);
+        generatedTexture.filterMode = FilterMode.Point;
+        ResetColor();
+
+        // creates material copy instance
+        material = new Material(material);
+        material.SetTexture(BaseMap, generatedTexture);
+        
+        var rend = GetComponent<Renderer>();
+        if (rend != null)
+            rend.material = material;
+
 
         // Precompute scaling factors to translate mouse position to pixel coordinates
         _xMult = Math.Abs(totalXPixels / (bottomRightCorner.position.x - topLeftCorner.position.x));
@@ -123,6 +131,9 @@ public class CanvasDraw : MonoBehaviour
             - Input.GetMouseButton(1): Executes for every frame the button is held down.
 
         */
+        // Only the active canvas is allowed to draw.
+        if (!ToDraw || CameraManager.ActiveCanvasDraw != this)
+            return;
 
         if (ToDraw)
         {
