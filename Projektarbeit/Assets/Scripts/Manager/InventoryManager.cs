@@ -31,13 +31,11 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
     [SerializeField]
     private GameObject slotPrefab;
 
+    private bool isSetup = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        player = GameObject.Find("Player");
-        playerInventory = player.GetComponent<Inventory_V3>().getInventory();
-        playerEquipment = player.GetComponent<Inventory_V3>().getEquipment();
         equipUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("EquipmentSlots").gameObject;
         itemUI = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Items").gameObject;
         statText = GameObject.Find("UIManager").transform.Find("Inventory").transform.Find("Equipment").transform.Find("DetailPanel").transform.Find("StatDetails").gameObject.GetComponent<TMP_Text>();
@@ -47,12 +45,19 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
         dummies[1, 1] = boots;
         dummies[2, 0] = rightHand;
         dummies[2, 1] = leftHand;
-        setupUI();
     }
-
+ 
     // Update is called once per frame
     void Update()
     {
+        if (!isSetup)
+        {
+            player = GameObject.Find("Player(Clone)");
+            playerInventory = player.GetComponent<Inventory_V3>().getInventory();
+            playerEquipment = player.GetComponent<Inventory_V3>().getEquipment();
+            setupUI();
+            isSetup = true;
+        }
         updateUI();
         if (selectedSlot.Item1 != -1)
         {

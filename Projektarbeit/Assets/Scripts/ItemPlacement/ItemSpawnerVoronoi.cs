@@ -68,7 +68,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                 var collectible = spawnedItem.GetComponent<CollectibleItem>();
                 if (collectible is not null)
                 {
-                    collectible.item = itemInstance;
+                    //collectible.item = itemInstance;
                 }
             }
         }
