@@ -2,132 +2,73 @@ using Unity.Cinemachine;
 using UnityEngine;
 
 /// <summary>
-/// Manages camera switching between top-down and first-person views and enables the corresponding player movement controls.
+/// Manages camera switching between first-person and canvas views and enables the corresponding player movement controls.
 /// </summary>
 public class CameraManager : MonoBehaviour
 {
     /// <summary>
-    /// The Cinemachine camera used for the top-down view.
+    /// Singleton instance of the CameraManager.
     /// </summary>
-    [SerializeField]
-    private CinemachineCamera topDownCamera;
-
+    public static CameraManager Instance { get; private set; }
+    
+    public static CanvasDraw ActiveCanvasDraw { get; private set; }
+    
     /// <summary>
-    /// The Cinemachine camera used for the first-person view.
+    /// The key used to toggle between views (for debugging only).
     /// </summary>
     [SerializeField]
-    private CinemachineCamera firstPersonCamera;
-
+    private KeyCode switchKey = KeyCode.Tab;
+    
     /// <summary>
     /// The Cinemachine camera used for the canvas view.
     /// </summary>
     [SerializeField]
     private CinemachineCamera canvCamera;
+    
+    private CinemachineCamera _firstPersonCamera;
+    private FirstPersonPlayerController _firstPersonPlayerController;
+    private GameObject _player;
 
-    /// <summary>
-    /// The key used to toggle between the two camera views.
-    /// </summary>
-    [SerializeField]
-    private KeyCode switchKey = KeyCode.Tab;
-
-    /// <summary>
-    /// The script controlling player movement in the top-down view.
-    /// </summary>
-    [SerializeField]
-    private TopDownPlayerController topDownPlayerController;
-
-    /// <summary>
-    /// The script controlling player movement in the first-person view.
-    /// </summary>
-    [SerializeField]
-    private FirstPersonPlayerController firstPersonPlayerController;
-
-    /// <summary>
-    /// The shooting script used for the top-down view.
-    /// </summary>
-    [SerializeField]
-    private TopDownShooting topDownShooting;
-
-    /// <summary>
-    /// The shooting script used for the first-person view.
-    /// </summary>
-    [SerializeField]
-    private PlayerShooting firstPersonShooting;
-
-    /// <summary>
-    /// The transform representing the shooting point for projectiles.
-    /// </summary>
-    [SerializeField]
-    private Transform shootPoint;
-
-    /// <summary>
-    /// The offset of the shooting point in the top-down view.
-    /// </summary>
-    private Vector3 topDownShootPointOffset = Vector3.zero;
-
-    /// <summary>
-    /// The offset of the shooting point in the first-person view.
-    /// </summary>
-    private Vector3 firstPersonShootPointOffset = new Vector3(0, 0, 1);
-
-    /// <summary>
-    /// Stores the player's renderer components.
-    /// </summary>
-    private Renderer[] playerRenderers;
-
-    /// <summary>
-    /// Initializes the starting camera view to the top-down perspective.
-    /// </summary>
-    private void Start()
+    private void Awake()
     {
-        GameObject player = GameObject.Find("Capsule");
-        if (player != null)
+        if (Instance != null && Instance != this)
         {
-            playerRenderers = player.GetComponentsInChildren<Renderer>();
+            Destroy(gameObject);
+            return;
         }
 
-        SetFirstPersonView();
+        Instance = this;
+        
+        DontDestroyOnLoad(gameObject);
     }
 
     /// <summary>
-    /// Monitors for input to toggle between the two camera views.
+    /// DEBUG ONLY: Allows switching back to FirstPersonView via key.
     /// </summary>
     private void Update()
     {
         if (Input.GetKeyDown(switchKey))
         {
             SetFirstPersonView();
-            
-            // THE CAMERA VIEW CAN BE CHANGED (ONLY FOR DEBUG!)
-            /*if (topDownCamera.Priority > firstPersonCamera.Priority)
-            {
-                SetFirstPersonView();
-            }
-            else
-            {
-                SetTopDownView();
-            }*/
         }
     }
-
-    /// <summary>
-    /// Activates the top-down view.
-    /// </summary>
-    private void SetTopDownView()
+    
+    public void SetActiveCanvas(CanvasDraw canvas)
     {
-        SetPlayerVisible(true);
+        ActiveCanvasDraw = canvas;
+    }
+    
+    /// <summary>
+    /// Sets the references to the player, its camera, and controller.
+    /// </summary>
+    public void SetPlayer(GameObject player)
+    {
+        _player = player;
 
-        topDownCamera.Priority = 10;
-        firstPersonCamera.Priority = 5;
-        canvCamera.Priority = 5;
+        _firstPersonPlayerController = player.GetComponent<FirstPersonPlayerController>();
+        _firstPersonCamera = player.transform.Find("FirstPersonCam")?.GetComponent<CinemachineCamera>();
 
-        topDownPlayerController.enabled = true;
-        firstPersonPlayerController.enabled = false;
-        topDownShooting.enabled = true;
-        firstPersonShooting.enabled = false;
-        CanvasDraw.ToDraw = false;
-
-        shootPoint.localPosition = topDownShootPointOffset;
+        SetFirstPersonView();
     }
 
     /// <summary>
@@ -136,19 +77,16 @@ public class CameraManager : MonoBehaviour
     private void SetFirstPersonView()
     {
         GameInputManager.Instance.MouseLocked(true);
+        
+        if (canvCamera.gameObject.activeSelf)
+            canvCamera.gameObject.SetActive(false);
 
-        topDownCamera.Priority = 5;
-        firstPersonCamera.Priority = 10;
+        _firstPersonCamera.Priority = 10;
         canvCamera.Priority = 5;
 
         SetPlayerVisible(true);
-        topDownPlayerController.enabled = false;
-        firstPersonPlayerController.enabled = true;
-        topDownShooting.enabled = false;
-        firstPersonShooting.enabled = true;
+        _firstPersonPlayerController.enabled = true;
         CanvasDraw.ToDraw = false;
-
-        shootPoint.localPosition = firstPersonShootPointOffset;
     }
 
     /// <summary>
@@ -157,55 +95,67 @@ public class CameraManager : MonoBehaviour
     private void SetCanvView()
     {
         GameInputManager.Instance.MouseLocked(false);
+        
+        if (!canvCamera.gameObject.activeSelf)
+            canvCamera.gameObject.SetActive(true);
 
-        topDownCamera.Priority = 5;
-        firstPersonCamera.Priority = 5;
+        _firstPersonCamera.Priority = 5;
         canvCamera.Priority = 10;
 
         SetPlayerVisible(false);
-        topDownPlayerController.enabled = false;
-        firstPersonPlayerController.enabled = false;
-        topDownShooting.enabled = false;
-        firstPersonShooting.enabled = false;
+        _firstPersonPlayerController.enabled = false;
         CanvasDraw.ToDraw = true;
-
-        shootPoint.localPosition = Vector3.zero;
     }
 
     /// <summary>
-    /// Toggles the visibility of the player.
+    /// Shows or hides all Renderer components of the player.
     /// </summary>
     /// <param name="visible">Whether the player should be visible.</param>
     private void SetPlayerVisible(bool visible)
     {
-        if (playerRenderers != null)
+        if (_player is null) return;
+
+        var renderers = _player.GetComponentsInChildren<Renderer>();
+        foreach (var renderer in renderers)
         {
-            foreach (Renderer renderer in playerRenderers)
-            {
+            if (renderer is not null)
                 renderer.enabled = visible;
-            }
         }
+    }
+    
+    /// <summary>
+    /// Moves and orients the canvas camera to a specific target (e.g., the drawing center).
+    /// </summary>
+    public void SetCanvasTarget(Transform target)
+    {
+        if (target == null)
+        {
+            Debug.LogWarning("SetCanvasTarget called with null target.");
+            return;
+        }
+        
+        // activate the canvas camera if it is disabled
+        if (!canvCamera.gameObject.activeSelf)
+            canvCamera.gameObject.SetActive(true);
+
+        Vector3 offset = -target.forward * 2f;
+        canvCamera.transform.position = target.position + offset;
+        canvCamera.transform.LookAt(target);
     }
 
     /// <summary>
-    /// Called when the script instance is being enabled.
-    /// Subscribes to the OnActivateCanvasView event to ensure the camera switches to Canvas View
-    /// whenever the event is triggered.
+    /// Subscribes to the OnActivateCanvasView event.
     /// </summary>
     private void OnEnable()
     {
-        // Subscribe to the Canvas View activation event
         EventManager.OnActivateCanvasView += SetCanvView;
     }
 
     /// <summary>
-    /// Called when the script instance is being disabled.
-    /// Unsubscribes from the OnActivateCanvasView event to prevent potential memory leaks
-    /// or unexpected behavior if the event is triggered while the script is inactive.
+    /// Unsubscribes from the OnActivateCanvasView event.
     /// </summary>
     private void OnDisable()
     {
-        // Unsubscribe from the event to prevent memory leaks
         EventManager.OnActivateCanvasView -= SetCanvView;
     }
 }

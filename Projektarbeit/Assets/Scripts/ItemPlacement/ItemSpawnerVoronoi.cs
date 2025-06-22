@@ -12,28 +12,72 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
     /// <summary>
     /// Distributor that takes all items and just gives one item at a time
     /// </summary>
-    private Distributor<ItemInstance> _itemsDistributor;
+    private readonly Distributor<ItemInstance> _itemsDistributor;
 
     /// <summary>
     /// list of item rooms to distribute items
     /// </summary>
-    private List<Room> _rooms;
+    private readonly List<Room> _rooms;
+    
+    /// <summary>
+    /// Parent transform to group all spawned items in the hierarchy.
+    /// </summary>
+    private readonly Transform _parent;
 
     /// <summary>
-    /// Initializes a new instance of the ItemSpawner class.
+    /// Creates a new ItemSpawner for given items and rooms.
     /// </summary>
-    /// <param name="items">Array of item instance objects to spawn.</param>
-    /// <param name="rooms">item rooms to work with for the distributor</param>
-    public ItemSpawnerVoronoi(List<ItemInstance> items, List<Room> rooms)
+    /// <param name="items">List of item instances to spawn.</param>
+    /// <param name="rooms">List of rooms where items should be placed.</param>
+    /// <param name="parent">Parent transform for hierarchy organization.</param>
+    public ItemSpawnerVoronoi(List<ItemInstance> items, List<Room> rooms, Transform parent)
     {
         _itemsDistributor = new Distributor<ItemInstance>(items);
         _rooms = rooms;
+        _parent = parent;
     }
-
+    
     /// <summary>
-    /// Spawns items in a specified room.
+    /// Spawns 1–3 items in each room, arranged in a circle around the room center.
+    /// Items are instantiated slightly inside the incircle to avoid room borders.
     /// </summary>
     public void SpawnInRoom()
+    {
+        foreach (var room in _rooms)
+        {
+            var itemCount = Random.Range(1, 4); // 1–3 items per room
+            var radius = room.getIncircleRadius();
+
+            for (var i = 0; i < itemCount; i++)
+            {
+                var itemInstance = _itemsDistributor.GetRandomElement();
+            
+                // Place items in a circular pattern
+                var angle = i * (360f / itemCount);
+                var distanceFromCenter = Mathf.Min(radius * 0.6f, 3f); // keep items within safe bounds
+            
+                var xOffset = Mathf.Cos(angle * Mathf.Deg2Rad) * distanceFromCenter;
+                var zOffset = Mathf.Sin(angle * Mathf.Deg2Rad) * distanceFromCenter;
+            
+                var spawnPos = new Vector3(room.center.x + xOffset, 0.5f, room.center.y + zOffset);
+                Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
+            
+                var spawnedItem = Object.Instantiate(itemInstance.itemData.spawnObject, spawnPos, rotation, _parent);
+                spawnedItem.SetActive(true);
+            
+                var collectible = spawnedItem.GetComponent<CollectibleItem>();
+                if (collectible is not null)
+                {
+                    collectible.item = itemInstance;
+                }
+            }
+        }
+    }
+    
+    
+    
+    // --- PETER VERSION --- //
+    /*public void SpawnInRoom()
     {
         foreach (Room room in _rooms)
         {
@@ -60,7 +104,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                 Quaternion randomRotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
                 Vector3 newPosition = calcNewPosition(room.center, firstItemRadius, roomRadius, firstPositionAngle);
                 
-                GameObject spawnedItem = GameObject.Instantiate(items[0].itemData.spawnObject, newPosition, randomRotation);
+                GameObject spawnedItem = GameObject.Instantiate(items[0].itemData.spawnObject, newPosition, randomRotation, _parent);
                 spawnedItem.SetActive(true);
                 
                 CollectibleItem collectible = spawnedItem.GetComponent<CollectibleItem>();
@@ -96,8 +140,8 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                 Vector3 firstItemPosition = calcNewPosition(room.center, firstItemRadius, roomRadius, firstPositionAngle);
                 Vector3 secondItemPosition = calcNewPosition(room.center, secondItemRadius, roomRadius, secondPositionAngle);
                 
-                GameObject spawnedFirstItem = GameObject.Instantiate(items[0].itemData.spawnObject, firstItemPosition, randomRotation);
-                GameObject spawnedSecondItem = GameObject.Instantiate(items[1].itemData.spawnObject, secondItemPosition, randomRotation);
+                GameObject spawnedFirstItem = GameObject.Instantiate(items[0].itemData.spawnObject, firstItemPosition, randomRotation, _parent);
+                GameObject spawnedSecondItem = GameObject.Instantiate(items[1].itemData.spawnObject, secondItemPosition, randomRotation, _parent);
                 spawnedFirstItem.SetActive(true);
                 spawnedSecondItem.SetActive(true);
                 
@@ -121,7 +165,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
     {
         Vector3 safeSpawnPosition = Vector3.zero;
         Quaternion safeSpawnRotation = Quaternion.identity;
-        GameObject tempItem = GameObject.Instantiate(item.itemData.spawnObject, safeSpawnPosition, safeSpawnRotation);
+        GameObject tempItem = GameObject.Instantiate(item.itemData.spawnObject, safeSpawnPosition, safeSpawnRotation, _parent);
         tempItem.SetActive(false);
         Renderer tempRenderer = tempItem.GetComponent<Renderer>();
         Bounds itemBounds = tempRenderer.bounds;
@@ -145,5 +189,5 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
             return 180f;
         }
         return (Mathf.Atan(itemRadius / roomRadius) * Mathf.Rad2Deg)*2;
-    }
+    }*/
 }

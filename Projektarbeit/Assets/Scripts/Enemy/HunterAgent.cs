@@ -28,7 +28,7 @@ namespace Enemy
         private float _stuckTimer;
         private Rigidbody _rb;
         private float _prevDistance;
-		private bool isInitialized = false;
+		// private bool isInitialized = false; // NOT USED!
 
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace Enemy
             	}
         	}
         
-        	isInitialized = true;
+        	// isInitialized = true; // NOT USED!
     	}
 
 

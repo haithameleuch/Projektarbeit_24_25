@@ -202,7 +202,7 @@ namespace Enemy
         {
             if (prefabToSpawn != null)
             {
-                Instantiate(prefabToSpawn, transform.position, transform.rotation);
+                Instantiate(prefabToSpawn, transform.position, transform.rotation, transform.parent);
             }
             else
             {

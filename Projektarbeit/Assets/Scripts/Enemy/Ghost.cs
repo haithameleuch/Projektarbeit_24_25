@@ -24,7 +24,7 @@ namespace Enemy
         private float _stuckTimer;
         private Rigidbody _rb;
         private float _prevDistance;
-        private bool isInitialized = false;
+        // private bool isInitialized = false; // NOT USED!
 
         public override void Initialize()
         {
@@ -51,7 +51,7 @@ namespace Enemy
                 }
             }
 
-            isInitialized = true;
+            // isInitialized = true; // NOT USED!
         }
 
         public override void OnEpisodeBegin()
