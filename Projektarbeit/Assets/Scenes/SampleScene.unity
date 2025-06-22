@@ -1059,15 +1059,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tmpText: {fileID: 1694553612}
   pause: {fileID: 569495315}
-  helmet: {fileID: 21300000, guid: e96007aff5ad3cd4191a19282e4a9ade, type: 3}
-  body: {fileID: 21300000, guid: a714d4bb98badfe40b6b6f10ad4ccfbc, type: 3}
-  legs: {fileID: 21300000, guid: fedd437e52625354a800bfde6a7f63b2, type: 3}
-  boots: {fileID: 21300000, guid: 8d2ec8ae17f502e48b1273aa8e64f764, type: 3}
-  rightHand: {fileID: 21300000, guid: 169dea20b51f72c4eac840ae5ef03954, type: 3}
-  leftHand: {fileID: 21300000, guid: 456a6f8ac95e22841b551c72f2ca47bb, type: 3}
-  rowPrefab: {fileID: 537439485919983965, guid: 508a221589879b642829b2bbe08e9aac, type: 3}
-  slotPrefab: {fileID: 8864310544714852560, guid: 0d1b1455782d12b4ea6db3e26570623c, type: 3}
-  emptyPrefab: {fileID: 3823725215152487871, guid: 800b877bb65a9aa4789ea78916918d50, type: 3}
 --- !u!114 &661638788
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2315,7 +2306,6 @@ GameObject:
   - component: {fileID: 1561343258}
   - component: {fileID: 1561343257}
   - component: {fileID: 1561343260}
-  - component: {fileID: 1561343261}
   - component: {fileID: 1561343262}
   m_Layer: 0
   m_Name: Player
@@ -2417,18 +2407,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHealth: 10
   _currentHealth: 10
---- !u!114 &1561343261
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1561343253}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d60c71a4310c28946bfa73e60ee21477, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1561343262
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3305,6 +3283,7 @@ GameObject:
   - component: {fileID: 2146937771}
   - component: {fileID: 2146937770}
   - component: {fileID: 2146937769}
+  - component: {fileID: 2146937772}
   m_Layer: 0
   m_Name: Inventory
   m_TagString: Untagged
@@ -3397,6 +3376,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2146937767}
   m_CullTransparentMesh: 1
+--- !u!114 &2146937772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2146937767}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cdfc904be7d1ef6499e546d2515e6ab3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  helmet: {fileID: 21300000, guid: e96007aff5ad3cd4191a19282e4a9ade, type: 3}
+  body: {fileID: 21300000, guid: a714d4bb98badfe40b6b6f10ad4ccfbc, type: 3}
+  legs: {fileID: 21300000, guid: fedd437e52625354a800bfde6a7f63b2, type: 3}
+  boots: {fileID: 21300000, guid: 8d2ec8ae17f502e48b1273aa8e64f764, type: 3}
+  rightHand: {fileID: 21300000, guid: 169dea20b51f72c4eac840ae5ef03954, type: 3}
+  leftHand: {fileID: 21300000, guid: 456a6f8ac95e22841b551c72f2ca47bb, type: 3}
+  rowPrefab: {fileID: 537439485919983965, guid: 508a221589879b642829b2bbe08e9aac, type: 3}
+  slotPrefab: {fileID: 8864310544714852560, guid: 0d1b1455782d12b4ea6db3e26570623c, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
