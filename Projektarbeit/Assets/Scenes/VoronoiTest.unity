@@ -944,6 +944,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cdfc904be7d1ef6499e546d2515e6ab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  itemUI: {fileID: 289684600}
+  equipUI: {fileID: 1414574136}
+  statText: {fileID: 615470417}
   helmet: {fileID: 21300000, guid: e96007aff5ad3cd4191a19282e4a9ade, type: 3}
   body: {fileID: 21300000, guid: a714d4bb98badfe40b6b6f10ad4ccfbc, type: 3}
   legs: {fileID: 21300000, guid: fedd437e52625354a800bfde6a7f63b2, type: 3}
