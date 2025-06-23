@@ -30,6 +30,8 @@ public class UIManager : MonoBehaviour
 
     // Reference to important onjects
     private GameObject itemUI;
+    
+    private InventoryManager inventoryManager;
 
     /// <summary>
     /// Ensures there is only one instance of the UIManager in the scene.
@@ -47,11 +49,18 @@ public class UIManager : MonoBehaviour
         Instance = this; // Assign this instance as the singleton.
 
         DontDestroyOnLoad(gameObject); // Ensure this GameObject persists across scenes.
+        
+        inventoryManager = GetComponentInChildren<InventoryManager>(true);
     }
 
     public void SetPlayer(GameObject newPlayer)
     {
         _player = newPlayer;
+        
+        if (inventoryManager != null)
+        {
+            inventoryManager.SetPlayer(newPlayer);
+        }
     }
     
     private void Start()
@@ -88,7 +97,7 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        //Check wether "P" is pressed to toggle the pause menu
+        //Check weather "P" is pressed to toggle the pause menu
         if (Input.GetKeyDown(KeyCode.P))
         {
             if (isPauseVisible)
