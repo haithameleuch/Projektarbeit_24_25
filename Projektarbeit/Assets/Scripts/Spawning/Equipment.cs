@@ -24,7 +24,7 @@ public class Equipment : Item
     public override void use(Inventory_V3 inv)
     {
         // Reference to the equipmentslots
-        ItemStack[,] player_equip = inv.getEquipment();
+        ItemInstance[,] player_equip = inv.getEquipment();
 
         // The column of the equipment slot
         int col = equip_slot % 2;
@@ -39,7 +39,7 @@ public class Equipment : Item
             inv.addItem(player_equip[row, col]);
 
             // If the item in the slot is of this type, unequip it / if not add this item
-            if (player_equip[row,col].item == this)
+            if (player_equip[row,col].itemData == this)
             {
                 // Remove item from equipment
                 player_equip[row, col] = null;
@@ -49,13 +49,13 @@ public class Equipment : Item
                 // Remove this item from the inventory
                 inv.removeItem(this);
                 // Place this item in its equipment slot
-                player_equip[row, col] = new ItemStack(this, 1);
+                player_equip[row, col] = new ItemInstance(this, 1);
             }
         }
         else
         {
             // Place this item in the empty slot
-            player_equip[row, col] = new ItemStack(this,1);
+            player_equip[row, col] = new ItemInstance(this,1);
             // Remove this item from the inventory
             inv.removeItem(this);
         }

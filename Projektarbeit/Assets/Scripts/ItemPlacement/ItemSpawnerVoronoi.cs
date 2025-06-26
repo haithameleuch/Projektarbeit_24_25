@@ -62,7 +62,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                 var spawnPos = new Vector3(room.center.x + xOffset, 0.5f, room.center.y + zOffset);
                 Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
             
-                var spawnedItem = Object.Instantiate(itemInstance.itemData.spawnObject, spawnPos, rotation, _parent);
+                var spawnedItem = Object.Instantiate(itemInstance.itemData._model, spawnPos, rotation, _parent);
                 spawnedItem.SetActive(true);
             
                 var collectible = spawnedItem.GetComponent<CollectibleItem>();

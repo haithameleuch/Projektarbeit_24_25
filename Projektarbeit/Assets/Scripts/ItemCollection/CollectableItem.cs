@@ -17,7 +17,7 @@ public class CollectibleItem : MonoBehaviour, IInteractable
         Inventory_V3 inv = interactor.GetComponent<Inventory_V3>();
         if (inv != null)
         {
-            if (inv.addItem(new ItemStack(item,amount)))
+            if (inv.addItem(new ItemInstance(item,amount)))
             {
                 Renderer rend = GetComponent<Renderer>();
                 Collider collider = GetComponent<Collider>();

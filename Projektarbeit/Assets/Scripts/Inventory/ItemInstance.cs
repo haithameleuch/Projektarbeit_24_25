@@ -9,20 +9,21 @@ using UnityEngine.Serialization;
 [System.Serializable]
 public class ItemInstance
 {
-    public SpawnableData itemData;
+    public Item itemData;
     [Range(0,100)]
     public int itemQuantity = 1;
 
-    public ItemInstance(SpawnableData itemData)
+    public ItemInstance(Item itemData,int amount)
     {
-        this.itemData = itemData;    
+        this.itemData = itemData; 
+        this.itemQuantity = amount;
     }
     public ItemInstance(string name, GameObject spawnedObject, float probability, Sprite icon, int quantity)
     {
-        itemData.spawnName = name;
-        itemData.spawnObject = spawnedObject;
-        itemData.spawnProbability = probability;
-        itemData.spawnSprite = icon;
+        itemData._name = name;
+        itemData._model = spawnedObject;
+        itemData.rarity = probability;
+        itemData.item_icon = icon;
         itemQuantity = quantity;
     }
 
@@ -34,30 +35,5 @@ public class ItemInstance
 
     public ItemInstance()
     {
-    }
-
-    public Color32 getRarityColor()
-    {
-        if (itemData.spawnProbability < 25)
-        {
-            return new Color32(255,255,0,100);
-        }
-        else if (itemData.spawnProbability < 50)
-        {
-            return new Color32(255,0,255,100);
-        }
-        else if(itemData.spawnProbability < 75)
-        {
-            return new Color32(0,0,255,100);
-        }
-        else
-        {
-            return new Color32(0,255,0,100);
-        }
-    }
-
-    public void use()
-    {
-        Debug.Log("Used: "+itemData.spawnName);
     }
 }
