@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Helmet 2
   m_EditorClassIdentifier: 
   _name: Helmet of Test
-  _model: {fileID: 0}
+  _model: {fileID: 1898624989463344962, guid: 9ce01709fe89192428e31aacffdef291, type: 3}
   rarity: 5.4
   item_icon: {fileID: 21300000, guid: e96007aff5ad3cd4191a19282e4a9ade, type: 3}
   equip_slot: 0

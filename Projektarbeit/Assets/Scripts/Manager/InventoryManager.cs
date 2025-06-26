@@ -17,13 +17,13 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
     /// <summary>
     /// 2D array storing item inventory.
     /// </summary>
-    private ItemStack[,] _playerInventory;
+    private ItemInstance[,] _playerInventory;
     // private ItemInstance[,] playerInventory;
 
     /// <summary>
     /// 2D array storing equipped items.
     /// </summary>
-    private ItemStack[,] _playerEquipment;
+    private ItemInstance[,] _playerEquipment;
     // private ItemInstance[,] playerEquipment;
     
     /// <summary>
@@ -213,14 +213,14 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
                 if (_playerInventory[i, j] != null)
                 {
                     // Set Background
-                    slot.GetComponent<Image>().color = _playerInventory[i, j].item.getRarityColor();
+                    slot.GetComponent<Image>().color = _playerInventory[i, j].itemData.getRarityColor();
                     // Set Icon
-                    slot.GetChild(0).GetComponent<Image>().sprite = _playerInventory[i, j].item.item_icon;
+                    slot.GetChild(0).GetComponent<Image>().sprite = _playerInventory[i, j].itemData.item_icon;
                     slot.GetChild(0).GetComponent<Image>().enabled = true;
 
                     // Set Name and Quantity
                     slot.GetChild(1).GetChild(0).GetComponent<TMP_Text>()
-                        .SetText(_playerInventory[i, j].item._name + " (x" + _playerInventory[i, j].amount + ")");
+                        .SetText(_playerInventory[i, j].itemData._name + " (x" + _playerInventory[i, j].itemQuantity + ")");
                 }
                 else
                 {
@@ -245,14 +245,14 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
                 if (_playerEquipment[i, j] != null)
                 {
                     // Set Icon
-                    slot.GetChild(0).GetComponent<Image>().sprite = _playerEquipment[i, j].item.item_icon;
+                    slot.GetChild(0).GetComponent<Image>().sprite = _playerEquipment[i, j].itemData.item_icon;
                     slot.GetChild(0).GetComponent<Image>().enabled = true;
 
-                    slot.GetComponent<Image>().color = _playerEquipment[i, j].item.getRarityColor();
+                    slot.GetComponent<Image>().color = _playerEquipment[i, j].itemData.getRarityColor();
 
                     // Set Name and Quantity
                     slot.GetChild(1).GetChild(0).GetComponent<TMP_Text>()
-                        .SetText(_playerEquipment[i, j].item._name + " (x" + _playerEquipment[i, j].amount + ")");
+                        .SetText(_playerEquipment[i, j].itemData._name + " (x" + _playerEquipment[i, j].itemQuantity + ")");
                 }
                 else
                 {

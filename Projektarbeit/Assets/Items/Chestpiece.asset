@@ -13,10 +13,8 @@ MonoBehaviour:
   m_Name: Chestpiece
   m_EditorClassIdentifier: 
   _name: Chestpiece of Test
-  _model: {fileID: 0}
+  _model: {fileID: 4953302517953274839, guid: fb7c55cacdd7dcd438591dbf64a685c4, type: 3}
   rarity: 4.3
   item_icon: {fileID: 21300000, guid: a714d4bb98badfe40b6b6f10ad4ccfbc, type: 3}
-  item_quantity: 1
   equip_slot: 1
   stat_increases: 0f00000005000000fbffffff
-  is_equipped: 0
