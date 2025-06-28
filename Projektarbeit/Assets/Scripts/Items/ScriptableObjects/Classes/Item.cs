@@ -2,8 +2,15 @@ using NUnit.Framework.Interfaces;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Item", menuName = "Scriptable Objects/Item")]
-public abstract class Item : Spawnable
+public abstract class Item : ScriptableObject
 {
+    [SerializeField]
+    public string _name = "";
+    [SerializeField]
+    public GameObject _model;
+    [SerializeField]
+    [Range(0, 100)]
+    public float rarity = 50.0f;
     [SerializeField]
     public Sprite item_icon = null;
 
@@ -27,6 +34,6 @@ public abstract class Item : Spawnable
         }
     }
 
-    public abstract void use(Inventory_V3 inv);
+    public abstract void use(Inventory inv);
 
 }

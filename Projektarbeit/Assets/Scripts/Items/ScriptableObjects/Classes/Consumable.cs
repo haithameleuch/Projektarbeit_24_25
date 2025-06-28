@@ -9,7 +9,7 @@ public class Consumable : Item
     [SerializeField]
     public float amount_to_restore = 0;
 
-    public override void use(Inventory_V3 inv)
+    public override void use(Inventory inv)
     {
         Debug.Log(this._name + " was used.");
     }
