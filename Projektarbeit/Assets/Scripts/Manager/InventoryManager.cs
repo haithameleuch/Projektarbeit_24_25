@@ -29,7 +29,7 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
     /// <summary>
     /// Cached reference to the player's inventory component.
     /// </summary>
-    private Inventory_V3 _inventory;
+    private Inventory _inventory;
 
     /// <summary>
     /// Reference to the item UI panel.
@@ -88,7 +88,7 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
     public void SetPlayer(GameObject newPlayer)
     {
         _player = newPlayer;
-        _inventory = _player.GetComponent<Inventory_V3>();
+        _inventory = _player.GetComponent<Inventory>();
     }
     
     /// <summary>

@@ -1891,11 +1891,17 @@ MonoBehaviour:
   voronoiGenerator: {fileID: 1621557366}
   roomSwitchThreshold: 5
   items:
-  - itemData: {fileID: 11400000, guid: 8d18fdbdf4503514ba7a3f36eb03cc3d, type: 2}
+  - itemData: {fileID: 11400000, guid: 10fb8d034f8e6e842935171eebfae62c, type: 2}
     itemQuantity: 1
-  - itemData: {fileID: 11400000, guid: 361d2623144dc3743ae393867f44375a, type: 2}
+  - itemData: {fileID: 11400000, guid: 61d246d50ed511a47a93cfd14763f000, type: 2}
     itemQuantity: 2
-  - itemData: {fileID: 11400000, guid: 36ae0ca13c0017b4a9f57d43f8e0592f, type: 2}
+  - itemData: {fileID: 11400000, guid: e12f5cbeff596cd4d848d3b793bf217e, type: 2}
+    itemQuantity: 3
+  - itemData: {fileID: 11400000, guid: 25bed11e542b52e4c818a60df4de64ee, type: 2}
+    itemQuantity: 2
+  - itemData: {fileID: 11400000, guid: b5ffda71ea37733489dd9bc79865d0de, type: 2}
+    itemQuantity: 5
+  - itemData: {fileID: 11400000, guid: 938db7f234030ae4e8c651e08b6d9bb7, type: 2}
     itemQuantity: 3
   minigamePrefabs:
   - {fileID: 5611471497110757971, guid: 4da05c4d5e1d899408b0f2dddd9bc012, type: 3}

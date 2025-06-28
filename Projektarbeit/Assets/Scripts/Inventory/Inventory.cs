@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Inventory_V3 : MonoBehaviour
+public class Inventory : MonoBehaviour
 {
     [SerializeField]
     private ItemInstance[,] inventory = new ItemInstance[4,5];

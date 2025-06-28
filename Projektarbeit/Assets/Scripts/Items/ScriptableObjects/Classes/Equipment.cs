@@ -21,7 +21,7 @@ public class Equipment : Item
     public List<int> stat_increases = new List<int>();
 
     // This method brings the functionality to the item
-    public override void use(Inventory_V3 inv)
+    public override void use(Inventory inv)
     {
         // Reference to the equipmentslots
         ItemInstance[,] player_equip = inv.getEquipment();

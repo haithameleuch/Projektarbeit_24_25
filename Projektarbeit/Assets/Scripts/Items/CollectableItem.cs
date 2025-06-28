@@ -14,7 +14,7 @@ public class CollectibleItem : MonoBehaviour, IInteractable
     public void Interact(GameObject interactor)
     {
         //füge hier das item zum inventory hinzu
-        Inventory_V3 inv = interactor.GetComponent<Inventory_V3>();
+        Inventory inv = interactor.GetComponent<Inventory>();
         if (inv != null)
         {
             if (inv.addItem(new ItemInstance(item,amount)))
