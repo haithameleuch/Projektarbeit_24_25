@@ -13,6 +13,12 @@ namespace Manager
     public class GameManagerVoronoi : MonoBehaviour
     {
         /// <summary>
+        /// Singleton instance of the GameManagerVoronoi, ensuring there is only one instance in the scene.
+        /// Provides global access to event management functionality.
+        /// </summary>
+        public static GameManagerVoronoi Instance { get; private set; }
+        
+        /// <summary>
         /// The prefab used to instantiate the player at the start of the game.
         /// </summary>
         [SerializeField] private GameObject playerPrefab;
@@ -40,6 +46,24 @@ namespace Manager
         
         private List<ISpawnerVoronoi> _spawners;
         private EnemySpawnerVoronoi _enemySpawner;
+        
+        /// <summary>
+        /// Ensures there is only one instance of the GameManagerVoronoi in the scene.
+        /// If another instance exists, it will be destroyed.
+        /// Persists the instance across scenes for consistent event state management.
+        /// </summary>
+        private void Awake()
+        {
+            if (Instance != null && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+        
+            DontDestroyOnLoad(gameObject);
+        }
 
         /// <summary>
         /// Initializes the game by starting the dungeon wait coroutine.
@@ -196,6 +220,26 @@ namespace Manager
             {
                 spawner.SpawnInRoom();
             }
+        }
+        
+        /// <summary>
+        /// Called by the BossKey item when the player uses the key.
+        /// Opens boss room doors when the player is standing in front of the boss room.
+        /// Returns whether the key was used "validly".
+        /// </summary>
+        public bool OnBossKeyUsed()
+        {
+            Room bossRoom = _dungeon.GetBossRoom();
+    
+            if (_currentRoom != null && bossRoom != null && _currentRoom.neighbors.Contains(bossRoom))
+            {
+                Debug.Log("[GameManager] Boss doors are opened!");
+                EventManager.Instance.TriggerOpenBossDoors();
+                return true;
+            }
+    
+            Debug.Log("[GameManager] Boss key used, but not in front of the boss room.");
+            return false;
         }
     }
 }

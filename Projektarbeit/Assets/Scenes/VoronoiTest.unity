@@ -1903,6 +1903,8 @@ MonoBehaviour:
     itemQuantity: 5
   - itemData: {fileID: 11400000, guid: 938db7f234030ae4e8c651e08b6d9bb7, type: 2}
     itemQuantity: 3
+  - itemData: {fileID: 11400000, guid: 18522e9a77233e84c9255f82839d2297, type: 2}
+    itemQuantity: 1
   minigamePrefabs:
   - {fileID: 5611471497110757971, guid: 4da05c4d5e1d899408b0f2dddd9bc012, type: 3}
   - {fileID: 424014852115387458, guid: 950c49bd7e0b271409e0132ec74d30d9, type: 3}
