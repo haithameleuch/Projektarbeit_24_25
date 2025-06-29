@@ -438,6 +438,10 @@ PrefabInstance:
       value: Shooter
       objectReference: {fileID: 0}
     - target: {fileID: 6671022129831243736, guid: 39e2b09b393e9074d9ee2bff8223b439, type: 3}
+      propertyPath: enemy
+      value: 
+      objectReference: {fileID: 2730697521770599447}
+    - target: {fileID: 6671022129831243736, guid: 39e2b09b393e9074d9ee2bff8223b439, type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 0}

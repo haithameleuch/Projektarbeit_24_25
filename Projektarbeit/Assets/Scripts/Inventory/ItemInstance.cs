@@ -9,20 +9,21 @@ using UnityEngine.Serialization;
 [System.Serializable]
 public class ItemInstance
 {
-    public SpawnableData itemData;
+    public Item itemData;
     [Range(0,100)]
     public int itemQuantity = 1;
 
-    public ItemInstance(SpawnableData itemData)
+    public ItemInstance(Item itemData,int amount)
     {
-        this.itemData = itemData;    
+        this.itemData = itemData; 
+        this.itemQuantity = amount;
     }
     public ItemInstance(string name, GameObject spawnedObject, float probability, Sprite icon, int quantity)
     {
-        itemData.spawnName = name;
-        itemData.spawnObject = spawnedObject;
-        itemData.spawnProbability = probability;
-        itemData.spawnSprite = icon;
+        itemData._name = name;
+        itemData._model = spawnedObject;
+        itemData.rarity = probability;
+        itemData.item_icon = icon;
         itemQuantity = quantity;
     }
 

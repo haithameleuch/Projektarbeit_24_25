@@ -32,13 +32,13 @@ public class Distributor<T> where T : ItemInstance, new()
         
         foreach (T element in elements)
         {
-            cumulativeProbability += element.itemData.spawnProbability;
+            cumulativeProbability += element.itemData.rarity;
         }
         
         float elementProbability = 0.0f;
         foreach (T element in elements)
         {
-            float normalizedProbability = element.itemData.spawnProbability / cumulativeProbability;
+            float normalizedProbability = element.itemData.rarity / cumulativeProbability;
             if (elementProbability == 0.0f)
             {
                 elementProbability += normalizedProbability;
