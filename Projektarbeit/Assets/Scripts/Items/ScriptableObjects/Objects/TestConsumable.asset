@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2519c7b34662f8246a85a6c3d9c65546, type: 3}
+  m_Name: TestConsumable
+  m_EditorClassIdentifier: 
+  _name: Test
+  _model: {fileID: 0}
+  rarity: 50
+  item_icon: {fileID: 10901, guid: 0000000000000000f000000000000000, type: 0}
+  item_quantity: -41
+  stat_to_restore: 0
+  amount_to_restore: 10

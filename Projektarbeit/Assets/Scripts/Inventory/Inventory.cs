@@ -1,113 +1,149 @@
-using System.Collections.Generic;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 
-/// <summary>
-/// Main inventory class, this class does the administration of the item system.
-/// The class saves the items in a list and is the point of interaction for Items.
-/// Possible for player and enemys/chests.
-/// </summary>
 public class Inventory : MonoBehaviour
 {
-    /// <summary>
-    /// The main part of the inventory, the list contains all items present in the inventory, in the order they were added.
-    /// </summary>
     [SerializeField]
-    private List<ItemInstance> items = new List<ItemInstance>();
-    
-    /// <summary>
-    /// Maximum number of different items the inventory is allowed to hold.
-    /// </summary>
-    private int maxSlots = 16;
+    private ItemInstance[,] inventory = new ItemInstance[4,5];
+    [SerializeField]
+    private ItemInstance[,] equipment = new ItemInstance[3,2];
 
-    /// <summary>
-    /// This method adds an item to the inventory either by adding it to a stack of already present items, or to a new stack if the space is available.
-    /// </summary>
-    /// <param name="newItemInstance">Is the object of the item class that should be added to the inventory.</param>
-    /// <returns>The method returns a boolean wether the addition of the item was succesful. This should be used incase something should happen regarding the result of the addition.</returns>
-    public bool AddItem(ItemInstance newItemInstance)
+    public bool addItem(ItemInstance toAdd)
     {
-        Debug.Log("Adding item: " + newItemInstance.itemQuantity);
-        if (newItemInstance.itemQuantity<=0)
+        if (toAdd.itemQuantity<1)
         {
-            Debug.Log("Item is empty");
             return false;
         }
-        // Add Item to stack if the item is already in the Inventory and return true
-        foreach (ItemInstance item in items)
+
+        for (int i = 0; i < inventory.GetLength(0); i++)
         {
-            if (item.itemData.spawnName==newItemInstance.itemData.spawnName)
+            for (int j = 0; j < inventory.GetLength(1); j++)
             {
-                item.itemQuantity += newItemInstance.itemQuantity;
-                return true;
+                if (inventory[i, j] != null) {
+                    if (toAdd.itemData == inventory[i, j].itemData)
+                    {
+                        inventory[i, j].itemQuantity += toAdd.itemQuantity;
+                        return true;
+                    }
+                }
             }
         }
 
-        // If the inventory is ful stop and return false, else add the item to the inventory and return true
-        if (items.Count < maxSlots)
+        for(int i = 0;i < inventory.GetLength(0); i++)
         {
-            items.Add(newItemInstance);
-            return true;
+            for(int j = 0;j < inventory.GetLength(1); j++)
+            {
+                if (inventory[i, j] == null)
+                {
+                    inventory[i, j] = toAdd;
+                    return true;
+                }
+            }
         }
-        
-        Debug.Log("Inventar ist voll!");
+
         return false;
     }
 
-    /// <summary>
-    /// Removes a certain amount of an item  from the inventory. //TODO spawn thrown away items
-    /// </summary>
-    /// <param name="item">The item that should be removed.</param>
-    /// <param name="amount">The amount of the item that should be removed</param>
-    public void RemoveItem(ItemInstance toRemove,int amount)
+    public bool removeItem(int row, int col)
     {
-        foreach (var item in items)
+        if (row != -1)
         {
-            if (item.Equals(toRemove))
+            if (inventory[row,col] != null)
             {
-                item.itemQuantity -= amount;
-                if (item.itemQuantity <= 0)
+                inventory[row, col].itemQuantity -= 1;
+                if (inventory[row, col].itemQuantity < 1)
                 {
-                    items.Remove(item);  
+                    inventory[row, col] = null;              
                 }
-                return;
+                return true;
             }
         }
+        return false;
+    }
+
+    public bool removeItem(Item toRemove)
+    {
+        for (int i = 0; i < inventory.GetLength(0); i++)
+        {
+            for (int j = 0; j < inventory.GetLength(1); j++)
+            {
+                if (inventory[i,j] != null) {
+                    if (inventory[i, j].itemData == toRemove)
+                    {
+                        inventory[i, j].itemQuantity--;
+                        if (inventory[i, j].itemQuantity < 1)
+                        {
+                            inventory[i, j] = null;
+                        }
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     // DEBUG: show the inventory to the console
     public void PrintInventory()
     {
         Debug.Log("Inventar:");
-        foreach (var item in items)
+        foreach (var item in inventory)
         {
-            Debug.Log($"{item.itemData.spawnName} - Menge: {item.itemQuantity}");
+            Debug.Log($"{item.itemData._name} - Menge: {item.itemQuantity}");
         }
     }
 
-    /// <summary>
-    /// Getter-method for the inventory
-    /// </summary>
-    /// <returns>The list of items.</returns>
-    public List<ItemInstance> getInventory()
-    {
-        return items; 
-    }
+    public ItemInstance[,] getInventory() { return inventory; }
+    public ItemInstance[,] getEquipment() { return equipment; }
 
-    /// <summary>
-    /// Method searches for an item in the inventory by the name.
-    /// </summary>
-    /// <param name="itemName">The name of the item you search for.</param>
-    /// <returns>The item from the list.</returns>
-    public ItemInstance GetItem(string itemName)
+    public (int,int) getItemByName(string name)
     {
-        foreach(var item in items)
+        for (int i = 0; i < inventory.GetLength(0); i++)
         {
-            if (item.itemData.spawnName.Equals(itemName))
+            for (int j = 0; j < inventory.GetLength(1); j++)
             {
-                return item;
+                if (inventory[i, j].itemData._name == name)
+                {
+                    return (i,j);
+                }
             }
         }
-        return new ItemInstance();
+        return (-1,-1);
+    }
+
+    public bool removeEquip(int row, int col)
+    {
+        if (row != -1)
+        {
+            if (equipment[row, col] != null)
+            {
+                equipment[row, col].itemQuantity -= 1;
+                if (equipment[row, col].itemQuantity < 1)
+                {
+                    addItem(equipment[row, col]);
+                    equipment[row, col] = null;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public ItemInstance getItemByIndex(int row, int col)
+    {
+        return inventory[row, col];
+    }
+
+    public void useItem(int row, int col)
+    {
+        ItemInstance item;
+        if (row<4)
+        {
+            item = inventory[row, col];
+        }
+        else
+        {
+            item = equipment[row-4,col];
+        }
+        item.itemData.use(this);
     }
 }

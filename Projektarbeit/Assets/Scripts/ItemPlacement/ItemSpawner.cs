@@ -57,12 +57,12 @@ public class ItemSpawner : ISpawner
 
             ItemInstance item = itemsDistributor.GetRandomElement();
 
-            GameObject spawnedItem = GameObject.Instantiate(item.itemData.spawnObject, position, randomRotation, room.transform);
+            GameObject spawnedItem = GameObject.Instantiate(item.itemData._model, position, randomRotation, room.transform);
             
             CollectibleItem collectible = spawnedItem.GetComponent<CollectibleItem>();
             if (collectible != null)
             {
-                collectible.item = item;
+                //collectible.item = item;
             }
             
             // item.itemData.spawnObject.transform.position = position;
