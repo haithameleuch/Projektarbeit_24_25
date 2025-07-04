@@ -221,6 +221,12 @@ namespace Geometry
         {
             return Mathf.Sqrt(((p_1.x-p_2.x) * (p_1.x - p_2.x)) + ((p_1.y - p_2.y) * (p_1.y - p_2.y)));
         }
+        
+        public Vector3 ToVector3(float y = 0f)
+        {
+            return new Vector3(this.x, y, this.y);
+        }
+        
         public void printPoint()
         {
             Debug.Log("("+this.x+";"+this.y+")");
