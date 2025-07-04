@@ -277,7 +277,7 @@ public class VoronoiGenerator : MonoBehaviour
             }
 
             bool forceDoor = forceBossDoor || forcePathDoor;
-            bool forbidBreakable = roomsWithEdge.Any(r => r.type == RoomType.Boss || r.type == RoomType.Enemy); // TODO: ENEMY ROOMS NOT DESTROYABLE WALLS
+            bool forbidBreakable = roomsWithEdge.Any(r => r.type == RoomType.Boss);
             bool placeDoor = forceDoor || (_rng.NextDouble() < DoorProbability);
 
             bool isMiddle   = i == midIndex;
@@ -303,7 +303,7 @@ public class VoronoiGenerator : MonoBehaviour
 
                 _dungeonGraph.idDoorDict[edgeId] = doorObj;
             }
-            else if (candidate && !forbidBreakable) // TODO: ENEMY ROOMS NOT DESTROYABLE WALLS (!forbidBreakable)
+            else if (candidate && !forbidBreakable)
             {
                 // Place a breakable wall instead of a door
                 Vector3 mid = (segStart + segEnd) * 0.5f;
