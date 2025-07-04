@@ -232,10 +232,11 @@ public class VoronoiGenerator : MonoBehaviour
     }
     
     /// <summary>
-    /// Create a wall using wall scaled segments
+    /// Create a wall using scaled wall segments, possibly placing a door or breakable wall
     /// </summary>
-    /// <param name="start">Beginning of the wall</param>
-    /// <param name="end">End of the wall</param>
+    /// <param name="start">Start of the wall edge</param>
+    /// <param name="end">End of the wall edge</param>
+    /// <param name="edgeId">Unique identifier for this wall edge</param>
     void CreateWall(Vector3 start, Vector3 end, int edgeId)
     {
         // Get all rooms that are touching this edge
@@ -293,12 +294,10 @@ public class VoronoiGenerator : MonoBehaviour
 
                 if (forceBossDoor)
                 {
-                    var openDoor = doorObj.GetComponent<OpenDoor>() ??
-                                   doorObj.GetComponentInChildren<OpenDoor>(true) ??
-                                   doorObj.AddComponent<OpenDoor>();
-                    openDoor.isBossDoor = true;
+                    SetupBossDoor(doorObj, roomsWithEdge.ToList());
                 }
 
+                // Add door to each room
                 foreach (var room in roomsWithEdge)
                     room.doors.Add(edgeId);
 
@@ -317,6 +316,59 @@ public class VoronoiGenerator : MonoBehaviour
                 // Place a regular wall segment
                 CreateWallSegment(segStart, segEnd, scaleOfSegment);
             }
+        }
+    }
+    
+    /// <summary>
+    /// Configures a door as a boss door by adding logic and visuals 
+    /// (fog wall, narrow door panel, correct rotation).
+    /// </summary>
+    /// <param name="doorObj">The door GameObject to configure.</param>
+    /// <param name="roomsWithEdge">The two connected rooms (one must be the boss room).</param>
+    void SetupBossDoor(GameObject doorObj, List<Room> roomsWithEdge)
+    {
+        // Ensure the door has an OpenDoor component, add one if missing
+        var openDoor = doorObj.GetComponent<OpenDoor>() ??
+                       doorObj.GetComponentInChildren<OpenDoor>(true) ??
+                       doorObj.AddComponent<OpenDoor>();
+        openDoor.isBossDoor = true;
+
+        // Find the child object Wall_Entrance
+        Transform entrance = doorObj.transform.Find("Wall_Entrance");
+        if (entrance == null) return;
+
+        // Find objects fog wall and door panel
+        Transform fog = entrance.Find("Room_Door_Fog");
+        Transform doorPanel = entrance.Find("Door");
+
+        // Identify the boss room and the adjacent room (otherRoom)
+        var roomList = roomsWithEdge.ToList();
+        var bossRoom = roomList.FirstOrDefault(r => r.type == RoomType.Boss);
+        var otherRoom = roomList.FirstOrDefault(r => r != bossRoom);
+
+        if (bossRoom != null && otherRoom != null)
+        {
+            // Determine direction from boss room to the other room
+            Vector3 dir = (otherRoom.center.ToVector3() - bossRoom.center.ToVector3()).normalized;
+            
+            // Check if the entrance is facing the wrong direction
+            float alignment = Vector3.Dot(dir, entrance.forward);
+
+            // Rotate 180° if entrance is facing the wrong direction
+            if (alignment > 0f)
+                entrance.Rotate(0, 180f, 0);
+        }
+
+        // Enable fog wall
+        if (fog != null)
+            fog.gameObject.SetActive(true);
+
+        // Make door visually narrower
+        if (doorPanel != null)
+        {
+            Vector3 scale = doorPanel.localScale;
+            scale.z = 0.75f;
+            doorPanel.localScale = scale;
         }
     }
     
@@ -648,7 +700,7 @@ public class VoronoiGenerator : MonoBehaviour
                     Vector2 shortend = new Vector2(dir[0] * 0.01f, dir[1] * 0.01f);
                     
                     // Now check a point a little bit before and after the intersection of the bisector and the triangle edge
-                    // Then build the edge AWAY from the triangle ( if one point is inside of the triangle use the other)
+                    // Then build the edge AWAY from the triangle (if one point is inside the triangle, use the other)
                     if (!PointOutTriangle(new Point(e.B.x + shortend[0], e.B.y + shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
                     {
                         Point inter = FindIntersectionWithMapBoundary(e, size);
@@ -680,7 +732,7 @@ public class VoronoiGenerator : MonoBehaviour
     
     #region Geometric Helpers
     /// <summary>
-    /// Checks if a Point is outside of a triangle
+    /// Checks if a Point is outside a triangle
     /// </summary>
     /// <param name="pt">The point we want to know</param>
     /// <param name="v1">Point A</param>
