@@ -16,18 +16,23 @@ namespace Enemy
         private float _prevDistance;
         private Vector3 _lastPosition;
         private float _stuckTimer;
-        private float stuckThreshold = 0.01f;
-        private float stuckTimeLimit = 0.3f;
-        private float lastReward = 0f;
+        private const float StuckThreshold = 0.01f;
+        private const float StuckTimeLimit = 0.3f;
+
+        private float _lastReward;
         // private bool isInitialized = false;  // NOT USED!
 
         // Statistik-Tracking
-        private List<float> episodeRewards = new List<float>();
-        private float episodeStartTime;
-        private int episodeCount = 0;
-        private const int STATS_INTERVAL = 50;
-        private int collisionCount = 0;
+        private readonly List<float> _episodeRewards = new List<float>();
+        private float _episodeStartTime;
+        private int _episodeCount;
+        private const int StatsInterval = 50;
+        private int _collisionCount;
 
+        /// <summary>
+        /// Called once when the agent is first initialized.
+        /// Sets up Rigidbody constraints and starts the coroutine to find the player.
+        /// </summary>
         public override void Initialize()
         {
             _rb = GetComponent<Rigidbody>();
@@ -37,6 +42,11 @@ namespace Enemy
             StartCoroutine(FindPlayerCoroutine());
         }
         
+        // ReSharper disable Unity.PerformanceAnalysis
+        /// <summary>
+        /// Coroutine that periodically searches for the Player object by tag
+        /// until it finds one and assigns it to the target variable.
+        /// </summary>
         private IEnumerator FindPlayerCoroutine()
         {
             while (!target)
@@ -47,12 +57,15 @@ namespace Enemy
                     yield return new WaitForSeconds(0.5f); 
                 }
             }
-            // isInitialized = true; // NOT USED!
         }
 
+        /// <summary>
+        /// Called at the beginning of each training episode.
+        /// Resets tracking variables such as position, timers, and reward counters.
+        /// </summary>
         public override void OnEpisodeBegin()
         {
-            /*
+            /* Training
             Vector3[] corner1 = { 
                 new Vector3(7.5f, 1f, -3.5f),
                 new Vector3(-7.5f, 1f, 3.5f)
@@ -81,11 +94,16 @@ namespace Enemy
             _stuckTimer = 0f;
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
             
-            episodeStartTime = Time.time;
-            lastReward = 0f;
-            collisionCount = 0;
+            _episodeStartTime = Time.time;
+            _lastReward = 0f;
+            _collisionCount = 0;
         }
-
+        
+        /// <summary>
+        /// Collects observations about the agent's environment.
+        /// Provides the agent with its own position, target's position,
+        /// direction to the target, current velocity, and facing direction.
+        /// </summary>
         public override void CollectObservations(VectorSensor sensor)
         {
             sensor.AddObservation(transform.localPosition);
@@ -95,6 +113,12 @@ namespace Enemy
             sensor.AddObservation(transform.forward);
         }
 
+        /// <summary>
+        /// Called when the agent receives an action from the policy.
+        /// Moves and rotates the agent according to the action inputs,
+        /// calculates rewards based on progress towards the target,
+        /// alignment with the target direction, and handles stuck detection.
+        /// </summary>
         public override void OnActionReceived(ActionBuffers actions)
         {
             float moveInput = Mathf.Clamp(actions.ContinuousActions[0], 0f, 1f);
@@ -119,17 +143,18 @@ namespace Enemy
 
             float totalReward = progressReward + alignmentReward + facingReward;
             AddReward(totalReward);
-            lastReward += totalReward;
+            _lastReward += totalReward;
 
             _prevDistance = currentDistance;
 
-            if (Vector3.Distance(transform.localPosition, _lastPosition) < stuckThreshold)
+            // Detect if the agent is stuck and penalize if stuck for too long
+            if (Vector3.Distance(transform.localPosition, _lastPosition) < StuckThreshold)
             {
                 _stuckTimer += Time.deltaTime;
-                if (_stuckTimer > stuckTimeLimit)
+                if (_stuckTimer > StuckTimeLimit)
                 {
                     AddReward(-0.5f);
-                    lastReward += -0.5f;
+                    _lastReward += -0.5f;
                     EndEpisodeWithStats();
                     return;
                 }
@@ -142,75 +167,76 @@ namespace Enemy
             _lastPosition = transform.localPosition;
         }
 
+        /// <summary>
+        /// Handles collision events with other objects.
+        /// Rewards the agent for colliding with the player (goal)
+        /// and penalizes collisions with walls, obstacles, or doors.
+        /// Ends the episode after collision.
+        /// </summary>
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
             {
                 AddReward(20f);
-                lastReward += 20f;
+                _lastReward += 20f;
                 EndEpisodeWithStats();
             }
             else if (other.CompareTag("Wall") || other.CompareTag("Obstacle") || other.CompareTag("Door"))
             {
-                collisionCount++;
+                _collisionCount++;
                 AddReward(-1f);
-                lastReward += -1f;
+                _lastReward += -1f;
                 EndEpisodeWithStats();
             }
         }
 
+        /// <summary>
+        /// Ends the current episode and logs statistics every StatsInterval episodes.
+        /// Tracks reward mean, standard deviation, duration, distance, and collisions.
+        /// Maintains a rolling list of recent rewards for statistics.
+        /// </summary>
         private void EndEpisodeWithStats()
         {
-            episodeRewards.Add(lastReward);
-            episodeCount++;
+            _episodeRewards.Add(_lastReward);
+            _episodeCount++;
 
-            if (episodeCount % STATS_INTERVAL == 0)
+            if (_episodeCount % StatsInterval == 0)
             {
                 float mean = 0f;
-                float sumSquaredDiff = 0f;
 
-                for (int i = episodeRewards.Count - STATS_INTERVAL; i < episodeRewards.Count; i++)
+                for (int i = _episodeRewards.Count - StatsInterval; i < _episodeRewards.Count; i++)
                 {
-                    mean += episodeRewards[i];
+                    mean += _episodeRewards[i];
                 }
-                mean /= STATS_INTERVAL;
+                mean /= StatsInterval;
 
-                for (int i = episodeRewards.Count - STATS_INTERVAL; i < episodeRewards.Count; i++)
+                for (int i = _episodeRewards.Count - StatsInterval; i < _episodeRewards.Count; i++)
                 {
-                    float diff = episodeRewards[i] - mean;
-                    sumSquaredDiff += diff * diff;
+                    float diff = _episodeRewards[i] - mean;
                 }
-                float standardDeviation = Mathf.Sqrt(sumSquaredDiff / STATS_INTERVAL);
 
-                float episodeDuration = Time.time - episodeStartTime;
-                Debug.Log($"==========================================");
-                Debug.Log($"Statistiken für Episode {episodeCount}:");
-                Debug.Log($"Mittelwert der Belohnungen: {mean:F2}");
-                Debug.Log($"Standardabweichung: {standardDeviation:F2}");
-                Debug.Log($"Episodendauer: {episodeDuration:F2} Sekunden");
-                Debug.Log($"Durchschnittliche Distanz zum Ziel: {_prevDistance:F2}");
-                Debug.Log($"Kollisionen mit Hindernissen: {collisionCount}");
-                Debug.Log($"==========================================");
-
-                if (episodeRewards.Count > STATS_INTERVAL * 2)
+                // Keep only the most recent rewards for stats to save memory
+                if (_episodeRewards.Count > StatsInterval * 2)
                 {
-                    episodeRewards.RemoveRange(0, episodeRewards.Count - STATS_INTERVAL);
+                    _episodeRewards.RemoveRange(0, _episodeRewards.Count - StatsInterval);
                 }
             }
 
             EndEpisode();
         }
 
+        /// <summary>
+        /// Draws gizmos in the editor to visualize the agent's forward direction
+        /// and a line pointing to the target.
+        /// </summary>
         private void OnDrawGizmos()
         {
-            if (target != null)
-            {
-                Gizmos.color = Color.red;
-                Gizmos.DrawLine(transform.position, target.transform.position);
+            if (target == null) return;
+            Gizmos.color = Color.red;
+            Gizmos.DrawLine(transform.position, target.transform.position);
 
-                Gizmos.color = Color.blue;
-                Gizmos.DrawRay(transform.position, transform.forward * 2f);
-            }
+            Gizmos.color = Color.blue;
+            Gizmos.DrawRay(transform.position, transform.forward * 2f);
         }
     }
 }

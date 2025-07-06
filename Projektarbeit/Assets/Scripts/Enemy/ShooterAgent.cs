@@ -32,9 +32,8 @@ namespace Enemy
 
         private float _healthNormalized;
         private Rigidbody _rb;
-        //private bool isInitialized = false; // NOT USED!
-        private float _fireRate = 0.5f; // Zeit in Sekunden zwischen den Schüssen
-        private float _nextFireTime = 0f; // Zeitpunkt, wann der nächste Schuss möglich ist
+        private const float FireRate = 0.5f; // Time to shoot
+        private float _nextFireTime;
 
         
         /// <summary>
@@ -52,7 +51,7 @@ namespace Enemy
 
         public void Update()
         {
-            if (enemy != null && shootPoint != null)
+            if (enemy && shootPoint)
             {
                 // Sync enemy rotation to shootPoint's rotation
                 enemy.transform.rotation = Quaternion.Euler(0f, shootPoint.rotation.eulerAngles.y, 0f);
@@ -61,10 +60,11 @@ namespace Enemy
 
 
 
+        // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator InitializeAfterTargetFound()
         {
             // Try to find the player if not yet assigned
-            while (target == null)
+            while (!target)
             {
                 target = GameObject.FindWithTag("Player");
                 if (target == null)
@@ -76,7 +76,7 @@ namespace Enemy
             // isInitialized = true; NOT USED!
 
             // Now it's safe to use target
-            Vector3 directionToTarget = (target.transform.position - shootPoint.position).normalized;
+            var directionToTarget = (target.transform.position - shootPoint.position).normalized;
             Debug.Log(directionToTarget);
             transform.forward = directionToTarget;
         }
@@ -98,15 +98,15 @@ namespace Enemy
         public override void CollectObservations(VectorSensor sensor)
         {
             Health targetHealth = target.GetComponent<Health>();
-            _healthNormalized = targetHealth != null ? targetHealth._currentHealth / targetHealth._maxHealth : 0f;
-            Vector3 toTarget = (target.transform.position - shootPoint.position).normalized;
-            Vector3 forward = shootPoint.forward;
+            _healthNormalized = targetHealth != null ? targetHealth.currentHealth / targetHealth.maxHealth : 0f;
+            var toTarget = (target.transform.position - shootPoint.position).normalized;
+            var forward = shootPoint.forward;
 
             sensor.AddObservation(_healthNormalized);
             sensor.AddObservation(shootPoint.InverseTransformDirection(toTarget)); // Direction to target in local space
             sensor.AddObservation(Vector3.Dot(forward, toTarget)); // Alignment measure (1 = perfectly aimed)
 
-            float angleDiff = Vector3.Angle(forward, toTarget) / 180f;
+            var angleDiff = Vector3.Angle(forward, toTarget) / 180f;
             sensor.AddObservation(angleDiff);
         }
 
@@ -116,8 +116,8 @@ namespace Enemy
         /// <param name="actions">Action buffer containing continuous and discrete actions.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
-            float rotationY = actions.ContinuousActions[0];
-            float rotationSpeed = 50f;
+            var rotationY = actions.ContinuousActions[0];
+            var rotationSpeed = 50f;
             shootPoint.Rotate(0, rotationY * rotationSpeed * Time.deltaTime, 0);
             if (actions.DiscreteActions[0] == 1)
             {
@@ -125,8 +125,8 @@ namespace Enemy
             }
             
             // Reward for aiming closer to target
-            Vector3 toTarget = (target.transform.position - shootPoint.position).normalized;
-            float aimReward = Vector3.Dot(shootPoint.forward, toTarget) * 0.01f;
+            var toTarget = (target.transform.position - shootPoint.position).normalized;
+            var aimReward = Vector3.Dot(shootPoint.forward, toTarget) * 0.01f;
             AddReward(aimReward);
 
             if (_healthNormalized == 0)
@@ -146,24 +146,22 @@ namespace Enemy
         /// </summary>
         private void FireProjectile()
         {
-            // Prüfen, ob genug Zeit seit dem letzten Schuss vergangen ist
+            // Test that the fire cool down is done
             if (Time.time < _nextFireTime)
                 return;
     
-            // Nächsten Schusszeitpunkt setzen
-            _nextFireTime = Time.time + _fireRate;
+            // Set the next fire time
+            _nextFireTime = Time.time + FireRate;
     
             // Get an inactive projectile from the object pool
-            GameObject projectile = objectPoolManager.GetPooledObject();
-            if (projectile is not null)
-            {
-                // Position and orient the projectile at the shooting point
-                projectile.transform.position = shootPoint.position;
-                projectile.transform.rotation = shootPoint.rotation;
+            var projectile = objectPoolManager.GetPooledObject();
+            if (projectile == null) return;
+            // Position and orient the projectile at the shooting point
+            projectile.transform.position = shootPoint.position;
+            projectile.transform.rotation = shootPoint.rotation;
 
-                // Activate the projectile
-                projectile.SetActive(true);
-            }
+            // Activate the projectile
+            projectile.SetActive(true);
         }
     }
 }

@@ -1,22 +1,11 @@
 using UnityEngine;
-using static HealthManager;
+using UnityEngine.Serialization;
 
-public class Health : MonoBehaviour
+namespace Enemy
 {
-    public float _maxHealth;
-    public float _currentHealth;
-
-    // Update is called once per frame
-    void Update()
+    public class Health : MonoBehaviour
     {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            _currentHealth = HealthManager.damageAbsolute(1.0f/3.0f, DamageType.Normal, _currentHealth);
-        }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            _currentHealth = HealthManager.healPercentage(13, _currentHealth, _maxHealth);
-        }
+        [FormerlySerializedAs("_maxHealth")] public float maxHealth;
+        [FormerlySerializedAs("_currentHealth")] public float currentHealth;
     }
 }

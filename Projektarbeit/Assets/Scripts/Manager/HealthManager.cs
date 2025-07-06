@@ -1,3 +1,4 @@
+using Enemy;
 using UnityEngine;
 
 public class HealthManager : MonoBehaviour
@@ -27,7 +28,7 @@ public class HealthManager : MonoBehaviour
 
     void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 100, 20), player.GetComponent<Health>()._currentHealth.ToString() + "/" + player.GetComponent<Health>()._maxHealth.ToString());
+        GUI.Label(new Rect(10, 10, 100, 20), player.GetComponent<Health>().currentHealth.ToString() + "/" + player.GetComponent<Health>().maxHealth.ToString());
     }
 
 }

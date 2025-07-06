@@ -1,26 +1,34 @@
 using UnityEngine;
 
-public class BombBehavior : MonoBehaviour
+namespace Enemy
 {
-    [SerializeField] private GameObject explosionEffectPrefab;
-
-    private void OnCollisionEnter(Collision collision)
+    public class BombBehavior : MonoBehaviour
     {
-        if (collision.collider.CompareTag("Ground"))
-        {
-            Explode();
-        }
-    }
+        // Prefab for the explosion visual effect
+        [SerializeField] private GameObject explosionEffectPrefab;
 
-    private void Explode()
-    {
-        if (explosionEffectPrefab != null)
+        // Called when this object collides with another
+        private void OnCollisionEnter(Collision collision)
         {
-            Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
+            // Check if the bomb hits the ground
+            if (collision.collider.CompareTag("Ground"))
+            {
+                Explode(); // Trigger explosion
+            }
         }
 
-        // Optional: Add damage or effects to nearby objects here
+        // Handles the explosion logic
+        private void Explode()
+        {
+            // Instantiate explosion effect at the bomb's position
+            if (explosionEffectPrefab != null)
+            {
+                Instantiate(explosionEffectPrefab, transform.position, Quaternion.identity);
+            }
 
-        Destroy(gameObject); // Remove the bomb
+            // Optional: Add damage or effects to nearby objects here
+
+            Destroy(gameObject); // Remove the bomb from the scene
+        }
     }
 }

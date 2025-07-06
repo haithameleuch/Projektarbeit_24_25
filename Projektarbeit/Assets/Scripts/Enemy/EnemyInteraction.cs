@@ -1,80 +1,105 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
-public class EnemyInteraction : MonoBehaviour, IInteractable
+namespace Enemy
 {
-    private bool canMove = true;
-    [SerializeField] private TextMeshPro LifeText;
-    private Color currentColor;
-
-    public void Interact(GameObject interactor)
+    /// <summary>
+    /// This module handles all enemy health changes triggered by player interactions.
+    /// </summary>
+    public class EnemyInteraction : MonoBehaviour, IInteractable
     {
-        Health health = interactor.GetComponent<Health>();
-        canMove = false;
+        // Flag to control whether the player/enemy can move
+        private bool _canMove = true;
 
-        if(health != null)
+        // Reference to the TextMeshPro component that displays life/health
+        [SerializeField] private TextMeshPro LifeText;
+
+        // Stores the current color, possibly for visual effects or status indication
+        private Color _currentColor;
+
+        /// <summary>
+        /// Interact with different components
+        /// </summary>
+        /// <param name="interactor"></param>
+        public void Interact(GameObject interactor)
         {
-            float currentHealth = health._currentHealth;
+            // Exit the method if there's no interactor
+            if (!interactor) return;
+            
+            // Try to get the Health component from the interactor
+            var health = interactor.GetComponent<Health>();
+            
+            // Disable movement while processing the interaction
+            _canMove = false;
+            
+            // Exit if the interactor does not have a Health component
+            if (!health) return;
+            
+            
+            // Get the current health value of the interactor
+            float currentHealth = health.currentHealth;
+            
+            // Apply damage if the interactor is the player
             if(interactor.name.Equals("Player"))
             {
-                health._currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, currentHealth);
+                // Deal 2.0f normal damage to the player's health using the HealthManager
+                health.currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, currentHealth);
             }
         }
-    }
 
-    public void OnExit(GameObject interactor)
-    {
-        if (interactor == null) return;
-        canMove = true;
-        UIManager.Instance.HidePanel();
-    }
-
-    public bool ShouldRepeat()
-    {
-        return false;
-    }
-
-    public bool CanMove() { return canMove; }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.name.Equals("Projectile(Clone)"))
+        // Called when the interactor exits the interaction zone or completes interaction
+        public void OnExit(GameObject interactor)
         {
-            Health enemyHealth = GetComponent<Health>();
-            float currentHealth = enemyHealth._currentHealth;
-            float maxHealth = enemyHealth._maxHealth;
-            float healthPercent = Mathf.Clamp01(currentHealth / maxHealth);
+            if (!interactor) return;
 
-            // Bright glow colors: green (full) to red (low)
-            Color targetColor = Color.Lerp(Color.red, Color.green, healthPercent);
+            // Allow movement again after interaction ends
+            _canMove = true;
 
-            // Smooth transition
-            currentColor = Color.Lerp(currentColor, targetColor, Time.deltaTime * 8f);
-            LifeText.color = currentColor;
+            // Hide any related UI panel
+            UIManager.Instance.HidePanel();
+        }
 
-            // Update text
-            LifeText.text = $"{currentHealth:0}";
+        // Indicates whether the interaction should repeat (always false here)
+        public bool ShouldRepeat()
+        {
+            return false;
+        }
 
-			/**
-            // Optional pulse at low HP
-            if (healthPercent < 0.2f)
+        // Returns whether movement is currently allowed
+        public bool CanMove() { return _canMove; }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            // Check if the object colliding is a projectile
+            if (collision.gameObject.name.Equals("Projectile(Clone)"))
             {
-                float pulse = Mathf.PingPong(Time.time * 4f, 0.2f) + 0.9f;
-                LifeText.transform.localScale = Vector3.one * pulse;
-            }
-            else
-            {
-                LifeText.transform.localScale = Vector3.one;
-            }
-			**/
-            
-            enemyHealth._currentHealth = HealthManager.damageAbsolute(0.5f, HealthManager.DamageType.Normal, enemyHealth._currentHealth);
+                // Get this object's Health component
+                Health enemyHealth = GetComponent<Health>();
+                float currentHealth = enemyHealth.currentHealth;
+                float maxHealth = enemyHealth.maxHealth;
 
-            if (enemyHealth._currentHealth <= 0f)
-            {
-                Destroy(gameObject);
+                // Calculate the remaining health percentage
+                float healthPercent = Mathf.Clamp01(currentHealth / maxHealth);
+
+                // Calculate the target color from red (low) to green (high) based on health
+                Color targetColor = Color.Lerp(Color.red, Color.green, healthPercent);
+
+                // Smoothly transition the displayed color to the target color
+                _currentColor = Color.Lerp(_currentColor, targetColor, Time.deltaTime * 8f);
+                LifeText.color = _currentColor;
+
+                // Display current health value as text
+                LifeText.text = $"{currentHealth:0}";
+        
+                // Apply damage to the enemy's health
+                enemyHealth.currentHealth = HealthManager.damageAbsolute(0.5f, HealthManager.DamageType.Normal, enemyHealth.currentHealth);
+
+                // Destroy the object if health reaches 0
+                if (enemyHealth.currentHealth <= 0f)
+                {
+                    Destroy(gameObject);
+                }
             }
         }
     }
-
 }
