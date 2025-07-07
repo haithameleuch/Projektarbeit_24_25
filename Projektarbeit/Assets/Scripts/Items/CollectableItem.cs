@@ -19,7 +19,10 @@ public class CollectibleItem : MonoBehaviour, IInteractable
         {
             if (inv.addItem(new ItemInstance(item,amount)))
             {
-                gameObject.SetActive(false);
+                Renderer rend = GetComponent<Renderer>();
+                Collider collider = GetComponent<Collider>();
+                if (collider != null) collider.enabled = false;
+                if (rend != null) rend.enabled = false;
             }
         }
     
