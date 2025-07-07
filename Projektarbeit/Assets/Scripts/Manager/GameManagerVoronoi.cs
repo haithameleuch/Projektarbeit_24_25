@@ -47,6 +47,9 @@ namespace Manager
         private List<ISpawnerVoronoi> _spawners;
         private EnemySpawnerVoronoi _enemySpawner;
         
+        public DungeonGraph Graph => _dungeon;
+        public Room CurrentRoom => _currentRoom;
+        
         /// <summary>
         /// Ensures there is only one instance of the GameManagerVoronoi in the scene.
         /// If another instance exists, it will be destroyed.
