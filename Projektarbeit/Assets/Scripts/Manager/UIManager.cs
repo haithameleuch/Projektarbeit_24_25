@@ -21,6 +21,9 @@ public class UIManager : MonoBehaviour
 
     [SerializeField]
     private RectTransform pause; // Reference to the pause screen
+    
+    [SerializeField] 
+    private GameObject miniMapPanel;  // Reference to the mini map
 
     // Toggle bools for UIs
     bool isPauseVisible = false;
@@ -211,6 +214,13 @@ public class UIManager : MonoBehaviour
                     isInvVisible = false;
                 }
             }
+        }
+        
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            if (miniMapPanel is null) return;
+            bool isActive = miniMapPanel.activeSelf;
+            miniMapPanel.SetActive(!isActive);
         }
     }
 }
