@@ -22,6 +22,7 @@ public class VoronoiGenerator : MonoBehaviour
     [SerializeField] private int seed;
     [SerializeField] private float minDoorEdgeLength = 4f;
     
+    public float DungeonSize => size;
     private DungeonGraph _dungeonGraph;
     private System.Random _rng;
     private readonly HashSet<string> _forcedDoorPairs = new();
