@@ -1,3 +1,4 @@
+using Controller;
 using UnityEngine;
 
 namespace Items
@@ -14,22 +15,21 @@ namespace Items
         /// <param name="interactor">The player GameObject that triggered the interaction.</param>
         public void Interact(GameObject interactor)
         {
-            Inventory inv = interactor.GetComponent<Inventory>();
-            if (inv is null) return;
-
-            // Left hand slot is index 5 → row 2, col 1
-            ItemInstance[,] equip = inv.getEquipment();
-            int row = 5 / 2;
-            int col = 5 % 2;
-
-            ItemInstance leftItem = equip[row, col];
-            if (leftItem != null && leftItem.itemData is Equipment eq && eq.toolType == ToolType.Pickaxe)
+            var inv    = interactor.GetComponent<Inventory>();
+            var player = interactor.GetComponent<PlayerPickaxeController>();
+            if (inv is null || player is null) return;
+            
+            var equip = inv.getEquipment();
+            var inst  = equip[2, 1];
+            if (inst != null && inst.itemData is Equipment eq && eq.toolType == ToolType.Pickaxe)
             {
-                gameObject.SetActive(false);
-                return;
+                player.AnimateSwing();
+                Destroy(gameObject, player.SwingTotalDuration());
             }
-
-            UIManager.Instance.ShowPanel("You need a pickaxe equipped in your left hand!");
+            else
+            {
+                UIManager.Instance.ShowPanel("You need a pickaxe in your left hand!");
+            }
         }
 
         /// <summary>
