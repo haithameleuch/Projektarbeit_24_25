@@ -1,6 +1,14 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+public enum ToolType
+{
+    None,
+    Pickaxe,
+    Sword,
+    // … other tools
+}
+
 /// <summary>
 /// Data-Class representing the equipment type as a sub-class of item
 /// </summary>
@@ -22,6 +30,9 @@ public class Equipment : Item
     // Example: The helmet provides 10 Health, 0 Damage and -2 Speed, the list would look like this (10,0,-2)
     [SerializeField]
     public List<int> stat_increases = new List<int>();
+    
+    [SerializeField]
+    public ToolType toolType = ToolType.None;
 
     // This method brings the functionality to the item
     public override void use(Inventory inv)
