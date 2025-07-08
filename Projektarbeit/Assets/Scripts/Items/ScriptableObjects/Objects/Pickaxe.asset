@@ -15,6 +15,7 @@ MonoBehaviour:
   _name: Pickaxe
   _model: {fileID: 3187131419838700913, guid: 9a4bc9ea35bcfac4bb1b66e5c8411055, type: 3}
   rarity: 100
-  item_icon: {fileID: 21300000, guid: a3a05db73f450b349a25441f13c88515, type: 3}
+  item_icon: {fileID: 21300000, guid: 8d4e2fbeafbcc452c8884a54e9c9de64, type: 3}
   equip_slot: 5
   stat_increases: 000000000000000000000000
+  toolType: 1
