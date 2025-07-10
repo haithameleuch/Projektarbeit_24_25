@@ -100,11 +100,10 @@ namespace Controller
         private void EquipPickaxe()
         {
             _pickaxeInstance = Instantiate(pickaxePrefab, leftHandHolder);
-            _pickaxeInstance.transform.localPosition = new Vector3(0f, 0.5f, 0f);
+            _pickaxeInstance.transform.localPosition = new Vector3(0f, 0f, 0f);
             _pickaxeInstance.transform.localRotation = Quaternion.identity;
-            _pickaxeInstance.transform.localScale    = Vector3.one * 0.75f;
+            _pickaxeInstance.transform.localScale    = Vector3.one * 0.5f;
             
-            _pickaxeInstance.SetActive(false);
             _isPickaxeEquipped = true;
         }
 
@@ -137,8 +136,6 @@ namespace Controller
             if (_firstPersonController is not null)     _firstPersonController.enabled = false;
             if (_playerShooting is not null) _playerShooting.enabled = false;
             
-            _pickaxeInstance.SetActive(true);
-            
             Vector3 targetEuler = _holderStartEuler + new Vector3(swingAngle, 0f, 0f);
 
             var halfDuration = swingDuration;
@@ -164,8 +161,6 @@ namespace Controller
                 yield return null;
             }
             leftHandHolder.localEulerAngles = _holderStartEuler;
-            
-            _pickaxeInstance.SetActive(false);
             
             // Restore player controls
             if (_firstPersonController is not null)    _firstPersonController.enabled = true;
