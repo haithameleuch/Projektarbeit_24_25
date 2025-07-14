@@ -6,6 +6,33 @@ using System.Collections;
 
 namespace Enemy
 {
+    /*
+     * GhostAgent Structure and Behavior:
+     *
+     * This class defines a stealthy and agile enemy agent (Ghost) using Unity ML-Agents.
+     * The Ghost's behavior combines smooth movement with disappearing and dashing to confuse and approach the player target.
+     *
+     * Agent Overview:
+     * - The Ghost uses continuous actions to move and rotate toward the player.
+     * - It observes the direction and angle to the player to inform its movement decisions.
+     * - Rewards are provided for reducing distance and facing the target, with penalties for idleness or poor performance.
+     *
+     * Enemy Type Summary:
+     * - Type: Agile-Stealth Enemy
+     * - Goal: Reach the player using evasive and unpredictable movement.
+     * - Behavior:
+     *     • Periodically becomes invisible.
+     *     • Perform smooth dash movement to the left or right (instead of teleportation).
+     *     • Reappears and continues pursuing the player.
+     *     • Penalized for hitting walls or getting stuck.
+     *
+     * Key Features:
+     * - Physics-based movement using Rigidbody.
+     * - Ghost-like dash using `Vector3.Lerp` over `dashDuration`.
+     * - Visibility controlled via alpha channel fading on the Renderer material.
+     * - Timed routine for random dash behavior that improves unpredictability.
+     */
+
     public class Ghost : Agent
     {
         public GameObject target;

@@ -7,6 +7,34 @@ using System.Collections;
 
 namespace Enemy
 {
+    /*
+     * HunterAgent Structure and Behavior:
+     *
+     * This class implements a simple pursuit-type enemy agent using Unity ML-Agents.
+     * The HunterAgent actively chases the player by learning how to move and rotate
+     * based on spatial observations, aiming to close the distance efficiently.
+     *
+     * Agent Overview:
+     * - Uses continuous actions for forward movement and rotation.
+     * - Observes:
+     *     • Normalized vector to the player
+     *     • Its own forward direction
+     *     • Signed angle between its forward direction and the direction to the player
+     * - Rewards:
+     *     • Positive reward for reducing distance and facing the player
+     *     • Penalties for being stuck, hitting walls, or taking too long
+     *
+     * Enemy Type Summary:
+     * - Type: Pursuer Enemy
+     * - Goal: Reach the player as quickly and directly as possible.
+     * - Behavior: Tracks the player using simple directional inputs, no abilities or stealth mechanics.
+     *
+     * Key Features:
+     * - Physics-based movement via Rigidbody
+     * - Built-in stuck detection logic using positional deltas
+     * - Optional random spawn logic for training (commented out)
+     * - Modular and adaptable as a foundation for more advanced enemy types
+     */
     public class HunterAgent : Agent
     {
         /// <summary>

@@ -6,6 +6,31 @@ using System.Collections;
 
 namespace Enemy
 {
+    /*
+     * BomberAgent Structure and Behavior:
+     *
+     * This class defines an enemy agent (BomberAgent) trained using Unity ML-Agents to pursue the player
+     * and drop bombs when nearby.
+     *
+     * Agent Overview:
+     * - The BomberAgent uses continuous actions to move forward/backward and rotate left/right.
+     * - It observes the direction to the player, its own forward vector, and the angle between them.
+     * - Rewards are given for approaching and facing the player, with penalties for being stuck or hitting walls.
+     * - A coroutine (`BombDropCoroutine`) handles bomb-dropping logic based on proximity to the player.
+     * - The bomb is instantiated slightly below the agent and given downward velocity.
+     *
+     * Key Features:
+     * - Movement is physics-based using Rigidbody.
+     * - Initialization includes waiting for the player to appear in the scene.
+     * - Includes a cooldown mechanism between bomb drops.
+     * - Ends the episode with a significant reward if the agent touches the player.
+     *
+     * Enemy Type Summary:
+     * - Type: Pursuer-Bomber Enemy
+     * - Goal: Approach the player and drop bombs to simulate threat.
+     * - Behavior: Smart navigation + area-based bombing + stuck detection logic.
+     */
+    
     public class BomberAgent : Agent
     {
         // Reference to the player target
