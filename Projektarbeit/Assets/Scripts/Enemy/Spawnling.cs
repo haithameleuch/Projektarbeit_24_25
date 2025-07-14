@@ -6,6 +6,41 @@ using System.Collections;
 
 namespace Enemy
 {
+    /*
+     * Spawnling Agent Structure and Behavior:
+     *
+     * This class defines a summoner-type enemy agent (Spawnling) trained using Unity ML-Agents.
+     * The agent's behavior focuses on pursuing the player while periodically spawning new entities (e.g., allies, hazards).
+     *
+     * Agent Overview:
+     * - Type: Summoner-Pursuer Enemy
+     * - Goal: Chase the player and spawn additional prefabs to increase pressure over time.
+     * - Behavior:
+     *     • Moves using continuous actions (forward + rotation).
+     *     • Observes:
+     *         - Normalized vector to the player
+     *         - Its own forward direction
+     *         - Signed angle to the player
+     *     • Rewards:
+     *         - Positive for reducing distance to the player
+     *         - Positive for facing the player
+     *         - Negative for being stuck or hitting walls
+     *     • Spawning:
+     *         - Periodically spawns a designated prefab at its current position.
+     *         - Uses a spawn timer (default 10s) to control spawn rate.
+     *
+     * Key Features:
+     * - Rigidbody-based movement and rotation
+     * - Player detection using coroutine with tag-based search
+     * - Reward shaping for efficient chasing behavior
+     * - Prefab instantiation system for spawning mechanics
+     * - Modular and adaptable for swarm- or support-based AI types
+     *
+     * Suitable for:
+     * - Enemy types that grow in threat over time (e.g., spawners, breeders)
+     * - Cooperative enemy behaviors (e.g., spawnling creates distractions or reinforcements)
+     */
+
     public class Spawnling : Agent
     {
         /// <summary>
@@ -23,7 +58,7 @@ namespace Enemy
         private float _stuckTimer;
         private Rigidbody _rb;
         private float _prevDistance;
-        private bool isInitialized = false;
+        private bool _isInitialized;
 
         /// <summary>
         /// Time interval between spawns, default 10 seconds.
@@ -40,8 +75,13 @@ namespace Enemy
         /// <summary>
         /// Timer to track spawn cooldown.
         /// </summary>
-        private float spawnTimer;
+        private float _spawnTimer;
 
+
+        private void Start()
+        {
+            SpawnPrefab();
+        }
 
         /// <summary>
         /// Called once at agent initialization. Assigns the player target and configures rigidbody constraints.
@@ -60,13 +100,14 @@ namespace Enemy
             StartCoroutine(FindPlayerCoroutine());
 
             // Initialize spawn timer to spawn immediately at start
-            spawnTimer = spawnInterval;
+            _spawnTimer = spawnInterval;
 
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator FindPlayerCoroutine()
         {
-            while (target == null)
+            while (!target)
             {
                 target = GameObject.FindWithTag("Player");
                 if (target == null)
@@ -75,7 +116,7 @@ namespace Enemy
                 }
             }
 
-            isInitialized = true;
+            _isInitialized = true;
         }
 
 
@@ -89,7 +130,7 @@ namespace Enemy
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
 
             // Reset spawn timer
-            spawnTimer = spawnInterval;
+            _spawnTimer = spawnInterval;
         }
         /// <summary>
         /// Collects observations for the agent to make decisions:
@@ -182,16 +223,15 @@ namespace Enemy
         /// </summary>
         private void Update()
         {
-            if (!isInitialized) return;
+            if (!_isInitialized) return;
 
             // Countdown spawn timer
-            spawnTimer -= Time.deltaTime;
+            _spawnTimer -= Time.deltaTime;
 
-            // When timer reaches zero, spawn a prefab instance
-            if (spawnTimer <= 0f)
+            // When the timer reaches zero, spawn a prefab instance
+            if (_spawnTimer <= 0f)
             {
-                SpawnPrefab();
-                spawnTimer = spawnInterval; // Reset timer
+                _spawnTimer = spawnInterval; // Reset timer
             }
         }
 
@@ -211,28 +251,3 @@ namespace Enemy
         }
     }
 }
-      
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-        
-
-       
