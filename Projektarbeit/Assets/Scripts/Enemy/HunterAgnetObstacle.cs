@@ -6,6 +6,37 @@ using System.Collections;
 
 namespace Enemy
 {
+    /*
+     * HunterAgentObstacle Structure and Behavior:
+     *
+     * This class defines a navigation-focused enemy agent (HunterAgentObstacle) trained using Unity ML-Agents.
+     * The agent specializes in efficiently reaching a player while navigating through an environment with static obstacles.
+     *
+     * Agent Overview:
+     * - Type: Pursuer-Obstacle Navigator Enemy
+     * - Goal: Reach the player by learning obstacle-aware pathfinding and target alignment.
+     * - Behavior:
+     *     • Moves toward the player using continuous actions (forward + rotation).
+     *     • Observes its position, velocity, forward direction, and vector to the player.
+     *     • Uses multiple reward components:
+     *         - Distance reduction toward the player (progress reward)
+     *         - Alignment of movement direction with target (velocity alignment reward)
+     *         - Facing the target directly (facing reward)
+     *     • Penalized for:
+     *         - Getting stuck
+     *         - Colliding with obstacles or walls
+     *
+     * Key Features:
+     * - Rigidbody-based physics movement
+     * - Smooth rotation and acceleration control
+     * - Coroutine-based player detection
+     * - Stuck detection using position delta and time threshold
+     * - Gizmo support for debugging forward direction and target tracking
+     *
+     * Training Utility:
+     * - This agent is well-suited for tasks involving obstacle avoidance, precision pursuit, and navigation-based reward shaping.
+     */
+
     public class HunterAgentObstacle : Agent
     {
         // Movement speed of the bomber agent

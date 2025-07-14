@@ -6,6 +6,41 @@ using System.Collections;
 
 namespace Enemy
 {
+    /*
+     * Spawnling Agent Structure and Behavior:
+     *
+     * This class defines a summoner-type enemy agent (Spawnling) trained using Unity ML-Agents.
+     * The agent's behavior focuses on pursuing the player while periodically spawning new entities (e.g., allies, hazards).
+     *
+     * Agent Overview:
+     * - Type: Summoner-Pursuer Enemy
+     * - Goal: Chase the player and spawn additional prefabs to increase pressure over time.
+     * - Behavior:
+     *     • Moves using continuous actions (forward + rotation).
+     *     • Observes:
+     *         - Normalized vector to the player
+     *         - Its own forward direction
+     *         - Signed angle to the player
+     *     • Rewards:
+     *         - Positive for reducing distance to the player
+     *         - Positive for facing the player
+     *         - Negative for being stuck or hitting walls
+     *     • Spawning:
+     *         - Periodically spawns a designated prefab at its current position.
+     *         - Uses a spawn timer (default 10s) to control spawn rate.
+     *
+     * Key Features:
+     * - Rigidbody-based movement and rotation
+     * - Player detection using coroutine with tag-based search
+     * - Reward shaping for efficient chasing behavior
+     * - Prefab instantiation system for spawning mechanics
+     * - Modular and adaptable for swarm- or support-based AI types
+     *
+     * Suitable for:
+     * - Enemy types that grow in threat over time (e.g., spawners, breeders)
+     * - Cooperative enemy behaviors (e.g., spawnling creates distractions or reinforcements)
+     */
+
     public class Spawnling : Agent
     {
         /// <summary>

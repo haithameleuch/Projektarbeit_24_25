@@ -7,10 +7,41 @@ using System.Collections;
 
 namespace Enemy
 {
-    /// <summary>
-    /// Agent responsible for shooting projectiles at a player target using ML-Agents.
-    /// The agent learns to rotate towards the player and fire projectiles from a fixed shoot point.
-    /// </summary>
+    /*
+     * AgentShooting Structure and Behavior:
+     *
+     * This class defines a ranged enemy agent (AgentShooting) trained using Unity ML-Agents.
+     * The agent learns to rotate toward the player and fire projectiles using a local shoot point.
+     * It uses health feedback and target alignment to learn efficient aiming and timing.
+     *
+     * Agent Overview:
+     * - Type: Ranged-Shooter Enemy
+     * - Goal: Eliminate the player by accurately aiming and firing projectiles.
+     * - Behavior:
+     *     • Uses continuous rotation around the Y-axis to align with the target.
+     *     • Fires a projectile using a discrete action when properly aimed.
+     *     • Observes:
+     *         - Player's normalized health
+     *         - Local-space direction to target
+     *         - Alignment score between aim direction and target
+     *         - Angular difference for precision
+     *     • Rewards:
+     *         - Positive reward for aiming accuracy (using dot product)
+     *         - Large reward for reducing target’s health to 0
+     *         - Small time penalty per step to encourage efficient shooting
+     *
+     * Key Features:
+     * - Uses an `ObjectPoolManager` to efficiently reuse projectiles
+     * - Keeps enemy model synced with the gun's rotation
+     * - Freezes Rigidbody to act as a stationary turret-type enemy
+     * - Includes optional debug logs and flexible reward shaping
+     *
+     * Suitable for:
+     * - Training precision shooter agents
+     * - Defensive turret-style AI
+     * - Scenarios where reactive, line-of-sight attacks are key
+     */
+
     public class AgentShooting : Agent
     {
         /// <summary>
