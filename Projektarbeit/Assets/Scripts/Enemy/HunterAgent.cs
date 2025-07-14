@@ -5,12 +5,36 @@ using UnityEngine;
 using System.Collections;
 
 
-/// <summary>
-/// ML-Agents-based hunter that chases a target (the player).
-/// Learns to approach the player, avoid walls, and not get stuck.
-/// </summary>
 namespace Enemy
 {
+    /*
+     * HunterAgent Structure and Behavior:
+     *
+     * This class implements a simple pursuit-type enemy agent using Unity ML-Agents.
+     * The HunterAgent actively chases the player by learning how to move and rotate
+     * based on spatial observations, aiming to close the distance efficiently.
+     *
+     * Agent Overview:
+     * - Uses continuous actions for forward movement and rotation.
+     * - Observes:
+     *     • Normalized vector to the player
+     *     • Its own forward direction
+     *     • Signed angle between its forward direction and the direction to the player
+     * - Rewards:
+     *     • Positive reward for reducing distance and facing the player
+     *     • Penalties for being stuck, hitting walls, or taking too long
+     *
+     * Enemy Type Summary:
+     * - Type: Pursuer Enemy
+     * - Goal: Reach the player as quickly and directly as possible.
+     * - Behavior: Tracks the player using simple directional inputs, no abilities or stealth mechanics.
+     *
+     * Key Features:
+     * - Physics-based movement via Rigidbody
+     * - Built-in stuck detection logic using positional deltas
+     * - Optional random spawn logic for training (commented out)
+     * - Modular and adaptable as a foundation for more advanced enemy types
+     */
     public class HunterAgent : Agent
     {
         /// <summary>
@@ -28,7 +52,6 @@ namespace Enemy
         private float _stuckTimer;
         private Rigidbody _rb;
         private float _prevDistance;
-		// private bool isInitialized = false; // NOT USED!
 
 
         /// <summary>
@@ -49,12 +72,13 @@ namespace Enemy
 
         }
 
-		private IEnumerator FindPlayerCoroutine()
+        // ReSharper disable Unity.PerformanceAnalysis
+        private IEnumerator FindPlayerCoroutine()
     	{
-        	while (target == null)
+        	while (!target)
         	{
             	target = GameObject.FindWithTag("Player");
-            	if (target == null)
+            	if (!target)
             	{
                 	yield return new WaitForSeconds(0.5f); 
             	}
@@ -69,19 +93,22 @@ namespace Enemy
         /// </summary>
         public override void OnEpisodeBegin()
         {
+            /* 
+            // Should be eliminated. It is there to show the configuration in training process
             // Randomize hunter position
-            //transform.localPosition = new Vector3(
-            //    Random.Range(-8, 8f),
-            //    1,
-            //    Random.Range(-4f, 4f)
-            //);
+            transform.localPosition = new Vector3(
+                Random.Range(-8, 8f),
+                1,
+                Random.Range(-4f, 4f)
+            );
 
             // Randomize target (player) position
-            // target.transform.localPosition = new Vector3(
-            //     Random.Range(-8f, 8),
-            //     1,
-            //     Random.Range(-4f, 4f)
-            // );
+             target.transform.localPosition = new Vector3(
+                 Random.Range(-8f, 8),
+                 1,
+                 Random.Range(-4f, 4f)
+             );
+             */
 
             // Reset tracking variables
             // _lastPosition = transform.localPosition;
@@ -116,25 +143,25 @@ namespace Enemy
         /// <param name="actions">Agent action buffers.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
-            float moveInput = actions.ContinuousActions[0]; // Forward/backward
-            float turnInput = actions.ContinuousActions[1]; // Left/right turn
+            var moveInput = actions.ContinuousActions[0]; // Forward/backward
+            var turnInput = actions.ContinuousActions[1]; // Left/right turn
 
             // Move forward/backward
-            Vector3 forwardMovement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
+            var forwardMovement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
             _rb.MovePosition(_rb.position + forwardMovement);
 
             // Rotate
             transform.Rotate(Vector3.up, turnInput * 180f * Time.deltaTime);
 
             // Calculate distance-based progress reward
-            float currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
-            float distanceDelta = _prevDistance - currentDistance;
+            var currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
+            var distanceDelta = _prevDistance - currentDistance;
             AddReward(distanceDelta * 0.01f);
             _prevDistance = currentDistance;
 
             // Reward for facing the target
-            Vector3 toTarget = (target.transform.localPosition - transform.localPosition).normalized;
-            float facingDot = Vector3.Dot(transform.forward, toTarget); // 1 = facing directly at target
+            var toTarget = (target.transform.localPosition - transform.localPosition).normalized;
+            var facingDot = Vector3.Dot(transform.forward, toTarget); // 1 = facing directly at target
             AddReward(facingDot * 0.005f);
 
             // Step penalty to encourage faster completion
