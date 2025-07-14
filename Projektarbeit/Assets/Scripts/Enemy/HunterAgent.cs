@@ -65,7 +65,7 @@ namespace Enemy
         /// </summary>
         public override void OnEpisodeBegin()
         {
-            /* TODO
+            /* 
             // Should be eliminated. It is there to show the configuration in training process
             // Randomize hunter position
             transform.localPosition = new Vector3(
