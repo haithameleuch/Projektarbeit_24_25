@@ -23,7 +23,7 @@ namespace Enemy
         private float _stuckTimer;
         private Rigidbody _rb;
         private float _prevDistance;
-        private bool isInitialized = false;
+        private bool _isInitialized;
 
         /// <summary>
         /// Time interval between spawns, default 10 seconds.
@@ -40,8 +40,13 @@ namespace Enemy
         /// <summary>
         /// Timer to track spawn cooldown.
         /// </summary>
-        private float spawnTimer;
+        private float _spawnTimer;
 
+
+        private void Start()
+        {
+            SpawnPrefab();
+        }
 
         /// <summary>
         /// Called once at agent initialization. Assigns the player target and configures rigidbody constraints.
@@ -60,13 +65,14 @@ namespace Enemy
             StartCoroutine(FindPlayerCoroutine());
 
             // Initialize spawn timer to spawn immediately at start
-            spawnTimer = spawnInterval;
+            _spawnTimer = spawnInterval;
 
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator FindPlayerCoroutine()
         {
-            while (target == null)
+            while (!target)
             {
                 target = GameObject.FindWithTag("Player");
                 if (target == null)
@@ -75,7 +81,7 @@ namespace Enemy
                 }
             }
 
-            isInitialized = true;
+            _isInitialized = true;
         }
 
 
@@ -89,7 +95,7 @@ namespace Enemy
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
 
             // Reset spawn timer
-            spawnTimer = spawnInterval;
+            _spawnTimer = spawnInterval;
         }
         /// <summary>
         /// Collects observations for the agent to make decisions:
@@ -182,16 +188,15 @@ namespace Enemy
         /// </summary>
         private void Update()
         {
-            if (!isInitialized) return;
+            if (!_isInitialized) return;
 
             // Countdown spawn timer
-            spawnTimer -= Time.deltaTime;
+            _spawnTimer -= Time.deltaTime;
 
-            // When timer reaches zero, spawn a prefab instance
-            if (spawnTimer <= 0f)
+            // When the timer reaches zero, spawn a prefab instance
+            if (_spawnTimer <= 0f)
             {
-                SpawnPrefab();
-                spawnTimer = spawnInterval; // Reset timer
+                _spawnTimer = spawnInterval; // Reset timer
             }
         }
 
@@ -211,28 +216,3 @@ namespace Enemy
         }
     }
 }
-      
-
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-        
-
-       

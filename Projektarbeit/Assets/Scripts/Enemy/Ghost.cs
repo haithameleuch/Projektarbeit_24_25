@@ -24,86 +24,109 @@ namespace Enemy
         private float _stuckTimer;
         private Rigidbody _rb;
         private float _prevDistance;
-        // private bool isInitialized = false; // NOT USED!
 
+        /// <summary>
+        /// Called once when the agent is initialized.
+        /// Sets up Rigidbody constraints and starts coroutines for player detection and dash/visibility logic.
+        /// </summary>
         public override void Initialize()
         {
             _rb = GetComponent<Rigidbody>();
 
-            // Freeze rotation and vertical movement
+            // Freeze rotation on X and Z axes, and freeze Y position to keep the agent grounded
             _rb.constraints = RigidbodyConstraints.FreezeRotationX |
                               RigidbodyConstraints.FreezeRotationZ |
                               RigidbodyConstraints.FreezePositionY;
 
-            // Start coroutine to find player target and toggle visibility/dash
+            // Start coroutine to find player target asynchronously
             StartCoroutine(FindPlayerCoroutine());
+
+            // Start coroutine to handle invisibility toggling and dashing behavior
             StartCoroutine(VisibilityToggleRoutine());
         }
 
+        // ReSharper disable Unity.PerformanceAnalysis
+        /// <summary>
+        /// Coroutine that continuously attempts to find the player GameObject by its tag.
+        /// Waits and retries until player is found.
+        /// </summary>
         private IEnumerator FindPlayerCoroutine()
         {
-            while (target == null)
+            while (!target)
             {
                 target = GameObject.FindWithTag("Player");
-                if (target == null)
+                if (!target)
                 {
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.5f); // Wait before retrying
                 }
             }
-
-            // isInitialized = true; // NOT USED!
         }
 
+        /// <summary>
+        /// Called at the start of each episode.
+        /// Resets stuck timer and initializes distance to the target for reward calculation.
+        /// </summary>
         public override void OnEpisodeBegin()
         {
-            _stuckTimer = 0f;
-            _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
+            _stuckTimer = 0f; // Reset stuck timer
+            _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition); // Compute the Distance
         }
 
+        /// <summary>
+        /// Collects observations for the agent including normalized direction and angle to the target.
+        /// </summary>
+        /// <param name="sensor">The sensor to add observations to.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
-            Vector3 toTarget = target.transform.localPosition - transform.localPosition;
-            Vector3 forward = transform.forward;
+            // Direction to target and current forward direction
+            var toTarget = target.transform.localPosition - transform.localPosition;
+            var forward = transform.forward;
 
-            sensor.AddObservation(toTarget.normalized);
-            sensor.AddObservation(forward);
+            sensor.AddObservation(toTarget.normalized); // Direction to target
+            sensor.AddObservation(forward);              // Current forward direction
 
+            // Signed angle between forward and toTarget, normalized to [-1,1]
             float angleToTarget = Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f;
             sensor.AddObservation(angleToTarget);
         }
 
+        /// <summary>
+        /// Receives actions from the neural network to control movement and rotation.
+        /// Provides rewards for approaching and facing the target, and penalties for being stuck or wasting time.
+        /// </summary>
+        /// <param name="actions">Actions from the agent's policy.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
-            float moveInput = actions.ContinuousActions[0];
-            float turnInput = actions.ContinuousActions[1];
+            var moveInput = actions.ContinuousActions[0];  // Forward/backward movement input
+            var turnInput = actions.ContinuousActions[1];  // Rotation input
 
-            // Move forward/backward
-            Vector3 forwardMovement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
+            // Move forward/backward based on input and speed
+            var forwardMovement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
             _rb.MovePosition(_rb.position + forwardMovement);
 
-            // Rotate left/right
+            // Rotate around Y axis based on input
             transform.Rotate(Vector3.up, turnInput * 180f * Time.deltaTime);
 
-            // Reward based on distance progress
-            float currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
-            float distanceDelta = _prevDistance - currentDistance;
+            // Reward agent for reducing distance to target
+            var currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
+            var distanceDelta = _prevDistance - currentDistance;
             AddReward(distanceDelta * 0.01f);
             _prevDistance = currentDistance;
 
-            // Reward for facing target
-            Vector3 toTarget = (target.transform.localPosition - transform.localPosition).normalized;
-            float facingDot = Vector3.Dot(transform.forward, toTarget);
+            // Small reward for facing the target
+            var toTarget = (target.transform.localPosition - transform.localPosition).normalized;
+            var facingDot = Vector3.Dot(transform.forward, toTarget);
             AddReward(facingDot * 0.005f);
 
-            AddReward(-0.001f); // Step penalty
+            AddReward(-0.001f); // Small time penalty to encourage efficiency
 
-            // Check if stuck
+            // Detect if stuck by checking minimal movement
             if (Vector3.Distance(transform.localPosition, _lastPosition) < 0.01f)
             {
                 _stuckTimer += Time.deltaTime;
                 if (_stuckTimer > 2f)
                 {
-                    AddReward(-5f);
+                    AddReward(-5f); // Penalize for being stuck
                     EndEpisode();
                 }
             }
@@ -115,28 +138,37 @@ namespace Enemy
             _lastPosition = transform.localPosition;
         }
 
+        /// <summary>
+        /// Handles collisions with the player and walls.
+        /// Rewards the agent for reaching the player and penalizes hitting walls.
+        /// </summary>
+        /// <param name="other">Collider of the object the agent collided with.</param>
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
             {
-                AddReward(10f);
+                AddReward(10f); // Big reward for reaching the player
                 EndEpisode();
             }
             else if (other.CompareTag("Wall"))
             {
-                AddReward(-2f);
+                AddReward(-2f); // Penalty for hitting walls
             }
         }
 
-        // Coroutine to smoothly fade ghost in/out by adjusting material alpha
+        /// <summary>
+        /// Coroutine to smoothly fade the ghost's material alpha to a target value over time.
+        /// Used to toggle invisibility.
+        /// </summary>
+        /// <param name="targetAlpha">Target alpha value (0 = invisible, 1 = fully visible).</param>
         private IEnumerator FadeToAlpha(float targetAlpha)
         {
-            if (ghostRenderer == null) yield break;
+            if (!ghostRenderer) yield break;
 
             Material mat = ghostRenderer.material;
             Color color = mat.color;
             float startAlpha = color.a;
-            float duration = 0.5f;
+            float duration = 0.5f;  // Fade duration in seconds
 
             float elapsed = 0f;
 
@@ -148,17 +180,21 @@ namespace Enemy
                 yield return null;
             }
 
+            // Ensure the final alpha set exactly
             mat.color = new Color(color.r, color.g, color.b, targetAlpha);
         }
 
-        // Coroutine to dash left or right smoothly over dashDuration seconds
+        /// <summary>
+        /// Coroutine to smoothly move the ghost left or over dashDuration seconds.
+        /// Implements a smooth dash movement instead of instant teleport.
+        /// </summary>
         private IEnumerator DashMovement()
         {
-            Vector3 direction = Random.value > 0.5f ? Vector3.right : Vector3.left;
-            Vector3 startPos = transform.position;
-            Vector3 targetPos = startPos + direction * dashDistance;
+            var direction = Random.value > 0.5f ? Vector3.right : Vector3.left;
+            var startPos = transform.position;
+            var targetPos = startPos + direction * dashDistance;
 
-            float elapsed = 0f;
+            var elapsed = 0f;
 
             while (elapsed < dashDuration)
             {
@@ -167,23 +203,28 @@ namespace Enemy
                 yield return null;
             }
 
-            transform.position = targetPos; // Snap to exact position at end
+            // Snap to exact dash target position
+            transform.position = targetPos;
         }
 
-        // Coroutine that controls invisibility toggling and dash movement on a timer
+        /// <summary>
+        /// Coroutine that continuously toggles the ghost's visibility and performs dash movement on a timer.
+        /// Waits a random interval, fades out, dashes left or right smoothly, then fades back in.
+        /// </summary>
         private IEnumerator VisibilityToggleRoutine()
         {
             while (true)
             {
+                // Wait a random time before dashing
                 yield return new WaitForSeconds(Random.Range(minTeleportTime, maxTeleportTime));
 
-                // Fade out (become invisible)
+                // Fade out ghost (become invisible)
                 yield return StartCoroutine(FadeToAlpha(0f));
 
-                // Dash to left or right smoothly instead of instant teleport
+                // Perform dash movement smoothly instead of instant teleport
                 yield return StartCoroutine(DashMovement());
 
-                // Fade back in (become visible)
+                // Fade ghost back in (become visible)
                 yield return StartCoroutine(FadeToAlpha(1f));
             }
         }
