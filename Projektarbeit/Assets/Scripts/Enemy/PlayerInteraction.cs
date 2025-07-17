@@ -46,6 +46,9 @@ public class PlayerInteraction : MonoBehaviour, IInteractable
         // Check if the colliding object is a projectile
         if (collision.gameObject.name.Equals("Projectile(Clone)"))
         {
+            Stats stats = GetComponent<Stats>();
+            stats.DecreaseCurStat(0,2f);
+            /*
             // Access the Health component of the player
             Health playerHealth = GetComponent<Health>();
 
@@ -55,6 +58,8 @@ public class PlayerInteraction : MonoBehaviour, IInteractable
                 HealthManager.DamageType.Normal,
                 playerHealth._currentHealth
             );
+            */
         }
+        
     }
 }

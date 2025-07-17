@@ -9,9 +9,12 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
 
     public void Interact(GameObject interactor)
     {
-        interactor.GetComponent<Stats>().DecreaseCurStat(0,gameObject.GetComponent<Stats>().GetCurStats(1));
-        Debug.Log(interactor.GetComponent<Stats>().GetCurStats(0));
+        if (interactor.name.Equals("Player"))
+        {
+            interactor.GetComponent<Stats>().DecreaseCurStat(0, gameObject.GetComponent<Stats>().GetCurStats(1));
+        }
         /*
+        //Legacy Code To Be Removed
         Health health = interactor.GetComponent<Health>();
         canMove = false;
 
@@ -43,11 +46,17 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
     {
         if (collision.gameObject.name.Equals("Projectile(Clone)"))
         {
+            Stats stats = GetComponent<Stats>();
+            float currentHealth = stats.GetCurStats(0);
+            float maxHealth = stats.GetMaxStats(0);
+            float healthPercent = Mathf.Clamp01(currentHealth / maxHealth);
+            //
+            /*
             Health enemyHealth = GetComponent<Health>();
             float currentHealth = enemyHealth._currentHealth;
             float maxHealth = enemyHealth._maxHealth;
             float healthPercent = Mathf.Clamp01(currentHealth / maxHealth);
-
+            */
             // Bright glow colors: green (full) to red (low)
             Color targetColor = Color.Lerp(Color.red, Color.green, healthPercent);
 
@@ -57,7 +66,9 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
 
             // Update text
             LifeText.text = $"{currentHealth:0}";
-
+            
+            //
+            
 			/**
             // Optional pulse at low HP
             if (healthPercent < 0.2f)
@@ -72,6 +83,7 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
 			**/
             
             /*
+            //Legacy Code To Be Removed
             enemyHealth._currentHealth = HealthManager.damageAbsolute(0.5f, HealthManager.DamageType.Normal, enemyHealth._currentHealth);
 
             if (enemyHealth._currentHealth <= 0f)
