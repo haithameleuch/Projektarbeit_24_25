@@ -219,6 +219,7 @@ GameObject:
   - component: {fileID: 4242882354488436998}
   - component: {fileID: 7210897651616893077}
   - component: {fileID: 4286397209588686781}
+  - component: {fileID: 5966284906250251990}
   m_Layer: 0
   m_Name: Enemy(Drone)
   m_TagString: Untagged
@@ -293,6 +294,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHealth: 10
   _currentHealth: 10
+--- !u!114 &5966284906250251990
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8403865049656987600}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStats:
+  - 20
+  - 15
+  - 5
+  curStats:
+  - 20
+  - 15
+  - 5
 --- !u!1001 &5167653782938042445
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -142,6 +142,7 @@ GameObject:
   - component: {fileID: 6267662679776151705}
   - component: {fileID: 3320558955795536712}
   - component: {fileID: 8697819253647704072}
+  - component: {fileID: 4784148671184020828}
   m_Layer: 0
   m_Name: Enemy(Bomber)
   m_TagString: Untagged
@@ -264,9 +265,8 @@ MonoBehaviour:
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
   target: {fileID: 0}
-  movementSpeed: 4
   bombPrefab: {fileID: 5837499380749358498}
-  bombSpawnPoint: {fileID: 7810404212908999940}
+  movementSpeed: 4
 --- !u!114 &3320558955795536712
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -298,6 +298,26 @@ MonoBehaviour:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
   MaxStep: 0
+--- !u!114 &4784148671184020828
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3263377452713168705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStats:
+  - 20
+  - 15
+  - 5
+  curStats:
+  - 20
+  - 15
+  - 5
 --- !u!1 &4087763052824998516
 GameObject:
   m_ObjectHideFlags: 0
