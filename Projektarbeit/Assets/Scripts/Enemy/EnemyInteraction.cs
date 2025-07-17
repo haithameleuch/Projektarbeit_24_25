@@ -9,6 +9,9 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
 
     public void Interact(GameObject interactor)
     {
+        interactor.GetComponent<Stats>().DecreaseCurStat(0,gameObject.GetComponent<Stats>().GetCurStats(1));
+        Debug.Log(interactor.GetComponent<Stats>().GetCurStats(0));
+        /*
         Health health = interactor.GetComponent<Health>();
         canMove = false;
 
@@ -19,7 +22,7 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
             {
                 health._currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, currentHealth);
             }
-        }
+        }*/
     }
 
     public void OnExit(GameObject interactor)

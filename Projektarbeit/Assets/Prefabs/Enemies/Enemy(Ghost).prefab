@@ -256,6 +256,7 @@ GameObject:
   - component: {fileID: 5374376805325335263}
   - component: {fileID: 2735041107232941460}
   - component: {fileID: 1316446358305264966}
+  - component: {fileID: -6563857063014366212}
   m_Layer: 0
   m_Name: Enemy(Ghost)
   m_TagString: Untagged
@@ -425,6 +426,26 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _maxHealth: 15
   _currentHealth: 15
+--- !u!114 &-6563857063014366212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9203938796069245880}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStats:
+  - 20
+  - 15
+  - 5
+  curStats:
+  - 20
+  - 15
+  - 5
 --- !u!1 &9203938796228337872
 GameObject:
   m_ObjectHideFlags: 0
