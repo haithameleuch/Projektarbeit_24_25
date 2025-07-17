@@ -87,6 +87,7 @@ namespace Enemy
                     yield return new WaitForSeconds(0.5f); // Wait before retrying
                 }
             }
+            movementSpeed = gameObject.GetComponent<Stats>().GetCurStats(2);
         }
 
         /// <summary>
