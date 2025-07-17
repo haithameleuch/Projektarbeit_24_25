@@ -71,9 +71,16 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
             }
 			**/
             
+            /*
             enemyHealth._currentHealth = HealthManager.damageAbsolute(0.5f, HealthManager.DamageType.Normal, enemyHealth._currentHealth);
 
             if (enemyHealth._currentHealth <= 0f)
+            {
+                Destroy(gameObject);
+            }
+            */
+            gameObject.GetComponent<Stats>().DecreaseCurStat(0,GameObject.Find("Player(Clone)").GetComponent<Stats>().GetCurStats(1)*0.5f);
+            if (gameObject.GetComponent<Stats>().GetCurStats(0) <= 0f)
             {
                 Destroy(gameObject);
             }
