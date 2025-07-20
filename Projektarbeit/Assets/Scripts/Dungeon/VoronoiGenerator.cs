@@ -176,14 +176,10 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     public void buildDungeon()
     {
-        // Place the floor of the dungeon
-        for (int j = 0; j < size / 2; j++)
-        {
-            for (int i = 0; i < size / 2; i++)
-            {
-                GameObject floorObj = Instantiate(floor, new Vector3((i * 2) + 1, 0, (j * 2) + 1), Quaternion.identity, transform);
-            }
-        }
+        // Place a single large floor object
+        var floorObj = Instantiate(floor, new Vector3(size * 0.5f, 0f, size * 0.5f), Quaternion.identity, transform);
+        floorObj.transform.localScale = new Vector3(size * 0.1f, 1f, size * 0.1f);
+        
         // Create outside walls of the dungeon
         CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0), -1);
         CreateWall(new Vector3(size, 0, 0), new Vector3(size, 0, size), -2);
