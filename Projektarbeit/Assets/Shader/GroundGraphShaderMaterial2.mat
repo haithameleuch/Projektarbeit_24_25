@@ -55,7 +55,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _BlendOpacity: 1
+    - _BlendOpacity: 0.25
     - _CellDensity: 5
     - _Intensity: 2
     - _QueueControl: 0
@@ -64,5 +64,6 @@ Material:
     m_Colors:
     - _BaseColor: {r: 0.06556134, g: 0, b: 0.8113208, a: 0}
     - _EdgeColor: {r: 0.36470592, g: 0.9630917, b: 1, a: 0}
+    - _ManualTiling: {r: 5, g: 5, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

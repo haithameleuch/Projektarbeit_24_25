@@ -9,6 +9,9 @@ using Geometry;
 
 public class VoronoiGenerator : MonoBehaviour
 {
+    private static readonly int BaseColor = Shader.PropertyToID("_BaseColor");
+    private static readonly int EdgeColor = Shader.PropertyToID("_EdgeColor");
+
     [Header("Prefabs for Dungeon")]
     [SerializeField] private GameObject pillar;
     [SerializeField] private GameObject wall;
@@ -177,8 +180,31 @@ public class VoronoiGenerator : MonoBehaviour
     public void buildDungeon()
     {
         // Place a single large floor object
-        var floorObj = Instantiate(floor, new Vector3(size * 0.5f, 0f, size * 0.5f), Quaternion.identity, transform);
+        GameObject floorObj = Instantiate(floor, new Vector3(size * 0.5f, 0f, size * 0.5f), Quaternion.identity, transform);
         floorObj.transform.localScale = new Vector3(size * 0.1f, 1f, size * 0.1f);
+
+        // Material
+        Renderer rend = floorObj.GetComponent<Renderer>();
+        Material mat = rend.material;
+
+        // Color list
+        List<Color> baseColors = new List<Color>
+        {
+            new Color32(0x11, 0x00, 0xCF, 0x00),
+            new Color32(0xD4, 0x0A, 0x00, 0x00)
+        };
+
+        List<Color> edgeColors = new List<Color>
+        {
+            new Color(93f / 255f, 246f / 255f, 255f / 255f, 0f),
+            new Color(255f / 255f, 243f / 255f, 0f, 0f)
+        };
+
+        // Same index for both Color lists
+        var index = Random.Range(0, baseColors.Count);
+
+        mat.SetColor(BaseColor, baseColors[index]);
+        mat.SetColor(EdgeColor, edgeColors[index]);
         
         // Create outside walls of the dungeon
         CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0), -1);
