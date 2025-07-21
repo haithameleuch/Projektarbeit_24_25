@@ -1,5 +1,5 @@
 using UnityEngine;
-
+/*
 public class HealthManager : MonoBehaviour
 {
     public enum DamageType { Normal, Magical, Absolute};
@@ -31,3 +31,4 @@ public class HealthManager : MonoBehaviour
     }
 
 }
+*/

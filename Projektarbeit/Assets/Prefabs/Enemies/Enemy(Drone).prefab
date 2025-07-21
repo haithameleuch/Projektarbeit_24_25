@@ -218,7 +218,6 @@ GameObject:
   - component: {fileID: 8296626775472227743}
   - component: {fileID: 4242882354488436998}
   - component: {fileID: 7210897651616893077}
-  - component: {fileID: 4286397209588686781}
   - component: {fileID: 5966284906250251990}
   m_Layer: 0
   m_Name: Enemy(Drone)
@@ -280,20 +279,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.8083483, y: 0.8389206, z: 0.5992259}
   m_Center: {x: 0.063871086, y: 1.4105718, z: -0.58704567}
---- !u!114 &4286397209588686781
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8403865049656987600}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ad762c71f53732495208742f2cc2ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHealth: 10
-  _currentHealth: 10
 --- !u!114 &5966284906250251990
 MonoBehaviour:
   m_ObjectHideFlags: 0

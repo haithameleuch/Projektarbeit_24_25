@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 7929234784204982106}
   - component: {fileID: 1042781483250249348}
   - component: {fileID: 6026498069539602025}
-  - component: {fileID: 425857103010466661}
   - component: {fileID: 3974673090526580785}
   - component: {fileID: 1817297916470957439}
   m_Layer: 0
@@ -71,20 +70,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPoolManager: {fileID: 0}
   shootPoint: {fileID: 1961652736631884286}
---- !u!114 &425857103010466661
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3632200126607871566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ad762c71f53732495208742f2cc2ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHealth: 100
-  _currentHealth: 100
 --- !u!114 &3974673090526580785
 MonoBehaviour:
   m_ObjectHideFlags: 0
