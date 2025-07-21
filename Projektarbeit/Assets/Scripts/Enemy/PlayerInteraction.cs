@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 /// <summary>
 /// Handles interaction logic for the player, including reactions to collisions with projectiles
@@ -6,6 +7,25 @@ using UnityEngine;
 /// </summary>
 public class PlayerInteraction : MonoBehaviour, IInteractable
 {
+    
+    /// <summary>
+    /// Health-bar to show the life of the player during the game 
+    /// </summary>
+    public Image healthBar;
+    private float lerpSpeed = 1f;
+
+    private void Update()
+    {
+        // Cache references in Start for performance
+        Stats playerStats;
+        playerStats = GameObject.Find("Player(Clone)").GetComponent<Stats>();
+        Debug.Log(playerStats);
+        healthBar = GameObject.FindGameObjectsWithTag("Health")[0].GetComponent<Image>();
+        float targetFill = playerStats.GetCurStats(0) / playerStats.GetMaxStats(0);
+        healthBar.fillAmount = Mathf.Lerp(healthBar.fillAmount, targetFill, Time.deltaTime * lerpSpeed);
+    }
+    
+    
     /// <summary>
     /// Called when another GameObject interacts with this one.
     /// Currently left empty but can be customized for specific interactions.
@@ -44,7 +64,7 @@ public class PlayerInteraction : MonoBehaviour, IInteractable
     private void OnCollisionEnter(Collision collision)
     {
         // Check if the colliding object is a projectile
-        if (collision.gameObject.name.Equals("Projectile(Clone)"))
+        if (collision.gameObject.name.Equals("ProjectileDrone(Clone)"))
         {
             Stats stats = GetComponent<Stats>();
             stats.DecreaseCurStat(0,2f);
