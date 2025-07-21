@@ -2304,7 +2304,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pillar: {fileID: 2094877393801379167, guid: 890ea58e375177a49adfc5ec6ae4dd33, type: 3}
   wall: {fileID: 3945106619950341444, guid: 192a01b192036874da1674510280fd14, type: 3}
-  floor: {fileID: 4594376586297923126, guid: aa54556f0a87405469430b1200cbfc6c, type: 3}
+  floorNormal: {fileID: 1204103256114764629, guid: 9062586baf2b3e54cbab89aa957afd90, type: 3}
+  floorShader: {fileID: 4594376586297923126, guid: aa54556f0a87405469430b1200cbfc6c, type: 3}
+  floorWave: {fileID: 8528812805128915473, guid: 483e8ca2ee7052c43ae45517c2aec5cb, type: 3}
   door: {fileID: 187169917318524780, guid: 64a0a6f873e11ae469a7caaa22514fc0, type: 3}
   destroyableWall: {fileID: 2725483830217079802, guid: 2ee0bf17ebf372e41ab59a0b15d9ea4a, type: 3}
   size: 40

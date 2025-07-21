@@ -29,11 +29,15 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _ColorEnd: 0.2
-    - _ColorStart: 0.3
-    - _WaveAmp: 0.04
+    - _ColorEnd: 1
+    - _ColorStart: 0
+    - _GridSize: 50
+    - _LineWidth: 0.01
+    - _WaveAmp: 0.15
+    - _WaveSpeed: 0.05
     m_Colors:
-    - _ColorA: {r: 0, g: 0.43708557, b: 0.9716981, a: 1}
-    - _ColorB: {r: 1, g: 0.08018869, b: 0.08018869, a: 1}
+    - _ColorA: {r: 0.4339623, g: 0.4339623, b: 0.4339623, a: 1}
+    - _ColorB: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
+    - _LineColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

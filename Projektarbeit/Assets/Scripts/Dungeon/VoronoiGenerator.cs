@@ -15,7 +15,9 @@ public class VoronoiGenerator : MonoBehaviour
     [Header("Prefabs for Dungeon")]
     [SerializeField] private GameObject pillar;
     [SerializeField] private GameObject wall;
-    [SerializeField] private GameObject floor;
+    [SerializeField] private GameObject floorNormal;
+    [SerializeField] private GameObject floorShader;
+    [SerializeField] private GameObject floorWave;
     [SerializeField] private GameObject door;
     [SerializeField] private GameObject destroyableWall;
     
@@ -179,32 +181,53 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     public void buildDungeon()
     {
-        // Place a single large floor object
-        GameObject floorObj = Instantiate(floor, new Vector3(size * 0.5f, 0f, size * 0.5f), Quaternion.identity, transform);
-        floorObj.transform.localScale = new Vector3(size * 0.1f, 1f, size * 0.1f);
+        var mode = Random.Range(0, 3);
 
-        // Material
-        Renderer rend = floorObj.GetComponent<Renderer>();
-        Material mat = rend.material;
-
-        // Color list
-        List<Color> baseColors = new List<Color>
+        if (mode == 0)
         {
-            new Color32(0x11, 0x00, 0xCF, 0x00),
-            new Color32(0xD4, 0x0A, 0x00, 0x00)
-        };
-
-        List<Color> edgeColors = new List<Color>
+            // Place a tiled floor
+            for (var j = 0; j < size / 2; j++)
+            {
+                for (var i = 0; i < size / 2; i++)
+                {
+                    Instantiate(floorNormal, new Vector3((i * 2) + 1, 0, (j * 2) + 1), Quaternion.identity, transform);
+                }
+            }
+        } else if (mode == 1)
         {
-            new Color(93f / 255f, 246f / 255f, 255f / 255f, 0f),
-            new Color(255f / 255f, 243f / 255f, 0f, 0f)
-        };
+            // Place a single large floor object
+            var floorObj = Instantiate(floorShader, new Vector3(size * 0.5f, 0f, size * 0.5f), Quaternion.identity, transform);
+            floorObj.transform.localScale = new Vector3(size * 0.1f, 1f, size * 0.1f);
 
-        // Same index for both Color lists
-        var index = Random.Range(0, baseColors.Count);
+            // Material
+            var rend = floorObj.GetComponent<Renderer>();
+            var mat = rend.material;
 
-        mat.SetColor(BaseColor, baseColors[index]);
-        mat.SetColor(EdgeColor, edgeColors[index]);
+            // Color list
+            List<Color> baseColors = new List<Color>
+            {
+                new Color32(0x11, 0x00, 0xCF, 0x00),
+                new Color32(0xD4, 0x0A, 0x00, 0x00)
+            };
+
+            List<Color> edgeColors = new List<Color>
+            {
+                new Color(93f / 255f, 246f / 255f, 255f / 255f, 0f),
+                new Color(255f / 255f, 243f / 255f, 0f, 0f)
+            };
+
+            // Same index for both Color lists
+            var index = Random.Range(0, baseColors.Count);
+
+            mat.SetColor(BaseColor, baseColors[index]);
+            mat.SetColor(EdgeColor, edgeColors[index]);
+        }
+        else
+        {
+            // Place a large floor with animated wave shader
+            var floorObj = Instantiate(floorWave, new Vector3(size * 0.5f, 0f, size * 0.5f), Quaternion.identity, transform);
+            floorObj.transform.localScale = new Vector3(size * 100f, 1f, size * 100f);
+        }
         
         // Create outside walls of the dungeon
         CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0), -1);
