@@ -9,9 +9,10 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
 
     public void Interact(GameObject interactor)
     {
-        if (interactor.name.Equals("Player"))
+        if (interactor.name.Equals("Player(Clone)"))
         {
             interactor.GetComponent<Stats>().DecreaseCurStat(0, gameObject.GetComponent<Stats>().GetCurStats(1));
+            //canMove = false;
         }
         /*
         //Legacy Code To Be Removed

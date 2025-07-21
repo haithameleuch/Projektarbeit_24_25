@@ -218,7 +218,6 @@ GameObject:
   - component: {fileID: 931394581240153737}
   - component: {fileID: 8270512410961810799}
   - component: {fileID: 1585890734966162495}
-  - component: {fileID: 5919544878098999410}
   - component: {fileID: -8177344407245803618}
   m_Layer: 0
   m_Name: Enemy(Gunner)
@@ -279,20 +278,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LifeText: {fileID: 6930745176575186739}
---- !u!114 &5919544878098999410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5921962025652973399}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ad762c71f53732495208742f2cc2ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHealth: 15
-  _currentHealth: 15
 --- !u!114 &-8177344407245803618
 MonoBehaviour:
   m_ObjectHideFlags: 0
