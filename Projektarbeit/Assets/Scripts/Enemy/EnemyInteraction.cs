@@ -92,12 +92,11 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
                 Destroy(gameObject);
             }
             */
-            gameObject.GetComponent<Stats>().DecreaseCurStat(0,GameObject.Find("Player(Clone)").GetComponent<Stats>().GetCurStats(1)*0.5f);
+            gameObject.GetComponent<Stats>().DecreaseCurStat(0, GameObject.Find("Player(Clone)").GetComponent<Stats>().GetCurStats(1) * 0.5f);
             if (gameObject.GetComponent<Stats>().GetCurStats(0) <= 0f)
             {
                 Destroy(gameObject);
             }
         }
     }
-
 }
