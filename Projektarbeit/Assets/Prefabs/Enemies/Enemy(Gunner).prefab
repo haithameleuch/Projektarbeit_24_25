@@ -263,8 +263,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.0818942, y: 1.9637566, z: 0.8072486}
-  m_Center: {x: -0.02487123, y: 0.48187828, z: -1.172052}
+  m_Size: {x: 1.6834812, y: 1.9637566, z: 2.3109653}
+  m_Center: {x: -0.0019962788, y: 0.48187828, z: -0.24461904}
 --- !u!114 &1585890734966162495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,7 +277,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 6930745176575186739}
+  lifeText: {fileID: 6930745176575186739}
 --- !u!114 &-8177344407245803618
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -353,7 +353,7 @@ PrefabInstance:
     - target: {fileID: 7681761152445447487, guid: 3f15c95a20b7fbc21997fcf4c628151e, type: 3}
       propertyPath: projectilePrefab
       value: 
-      objectReference: {fileID: 6647848563404276463, guid: f1612264ad1224037a9b372f4d925dab, type: 3}
+      objectReference: {fileID: 7023307184592512233, guid: e032ae0b41b25d34db53572ff4a1fb6f, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -567,4 +567,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 6930745176575186739}
+  lifeText: {fileID: 6930745176575186739}
