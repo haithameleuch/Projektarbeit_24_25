@@ -257,7 +257,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 8738884227407215652}
+  lifeText: {fileID: 8738884227407215652}
 --- !u!65 &7210897651616893077
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -277,8 +277,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.8083483, y: 0.8389206, z: 0.5992259}
-  m_Center: {x: 0.063871086, y: 1.4105718, z: -0.58704567}
+  m_Size: {x: 1.9232007, y: 0.8389206, z: 1.7016654}
+  m_Center: {x: -0.056151688, y: 1.4105718, z: -0.03582585}
 --- !u!114 &5966284906250251990
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -354,7 +354,7 @@ PrefabInstance:
     - target: {fileID: 7681761152445447487, guid: 3f15c95a20b7fbc21997fcf4c628151e, type: 3}
       propertyPath: projectilePrefab
       value: 
-      objectReference: {fileID: 6647848563404276463, guid: f1612264ad1224037a9b372f4d925dab, type: 3}
+      objectReference: {fileID: 7023307184592512233, guid: e032ae0b41b25d34db53572ff4a1fb6f, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
