@@ -178,7 +178,7 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     public void buildDungeon()
     {
-        var mode = Random.Range(0, 3);
+        var mode = seed % 3;
 
         if (mode == 0)
         {
@@ -216,7 +216,7 @@ public class VoronoiGenerator : MonoBehaviour
             };
 
             // Same index for both Color lists
-            var index = Random.Range(0, baseColors.Count);
+            var index = (seed / 3) % baseColors.Count;
 
             mat.SetColor("_BaseColor", baseColors[index]);
             mat.SetColor("_EdgeColor", edgeColors[index]);
@@ -451,10 +451,8 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     private void AssignRoomTypes()
     {
-        var rng = new System.Random();
-
         // Starting room
-        int startIndex = rng.Next(_dungeonGraph.rooms.Count);
+        int startIndex = _rng.Next(_dungeonGraph.rooms.Count);
         var startRoom = _dungeonGraph.rooms[startIndex];
         startRoom.type    = RoomType.Start;
         startRoom.visited = true;
@@ -471,7 +469,7 @@ public class VoronoiGenerator : MonoBehaviour
         // Minigame rooms
         for (int i = 0; i < 2 && normals.Count > 0; i++)
         {
-            int idx = rng.Next(normals.Count);
+            int idx = _rng.Next(normals.Count);
             normals[idx].type = RoomType.MiniGame;
             normals.RemoveAt(idx);
         }
@@ -480,7 +478,7 @@ public class VoronoiGenerator : MonoBehaviour
         int itemCount = Mathf.Max(1, (int)(0.2f * _dungeonGraph.rooms.Count));
         for (int i = 0; i < itemCount && normals.Count > 0; i++)
         {
-            int idx = rng.Next(normals.Count);
+            int idx = _rng.Next(normals.Count);
             normals[idx].type = RoomType.Item;
             normals.RemoveAt(idx);
         }
@@ -489,7 +487,7 @@ public class VoronoiGenerator : MonoBehaviour
         int enemyCount = Mathf.Max(1, (int)(0.2f * _dungeonGraph.rooms.Count));
         for (int i = 0; i < enemyCount && normals.Count > 0; i++)
         {
-            int idx = rng.Next(normals.Count);
+            int idx = _rng.Next(normals.Count);
             normals[idx].type = RoomType.Enemy;
             normals.RemoveAt(idx);
         }
@@ -545,14 +543,13 @@ public class VoronoiGenerator : MonoBehaviour
     public List<Point> generatePoints(int count, float radius, float size)
     {
         List<Point> points = new List<Point>();
-        System.Random random = new System.Random(seed);
         int maxAttempts = 1000;
 
         while (points.Count < count && maxAttempts > 0)
         {
             float margin = 2f;
-            float x = margin + (float)random.NextDouble() * (size - 2 * margin);
-            float y = margin + (float)random.NextDouble() * (size - 2 * margin);
+            float x = margin + (float)_rng.NextDouble() * (size - 2 * margin);
+            float y = margin + (float)_rng.NextDouble() * (size - 2 * margin);
             Point newPoint = new Point(x, y);
             bool isValid = true;
 
