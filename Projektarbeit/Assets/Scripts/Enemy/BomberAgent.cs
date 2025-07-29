@@ -78,7 +78,7 @@ namespace Enemy
             }
 
             _isInitialized = true;
-
+            movementSpeed = gameObject.GetComponent<Stats>().GetCurStats(2);
             // Start bomb-dropping logic once initialized
             StartCoroutine(BombDropCoroutine());
         }

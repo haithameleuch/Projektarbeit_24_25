@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 7929234784204982106}
   - component: {fileID: 1042781483250249348}
   - component: {fileID: 6026498069539602025}
-  - component: {fileID: 425857103010466661}
   - component: {fileID: 3974673090526580785}
+  - component: {fileID: 1817297916470957439}
+  - component: {fileID: -6843795123550766924}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -70,20 +71,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPoolManager: {fileID: 0}
   shootPoint: {fileID: 1961652736631884286}
---- !u!114 &425857103010466661
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3632200126607871566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ad762c71f53732495208742f2cc2ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHealth: 100
-  _currentHealth: 100
 --- !u!114 &3974673090526580785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,6 +83,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d6700e8c5700064780ff8b9ac6cc99c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1817297916470957439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3632200126607871566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStats:
+  - 1000
+  - 10
+  - 5
+  curStats:
+  - 1000
+  - 10
+  - 5
+--- !u!114 &-6843795123550766924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3632200126607871566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ec74838f1e42f081baf8c5266b5610, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 0}
 --- !u!1 &5165029188938454683
 GameObject:
   m_ObjectHideFlags: 0

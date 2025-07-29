@@ -1,14 +1,24 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
+using UnityEngine.Serialization;
 
-public class EnemyInteraction : MonoBehaviour, IInteractable
+namespace Enemy
 {
-    private bool canMove = true;
-    [SerializeField] private TextMeshPro LifeText;
-    private Color currentColor;
-
-    public void Interact(GameObject interactor)
+    public class EnemyInteraction : MonoBehaviour, IInteractable
     {
+        private bool _canMove = true;
+        [FormerlySerializedAs("LifeText")] [SerializeField] private TextMeshPro lifeText;
+        private Color _currentColor;
+
+        public void Interact(GameObject interactor)
+        {
+            if (interactor.name.Equals("Player(Clone)"))
+            {
+                interactor.GetComponent<Stats>().DecreaseCurStat(0, gameObject.GetComponent<Stats>().GetCurStats(1));
+                //canMove = false;
+            }
+            /*
+        //Legacy Code To Be Removed
         Health health = interactor.GetComponent<Health>();
         canMove = false;
 
@@ -19,62 +29,48 @@ public class EnemyInteraction : MonoBehaviour, IInteractable
             {
                 health._currentHealth = HealthManager.damageAbsolute(2.0f, HealthManager.DamageType.Normal, currentHealth);
             }
+        }*/
         }
-    }
 
-    public void OnExit(GameObject interactor)
-    {
-        if (interactor == null) return;
-        canMove = true;
-        UIManager.Instance.HidePanel();
-    }
-
-    public bool ShouldRepeat()
-    {
-        return false;
-    }
-
-    public bool CanMove() { return canMove; }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (collision.gameObject.name.Equals("Projectile(Clone)"))
+        public void OnExit(GameObject interactor)
         {
-            Health enemyHealth = GetComponent<Health>();
-            float currentHealth = enemyHealth._currentHealth;
-            float maxHealth = enemyHealth._maxHealth;
-            float healthPercent = Mathf.Clamp01(currentHealth / maxHealth);
+            if (!interactor) return;
+            _canMove = true;
+            UIManager.Instance.HidePanel();
+        }
 
-            // Bright glow colors: green (full) to red (low)
-            Color targetColor = Color.Lerp(Color.red, Color.green, healthPercent);
+        public bool ShouldRepeat()
+        {
+            return false;
+        }
 
-            // Smooth transition
-            currentColor = Color.Lerp(currentColor, targetColor, Time.deltaTime * 8f);
-            LifeText.color = currentColor;
+        public bool CanMove() { return _canMove; }
 
-            // Update text
-            LifeText.text = $"{currentHealth:0}";
-
-			/**
-            // Optional pulse at low HP
-            if (healthPercent < 0.2f)
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.name.Equals("Projectile(Clone)"))
             {
-                float pulse = Mathf.PingPong(Time.time * 4f, 0.2f) + 0.9f;
-                LifeText.transform.localScale = Vector3.one * pulse;
-            }
-            else
-            {
-                LifeText.transform.localScale = Vector3.one;
-            }
-			**/
-            
-            enemyHealth._currentHealth = HealthManager.damageAbsolute(0.5f, HealthManager.DamageType.Normal, enemyHealth._currentHealth);
+                Stats stats = GetComponent<Stats>();
+                float currentHealth = stats.GetCurStats(0);
+                float maxHealth = stats.GetMaxStats(0);
+                float healthPercent = Mathf.Clamp01(currentHealth / maxHealth);
+                // Bright glow colors: green (full) to red (low)
+                Color targetColor = Color.Lerp(Color.red, Color.green, healthPercent);
 
-            if (enemyHealth._currentHealth <= 0f)
-            {
-                Destroy(gameObject);
+                // Smooth transition
+                _currentColor = Color.Lerp(_currentColor, targetColor, Time.deltaTime * 8f);
+                lifeText.color = _currentColor;
+
+                // Update text
+                lifeText.text = $"{currentHealth:0}";
+                
+                gameObject.GetComponent<Stats>().DecreaseCurStat(0, GameObject.Find("Player(Clone)").GetComponent<Stats>().GetCurStats(1) * 0.5f);
+                if (gameObject.GetComponent<Stats>().GetCurStats(0) <= 0f)
+                {
+                    Destroy(gameObject);
+                }
+                collision.gameObject.SetActive(false);
             }
         }
     }
-
 }

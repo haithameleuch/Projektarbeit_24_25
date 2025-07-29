@@ -128,8 +128,17 @@ namespace Enemy
         /// <param name="sensor">Sensor used to collect observations.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
-            Health targetHealth = target.GetComponent<Health>();
-            _healthNormalized = targetHealth != null ? targetHealth._currentHealth / targetHealth._maxHealth : 0f;
+            Stats targetStats = target.GetComponent<Stats>();
+            if (targetStats != null)
+            {
+                float targetMaxHealth = targetStats.GetMaxStats(0);
+                float targetCurHealth = targetStats.GetCurStats(0);
+                _healthNormalized = targetCurHealth / targetMaxHealth;
+            }
+            
+            //Health targetHealth = target.GetComponent<Health>();
+            //_healthNormalized = targetHealth != null ? targetHealth._currentHealth / targetHealth._maxHealth : 0f;
+            
             var toTarget = (target.transform.position - shootPoint.position).normalized;
             var forward = shootPoint.forward;
 

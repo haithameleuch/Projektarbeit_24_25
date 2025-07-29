@@ -218,7 +218,7 @@ GameObject:
   - component: {fileID: 931394581240153737}
   - component: {fileID: 8270512410961810799}
   - component: {fileID: 1585890734966162495}
-  - component: {fileID: 5919544878098999410}
+  - component: {fileID: -8177344407245803618}
   m_Layer: 0
   m_Name: Enemy(Gunner)
   m_TagString: Enemy
@@ -263,8 +263,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.0818942, y: 1.9637566, z: 0.8072486}
-  m_Center: {x: -0.02487123, y: 0.48187828, z: -1.172052}
+  m_Size: {x: 1.6834812, y: 1.9637566, z: 2.3109653}
+  m_Center: {x: -0.0019962788, y: 0.48187828, z: -0.24461904}
 --- !u!114 &1585890734966162495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,8 +277,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 6930745176575186739}
---- !u!114 &5919544878098999410
+  lifeText: {fileID: 6930745176575186739}
+--- !u!114 &-8177344407245803618
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -287,11 +287,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 5921962025652973399}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ad762c71f53732495208742f2cc2ea, type: 3}
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 15
-  _currentHealth: 15
+  maxStats:
+  - 20
+  - 15
+  - 5
+  curStats:
+  - 20
+  - 15
+  - 5
 --- !u!1001 &4032619976244932029
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -344,6 +350,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: ObjectPoolManager
       objectReference: {fileID: 0}
+    - target: {fileID: 7681761152445447487, guid: 3f15c95a20b7fbc21997fcf4c628151e, type: 3}
+      propertyPath: projectilePrefab
+      value: 
+      objectReference: {fileID: 6647848563404276463, guid: f1612264ad1224037a9b372f4d925dab, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -557,4 +567,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 6930745176575186739}
+  lifeText: {fileID: 6930745176575186739}
