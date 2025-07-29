@@ -10,7 +10,7 @@ public class VignetteControler : MonoBehaviour
     public Color lowHealthColor = new Color(1, 0, 0, 0.75f); // rot, halbtransparent
 
     private Volume volume;
-    private Health playerHealth;
+    private Stats playerStats;
     private Vignette vignette;
 
     void Start()
@@ -36,17 +36,17 @@ public class VignetteControler : MonoBehaviour
         if (vignette == null)
             return;
 
-        if (playerHealth == null)
+        if (playerStats == null)
         {
             GameObject player = GameObject.FindGameObjectWithTag("Player");
             if (player == null)
             {
                 return;
             }
-            playerHealth = player.GetComponent<Health>();
+            playerStats= player.GetComponent<Stats>();
         }
         
-        float health01 = Mathf.Clamp01(playerHealth._currentHealth / playerHealth._maxHealth);
+        float health01 = Mathf.Clamp01(playerStats.GetCurStats(0) / playerStats.GetMaxStats(0));
         if (health01 > 0.3f && health01 <= 0.5f)
         {
             vignette.color.value = Color.Lerp(halfHealthColor, fullHealthColor, health01);

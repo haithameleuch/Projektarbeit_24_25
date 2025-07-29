@@ -44,11 +44,11 @@ GameObject:
   - component: {fileID: 4375913299302485506}
   - component: {fileID: 4375913299302485505}
   - component: {fileID: 7174293039573403619}
-  - component: {fileID: 382042770396257417}
   - component: {fileID: 8705717491461825726}
   - component: {fileID: 752592993701942226}
   - component: {fileID: 7079616725941826702}
   - component: {fileID: 7232550395591659069}
+  - component: {fileID: -5924977830340484731}
   m_Layer: 0
   m_Name: Enemy(BigStalker)
   m_TagString: Enemy
@@ -145,20 +145,6 @@ CapsuleCollider:
   m_Height: 1.3919044
   m_Direction: 1
   m_Center: {x: -0.0054345727, y: 0.5262904, z: -0.033289373}
---- !u!114 &382042770396257417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4375913299302485504}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ad762c71f53732495208742f2cc2ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHealth: 20
-  _currentHealth: 20
 --- !u!114 &8705717491461825726
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -236,6 +222,26 @@ MonoBehaviour:
   DecisionPeriod: 5
   DecisionStep: 0
   TakeActionsBetweenDecisions: 1
+--- !u!114 &-5924977830340484731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4375913299302485504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStats:
+  - 20
+  - 15
+  - 5
+  curStats:
+  - 20
+  - 15
+  - 5
 --- !u!1 &4375913299420751562
 GameObject:
   m_ObjectHideFlags: 0

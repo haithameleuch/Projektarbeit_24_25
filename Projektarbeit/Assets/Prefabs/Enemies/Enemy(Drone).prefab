@@ -218,10 +218,10 @@ GameObject:
   - component: {fileID: 8296626775472227743}
   - component: {fileID: 4242882354488436998}
   - component: {fileID: 7210897651616893077}
-  - component: {fileID: 4286397209588686781}
+  - component: {fileID: 5966284906250251990}
   m_Layer: 0
   m_Name: Enemy(Drone)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -257,7 +257,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 8738884227407215652}
+  lifeText: {fileID: 8738884227407215652}
 --- !u!65 &7210897651616893077
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -277,9 +277,9 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.8083483, y: 0.8389206, z: 0.5992259}
-  m_Center: {x: 0.063871086, y: 1.4105718, z: -0.58704567}
---- !u!114 &4286397209588686781
+  m_Size: {x: 1.9232007, y: 0.8389206, z: 1.7016654}
+  m_Center: {x: -0.056151688, y: 1.4105718, z: -0.03582585}
+--- !u!114 &5966284906250251990
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -288,11 +288,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 8403865049656987600}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ad762c71f53732495208742f2cc2ea, type: 3}
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxHealth: 10
-  _currentHealth: 10
+  maxStats:
+  - 20
+  - 15
+  - 5
+  curStats:
+  - 20
+  - 15
+  - 5
 --- !u!1001 &5167653782938042445
 PrefabInstance:
   m_ObjectHideFlags: 0

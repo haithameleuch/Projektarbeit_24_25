@@ -733,15 +733,15 @@ GameObject:
   - component: {fileID: 1159079424287651424}
   - component: {fileID: 8081479390048056114}
   - component: {fileID: 3520200159246348585}
-  - component: {fileID: 6440059150534287894}
   - component: {fileID: 5759013657042067954}
   - component: {fileID: 3502487741754465052}
   - component: {fileID: 7146893447918871071}
   - component: {fileID: 8107697874957256437}
   - component: {fileID: 5931953991162711414}
+  - component: {fileID: -688158457046289043}
   m_Layer: 0
   m_Name: Enemy(Finder)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -812,20 +812,6 @@ MeshCollider:
   m_Convex: 1
   m_CookingOptions: 30
   m_Mesh: {fileID: 4277936243970900915, guid: 9ad131497dd2d1545b6c35e7cc732b35, type: 3}
---- !u!114 &6440059150534287894
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8645800439622117225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8ad762c71f53732495208742f2cc2ea, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHealth: 20
-  _currentHealth: 20
 --- !u!114 &5759013657042067954
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -838,7 +824,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 6876460796947799683}
+  lifeText: {fileID: 6876460796947799683}
 --- !u!114 &3502487741754465052
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -932,3 +918,23 @@ MonoBehaviour:
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   m_StartVerticalOffset: 0
   m_EndVerticalOffset: 0
+--- !u!114 &-688158457046289043
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8645800439622117225}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStats:
+  - 20
+  - 15
+  - 5
+  curStats:
+  - 20
+  - 15
+  - 5
