@@ -69,6 +69,7 @@ namespace Enemy
                 {
                     Destroy(gameObject);
                 }
+                collision.gameObject.SetActive(false);
             }
         }
     }

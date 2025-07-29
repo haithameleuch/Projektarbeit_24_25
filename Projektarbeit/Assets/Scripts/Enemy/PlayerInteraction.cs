@@ -19,7 +19,6 @@ public class PlayerInteraction : MonoBehaviour, IInteractable
         // Cache references in Start for performance
         Stats playerStats;
         playerStats = GameObject.Find("Player(Clone)").GetComponent<Stats>();
-        Debug.Log(playerStats);
         healthBar = GameObject.FindGameObjectsWithTag("Health")[0].GetComponent<Image>();
         float targetFill = playerStats.GetCurStats(0) / playerStats.GetMaxStats(0);
         healthBar.fillAmount = Mathf.Lerp(healthBar.fillAmount, targetFill, Time.deltaTime * lerpSpeed);
