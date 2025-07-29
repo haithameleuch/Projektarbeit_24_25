@@ -12,7 +12,9 @@ public class VoronoiGenerator : MonoBehaviour
     [Header("Prefabs for Dungeon")]
     [SerializeField] private GameObject pillar;
     [SerializeField] private GameObject wall;
-    [SerializeField] private GameObject floor;
+    [SerializeField] private GameObject floorNormal;
+    [SerializeField] private GameObject floorShader;
+    [SerializeField] private GameObject floorWave;
     [SerializeField] private GameObject door;
     [SerializeField] private GameObject destroyableWall;
     
@@ -176,14 +178,64 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     public void buildDungeon()
     {
-        // Place the floor of the dungeon
-        for (int j = 0; j < size / 2; j++)
+        var mode = seed % 3;
+
+        if (mode == 0)
         {
-            for (int i = 0; i < size / 2; i++)
+            // Place a tiled floor
+            for (var j = 0; j < size / 2; j++)
             {
-                GameObject floorObj = Instantiate(floor, new Vector3((i * 2) + 1, 0, (j * 2) + 1), Quaternion.identity, transform);
+                for (var i = 0; i < size / 2; i++)
+                {
+                    Instantiate(floorNormal, new Vector3((i * 2) + 1, 0, (j * 2) + 1), Quaternion.identity, transform);
+                }
             }
+        } else if (mode == 1)
+        {
+            // Place a single large floor object
+            var floorObj = Instantiate(floorShader, new Vector3(size * 0.5f, 0f, size * 0.5f), Quaternion.identity, transform);
+            floorObj.transform.localScale = new Vector3(size * 0.1f, 1f, size * 0.1f);
+
+            // Material
+            var rend = floorObj.GetComponent<Renderer>();
+            var mat = rend.material;
+
+            // Color list
+            List<Color> baseColors = new List<Color>
+            {
+                new Color32(0x11, 0x00, 0xCF, 0x00),    // Blue
+                new Color32(0xD4, 0x0A, 0x00, 0x00),    // Red
+                new Color32(0x45, 0x8B, 0x00, 0x00)     // Green
+            };
+
+            List<Color> edgeColors = new List<Color>
+            {
+                new Color(93f / 255f, 246f / 255f, 255f / 255f, 0f),    // Light Blue
+                new Color(255f / 255f, 243f / 255f, 0f, 0f),            // Light Red
+                new Color(118f / 255f, 238f / 255f, 0f, 0f)             // Light Green
+            };
+
+            // Same index for both Color lists
+            var index = (seed / 3) % baseColors.Count;
+
+            mat.SetColor("_BaseColor", baseColors[index]);
+            mat.SetColor("_EdgeColor", edgeColors[index]);
         }
+        else
+        {
+            // Place a large floor with animated wave shader
+            var floorObj = Instantiate(floorWave, new Vector3(size * 0.5f, 0f, size * 0.5f), Quaternion.identity, transform);
+            floorObj.transform.localScale = new Vector3(size * 100f, 1f, size * 100f);
+            
+            // Material
+            var rend = floorObj.GetComponent<Renderer>();
+            var mat = rend.material;
+
+            // Set the grid size based on dungeon size
+            var gridSize = size * 1.5f;
+            mat.SetFloat("_GridSize", gridSize);
+        }
+        
         // Create outside walls of the dungeon
         CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0), -1);
         CreateWall(new Vector3(size, 0, 0), new Vector3(size, 0, size), -2);
@@ -399,10 +451,8 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     private void AssignRoomTypes()
     {
-        var rng = new System.Random();
-
         // Starting room
-        int startIndex = rng.Next(_dungeonGraph.rooms.Count);
+        int startIndex = _rng.Next(_dungeonGraph.rooms.Count);
         var startRoom = _dungeonGraph.rooms[startIndex];
         startRoom.type    = RoomType.Start;
         startRoom.visited = true;
@@ -419,7 +469,7 @@ public class VoronoiGenerator : MonoBehaviour
         // Minigame rooms
         for (int i = 0; i < 2 && normals.Count > 0; i++)
         {
-            int idx = rng.Next(normals.Count);
+            int idx = _rng.Next(normals.Count);
             normals[idx].type = RoomType.MiniGame;
             normals.RemoveAt(idx);
         }
@@ -428,7 +478,7 @@ public class VoronoiGenerator : MonoBehaviour
         int itemCount = Mathf.Max(1, (int)(0.2f * _dungeonGraph.rooms.Count));
         for (int i = 0; i < itemCount && normals.Count > 0; i++)
         {
-            int idx = rng.Next(normals.Count);
+            int idx = _rng.Next(normals.Count);
             normals[idx].type = RoomType.Item;
             normals.RemoveAt(idx);
         }
@@ -437,7 +487,7 @@ public class VoronoiGenerator : MonoBehaviour
         int enemyCount = Mathf.Max(1, (int)(0.2f * _dungeonGraph.rooms.Count));
         for (int i = 0; i < enemyCount && normals.Count > 0; i++)
         {
-            int idx = rng.Next(normals.Count);
+            int idx = _rng.Next(normals.Count);
             normals[idx].type = RoomType.Enemy;
             normals.RemoveAt(idx);
         }
@@ -493,14 +543,13 @@ public class VoronoiGenerator : MonoBehaviour
     public List<Point> generatePoints(int count, float radius, float size)
     {
         List<Point> points = new List<Point>();
-        System.Random random = new System.Random(seed);
         int maxAttempts = 1000;
 
         while (points.Count < count && maxAttempts > 0)
         {
             float margin = 2f;
-            float x = margin + (float)random.NextDouble() * (size - 2 * margin);
-            float y = margin + (float)random.NextDouble() * (size - 2 * margin);
+            float x = margin + (float)_rng.NextDouble() * (size - 2 * margin);
+            float y = margin + (float)_rng.NextDouble() * (size - 2 * margin);
             Point newPoint = new Point(x, y);
             bool isValid = true;
 

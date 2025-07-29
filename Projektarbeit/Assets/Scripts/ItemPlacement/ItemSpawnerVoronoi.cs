@@ -63,6 +63,17 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                 Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
             
                 var spawnedItem = Object.Instantiate(itemInstance.itemData._model, spawnPos, rotation, _parent);
+                
+                var auraTransform = spawnedItem.transform.Find("SphereAura/Aura");
+                if (auraTransform is not null)
+                {
+                    var renderer = auraTransform.GetComponent<MeshRenderer>();
+                    
+                    var material = renderer.material;
+                    material.SetColor("_ColorA", itemInstance.itemData.getRarityColor());
+                    material.SetColor("_ColorB", itemInstance.itemData.getRarityColor());
+                }
+                
                 spawnedItem.SetActive(true);
             
                 var collectible = spawnedItem.GetComponent<CollectibleItem>();
