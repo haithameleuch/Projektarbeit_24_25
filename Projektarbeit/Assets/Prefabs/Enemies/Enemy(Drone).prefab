@@ -221,7 +221,7 @@ GameObject:
   - component: {fileID: 5966284906250251990}
   m_Layer: 0
   m_Name: Enemy(Drone)
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -354,7 +354,7 @@ PrefabInstance:
     - target: {fileID: 7681761152445447487, guid: 3f15c95a20b7fbc21997fcf4c628151e, type: 3}
       propertyPath: projectilePrefab
       value: 
-      objectReference: {fileID: 7023307184592512233, guid: e032ae0b41b25d34db53572ff4a1fb6f, type: 3}
+      objectReference: {fileID: 6647848563404276463, guid: f1612264ad1224037a9b372f4d925dab, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

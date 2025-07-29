@@ -52,7 +52,7 @@ public class Projectile : MonoBehaviour
     /// <param name="collision">Information about the collision.</param>
     private void OnCollisionEnter(Collision collision)
     {
-        if (!gameObject.CompareTag("Projectile"))
+        if (!collision.gameObject.CompareTag("Projectile") && !collision.gameObject.CompareTag("Enemy"))
         {
             // Deactivate the projectile on collision
             gameObject.SetActive(false);

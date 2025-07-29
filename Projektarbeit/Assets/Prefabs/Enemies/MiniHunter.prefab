@@ -534,7 +534,7 @@ GameObject:
   - component: {fileID: -5230255876404980581}
   m_Layer: 0
   m_Name: MiniHunter
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -617,7 +617,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 7905898510492400595}
+  lifeText: {fileID: 7905898510492400595}
 --- !u!114 &757016021483082846
 MonoBehaviour:
   m_ObjectHideFlags: 0

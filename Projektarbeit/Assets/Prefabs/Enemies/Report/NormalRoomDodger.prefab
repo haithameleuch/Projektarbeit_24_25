@@ -539,7 +539,6 @@ Transform:
   - {fileID: 1057462769825050312}
   - {fileID: 6672577033315591000}
   - {fileID: 4028369987179721078}
-  - {fileID: 1986907958322751695}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &206003525451345891
@@ -1055,6 +1054,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
 --- !u!65 &8529180272630956435
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3456,86 +3456,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5239272197777735519, guid: e348e7143b6247b488737e4be26fb038, type: 3}
   m_PrefabInstance: {fileID: 3149118750335460135}
   m_PrefabAsset: {fileID: 0}
---- !u!1001 &3276276185091155051
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 3696167199247858630}
-    m_Modifications:
-    - target: {fileID: 2388860553040145154, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 4371385562044540089}
-    - target: {fileID: 3233246149798552877, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_Name
-      value: Enemy(GunnerMachine)
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -7.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -3.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 8873273487576931891, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.3
-      objectReference: {fileID: 0}
-    - target: {fileID: 8873273487576931891, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.3
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects:
-    - {fileID: 7640670079736927947, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
---- !u!1 &119741123316564294 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3233246149798552877, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-  m_PrefabInstance: {fileID: 3276276185091155051}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &1986907958322751695 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3955639960875781284, guid: 18cef99266106e714a0f982c55f1f73f, type: 3}
-  m_PrefabInstance: {fileID: 3276276185091155051}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3284351638568316719
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4780,10 +4700,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3696167199247858630}
     m_Modifications:
-    - target: {fileID: 2182366979327620020, guid: 783bd9e680010e5eaa1a8ef450188dc6, type: 3}
-      propertyPath: target
-      value: 
-      objectReference: {fileID: 119741123316564294}
     - target: {fileID: 2942126799527706079, guid: 783bd9e680010e5eaa1a8ef450188dc6, type: 3}
       propertyPath: m_BehaviorType
       value: 0
@@ -4841,11 +4757,6 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 783bd9e680010e5eaa1a8ef450188dc6, type: 3}
---- !u!1 &4371385562044540089 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 9203938796069245880, guid: 783bd9e680010e5eaa1a8ef450188dc6, type: 3}
-  m_PrefabInstance: {fileID: 4832570826807801601}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4371385562044540090 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9203938796069245883, guid: 783bd9e680010e5eaa1a8ef450188dc6, type: 3}
@@ -5137,6 +5048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
 --- !u!65 &9126842831362260899
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7700,6 +7612,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
 --- !u!65 &7050775787651091469
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -7894,6 +7807,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db23e8408760044b8ab94d17354e9b75, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isBossDoor: 0
 --- !u!65 &2916325656796323181
 BoxCollider:
   m_ObjectHideFlags: 0
