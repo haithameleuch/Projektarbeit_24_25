@@ -195,7 +195,10 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
         }
 
         // Set stat Text
-        statText.SetText("Health:10\nDamage:10\nSpeed:10");
+        Stats playerStats = _player.GetComponent<Stats>();
+        statText.SetText("Health: "+playerStats.GetMaxStats(0)+
+                         "\nDamage:"+playerStats.GetMaxStats(1)+
+                         "\nSpeed:"+playerStats.GetMaxStats(2));
     }
 
     /// <summary>
@@ -282,8 +285,11 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
             }
         }
         // Set new Stat text
-        // Todo calculate
-        statText.SetText("Health:10\nDamage:10\nSpeed:10");
+        // Set stat Text
+        Stats playerStats = _player.GetComponent<Stats>();
+        statText.SetText("Health: "+playerStats.GetMaxStats(0)+
+                         "\nDamage:"+playerStats.GetMaxStats(1)+
+                         "\nSpeed:"+playerStats.GetMaxStats(2));
     }
 
     /// <summary>
