@@ -51,7 +51,13 @@ public class Equipment : Item
         {
             // Place item back in the inventory
             inv.addItem(player_equip[row, col]);
-
+            // Remove Stats
+            Stats playerStats = inv.gameObject.GetComponent<Stats>();
+            for (int i=0;i< stat_increases.Count;i++)
+            {
+                playerStats.DecreaseMaxStat(i,stat_increases[i]);
+            }
+            
             // If the item in the slot is of this type, unequip it / if not add this item
             if (player_equip[row,col].itemData == this)
             {
@@ -64,6 +70,13 @@ public class Equipment : Item
                 inv.removeItem(this);
                 // Place this item in its equipment slot
                 player_equip[row, col] = new ItemInstance(this, 1);
+                
+                // Add Stats
+                for (int i=0;i< stat_increases.Count;i++)
+                {
+                    playerStats.IncreaseMaxStat(i,stat_increases[i]);
+                    playerStats.IncreaseCurStat(i,stat_increases[i]);
+                }
             }
         }
         else
@@ -72,6 +85,13 @@ public class Equipment : Item
             player_equip[row, col] = new ItemInstance(this,1);
             // Remove this item from the inventory
             inv.removeItem(this);
+            // Add Stats
+            Stats playerStats = inv.gameObject.GetComponent<Stats>();
+            for (int i=0;i< stat_increases.Count;i++)
+            {
+                playerStats.IncreaseMaxStat(i,stat_increases[i]);
+                playerStats.IncreaseCurStat(i,stat_increases[i]);
+            }
         }
     }
 }
