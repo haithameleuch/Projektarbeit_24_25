@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2519c7b34662f8246a85a6c3d9c65546, type: 3}
+  m_Name: Health_Potion
+  m_EditorClassIdentifier: 
+  _name: Health Potion
+  _model: {fileID: 3266668981186320207, guid: 9845ee9b8ac53cf48b587e4dff5e15c4, type: 3}
+  rarity: 80
+  item_icon: {fileID: 21300000, guid: 9205aacb03a0449bfbe627ba7b954c24, type: 3}
+  stat_to_restore: 0
+  amount_to_restore: 100
