@@ -25,6 +25,8 @@ public class Consumable : Item
     /// <param name="inv">The inventory calling this method to handle interactions locally</param>
     public override void use(Inventory inv)
     {
+        inv.gameObject.GetComponent<Stats>().IncreaseCurStat(stat_to_restore,amount_to_restore);
+        inv.removeItem(this);
         Debug.Log(this._name + " was used.");
     }
 }
