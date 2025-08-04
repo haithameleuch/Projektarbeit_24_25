@@ -48,11 +48,11 @@ public static class SaveSystemManager
     public static Vector3 GetPlayerPosition() => SaveData.playerPosition;
     public static void SetPlayerPosition(Vector3 pos) => SaveData.playerPosition = pos;
     
-    public static float GetPlayerRotation() => SaveData.playerRotation;
-    public static void SetPlayerRotation(Quaternion q) => SaveData.playerRotation = q.eulerAngles.y;
+    public static Vector3 GetPlayerRotation() => SaveData.playerRotation;
+    public static void SetPlayerRotation(Vector3 direct) => SaveData.playerRotation = direct;
     
-    public static float GetCamRotation() => SaveData.cameraRotation;
-    public static void SetCamRotation(Quaternion q) => SaveData.cameraRotation = q.eulerAngles.x;
+    public static Vector3 GetCamRotation() => SaveData.cameraRotation;
+    public static void SetCamRotation(Vector3 direct) => SaveData.cameraRotation = direct;
 
     private static SaveData CreateDefaultSave()
     {
