@@ -44,9 +44,9 @@ public class ButtonManager : MonoBehaviour
     {
         Debug.Log("Save");
         GameObject player = GameObject.Find("Player(Clone)");
-        SaveSystemManager.SetPlayerRotation(player.transform.rotation);
+        SaveSystemManager.SetPlayerRotation(player.transform.forward);
         SaveSystemManager.SetPlayerPosition(player.transform.position);
-        SaveSystemManager.SetCamRotation(player.transform.Find("FirstPersonCam").transform.rotation);
+        SaveSystemManager.SetCamRotation(player.transform.Find("FirstPersonCam").transform.forward);
         SaveSystemManager.Save();
     }
 }

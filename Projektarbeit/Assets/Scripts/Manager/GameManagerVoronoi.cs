@@ -137,8 +137,8 @@ namespace Manager
         private void SpawnPlayerAtStartRoom()
         {
             var spawnPosition = Vector3.zero;
-            var rotation = 0f;
-            var cam_rotation = 0f;
+            var rotation = Vector3.zero;
+            var cam_rotation = Vector3.zero;
             if (SaveSystemManager.GetPlayerPosition() == Vector3.zero)
             {
                 var startRoom = _dungeon.GetStartRoom();
@@ -152,7 +152,8 @@ namespace Manager
                 rotation = SaveSystemManager.GetPlayerRotation();
                 cam_rotation = SaveSystemManager.GetCamRotation();
             }
-            _player = Instantiate(playerPrefab, spawnPosition, Quaternion.Euler(0,rotation,0));
+            _player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+            _player.transform.forward = rotation;
             
             // Initialize references
             var inputManager = FindFirstObjectByType<GameInputManager>();
@@ -168,11 +169,11 @@ namespace Manager
 
             UIManager.Instance?.SetPlayer(_player);
             CameraManager.Instance?.SetPlayer(_player);
-            _player.transform.Find("FirstPersonCam").transform.localRotation = Quaternion.Euler(cam_rotation,0,0);
+            _player.transform.Find("FirstPersonCam").transform.forward = cam_rotation;
             
             SaveSystemManager.SetPlayerPosition(_player.transform.position);
-            SaveSystemManager.SetPlayerRotation(_player.transform.rotation);
-            SaveSystemManager.SetCamRotation(_player.transform.Find("FirstPersonCam").transform.localRotation);
+            SaveSystemManager.SetPlayerRotation(_player.transform.forward);
+            SaveSystemManager.SetCamRotation(_player.transform.Find("FirstPersonCam").transform.forward);
             SaveSystemManager.Save();
         }
 

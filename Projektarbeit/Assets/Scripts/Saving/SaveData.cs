@@ -9,9 +9,9 @@ public class SaveData
     
     // Player
     public Vector3 playerPosition= new Vector3(0,0,0);
-    public float playerRotation = new Quaternion(0,0,0,0).eulerAngles.y;
+    public Vector3 playerRotation = new Vector3(0,0,0);
     public Stats stats = new Stats();
-    public float cameraRotation = new Quaternion(0,0,0,0).eulerAngles.x;
+    public Vector3 cameraRotation = new Vector3(0,0,0);
     public bool pickaxe = false;
     
     // Inventory
