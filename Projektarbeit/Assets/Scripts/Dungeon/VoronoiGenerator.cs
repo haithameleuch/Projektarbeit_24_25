@@ -21,7 +21,7 @@ public class VoronoiGenerator : MonoBehaviour
     [Header("Dungeon Settings")]
     [SerializeField] private float size = 40;
     [SerializeField] private int numPoints = 5;
-    [SerializeField] private int seed;
+    private int _seed;
     [SerializeField] private float minDoorEdgeLength = 4f;
     
     public float DungeonSize => size;
@@ -56,9 +56,10 @@ public class VoronoiGenerator : MonoBehaviour
     /// <summary>
     /// Initializes dungeon generation
     /// </summary>
-    private void Start()
+    public void GenerateDungeon(int seed)
     {
-        _rng = new System.Random(seed);
+        _seed = seed;
+        _rng = new System.Random(_seed);
         
         GenerateDebugData();
         
@@ -178,7 +179,7 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     public void buildDungeon()
     {
-        var mode = seed % 3;
+        var mode = _seed % 3;
 
         if (mode == 0)
         {
@@ -216,7 +217,7 @@ public class VoronoiGenerator : MonoBehaviour
             };
 
             // Same index for both Color lists
-            var index = (seed / 3) % baseColors.Count;
+            var index = (_seed / 3) % baseColors.Count;
 
             mat.SetColor("_BaseColor", baseColors[index]);
             mat.SetColor("_EdgeColor", edgeColors[index]);

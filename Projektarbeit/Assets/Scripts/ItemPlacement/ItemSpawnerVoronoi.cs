@@ -43,6 +43,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
     /// </summary>
     public void SpawnInRoom()
     {
+        Random.InitState(SaveSystemManager.GetSeed());
         foreach (var room in _rooms)
         {
             var itemCount = Random.Range(1, 4); // 1–3 items per room
