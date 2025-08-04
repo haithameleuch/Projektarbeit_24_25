@@ -150,10 +150,12 @@ public class FirstPersonPlayerController : MonoBehaviour
         // Get the mouse look input.
         Vector2 lookDelta = gameInput.GetLookDelta();
         _rotationY += lookDelta.x * mouseSensitivity;
-
+        if (lookDelta == Vector2.zero)
+            return;
+        
         // Calculate the target Yaw rotation based on mouse input.
         Quaternion targetYaw = Quaternion.Euler(0f, _rotationY, 0f);
-
+        
         // Smoothly interpolate to the targetYaw rotation using Slerp.
         _currentRotation = Quaternion.Slerp(_currentRotation, targetYaw, rotationSmoothness);
         transform.rotation = _currentRotation;
@@ -198,6 +200,7 @@ public class FirstPersonPlayerController : MonoBehaviour
     public void Init(GameInputManager inputManager)
     {
         this.gameInput = inputManager;
+        
     }
 
 }

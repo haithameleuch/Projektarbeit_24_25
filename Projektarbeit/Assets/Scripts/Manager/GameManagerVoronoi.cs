@@ -68,12 +68,38 @@ namespace Manager
             DontDestroyOnLoad(gameObject);
         }
 
+        public void StartNewRun()
+        {
+            int newSeed = Random.Range(100000, 999999);
+            SaveSystemManager.StartNewRun(newSeed);
+            UnityEngine.SceneManagement.SceneManager.LoadScene(0); // optional: Szene neuladen
+        }
+        
         /// <summary>
         /// Initializes the game by starting the dungeon wait coroutine.
         /// </summary>
         void Start()
         {
-            StartCoroutine(WaitForDungeon());
+            
+            // StartCoroutine(WaitForDungeon());
+            int seed = SaveSystemManager.GetSeed();
+            voronoiGenerator.GenerateDungeon(seed);
+            
+            _dungeon = voronoiGenerator.GetDungeonGraph();
+            List<Room> rooms = _dungeon.GetAllItemRooms();
+            List<Room> minigameRooms = _dungeon.GetAllMiniGameRooms();
+            List<Room> enemyRooms = _dungeon.GetAllEnemyRooms();
+            
+            _spawners = new List<ISpawnerVoronoi>()
+            {
+                new ItemSpawnerVoronoi(items, rooms, transform),
+                new MiniGameSpawnerVoronoi(minigameRooms, minigamePrefabs, transform)
+            };
+            
+            PopulateDungeon();
+            SpawnPlayerAtStartRoom();
+            _enemySpawner = new EnemySpawnerVoronoi(enemyRooms, enemyPrefabs, this.transform);
+
         }
 
         /// <summary>
@@ -110,10 +136,24 @@ namespace Manager
         /// </summary>
         private void SpawnPlayerAtStartRoom()
         {
-            var startRoom = _dungeon.GetStartRoom();
-            var spawnPosition = new Vector3(startRoom.center.x, 1f, startRoom.center.y);
-            _player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
-
+            var spawnPosition = Vector3.zero;
+            var rotation = 0f;
+            var cam_rotation = 0f;
+            if (SaveSystemManager.GetPlayerPosition() == Vector3.zero)
+            {
+                var startRoom = _dungeon.GetStartRoom();
+                spawnPosition = new Vector3(startRoom.center.x, 1f, startRoom.center.y);
+                _currentRoom = startRoom;
+                OnRoomEntered(_currentRoom);
+            }
+            else
+            {
+                spawnPosition = SaveSystemManager.GetPlayerPosition();
+                rotation = SaveSystemManager.GetPlayerRotation();
+                cam_rotation = SaveSystemManager.GetCamRotation();
+            }
+            _player = Instantiate(playerPrefab, spawnPosition, Quaternion.Euler(0,rotation,0));
+            
             // Initialize references
             var inputManager = FindFirstObjectByType<GameInputManager>();
             var poolManager = FindFirstObjectByType<ObjectPoolManager>();
@@ -126,11 +166,14 @@ namespace Manager
             if (shooter is not null && poolManager is not null)
                 shooter.Init(poolManager);
 
-            _currentRoom = startRoom;
-            OnRoomEntered(_currentRoom);
-            
             UIManager.Instance?.SetPlayer(_player);
             CameraManager.Instance?.SetPlayer(_player);
+            _player.transform.Find("FirstPersonCam").transform.localRotation = Quaternion.Euler(cam_rotation,0,0);
+            
+            SaveSystemManager.SetPlayerPosition(_player.transform.position);
+            SaveSystemManager.SetPlayerRotation(_player.transform.rotation);
+            SaveSystemManager.SetCamRotation(_player.transform.Find("FirstPersonCam").transform.localRotation);
+            SaveSystemManager.Save();
         }
 
         /// <summary>
