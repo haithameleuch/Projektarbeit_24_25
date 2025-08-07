@@ -118,5 +118,140 @@ namespace Saving
         public static bool GetBossRoomOpen() => SaveData.BossRoomOpen;
         
         public static void SetBossRoomOpen(bool open) => SaveData.BossRoomOpen = open;
+
+        // ------------Inventory------------
+        public static void SetInventory(ItemInstance[,] item)
+        {
+            for (int i = 0; i < item.GetLength(1); i++)
+            {
+                SaveData.I_Row_1[i] = item[0, i];
+            }
+            for (int i = 0; i < item.GetLength(1); i++)
+            {
+                SaveData.I_Row_2[i] = item[1, i];
+            }
+            for (int i = 0; i < item.GetLength(1); i++)
+            {
+                SaveData.I_Row_3[i] = item[2, i];
+
+            }
+            for (int i = 0; i < item.GetLength(1); i++)
+            {
+                SaveData.I_Row_4[i] = item[3, i];
+            }
+        }
+
+        public static ItemInstance[,] GetInventory()
+        {
+            Debug.Log("ItemLadenHIERTEXTZUMFINDEN:"+(SaveData.I_Row_1[4].itemData == null));
+            ItemInstance[,] inventory = new ItemInstance[4, 5];
+            for (int i = 0; i < SaveData.I_Row_1.GetLength(0); i++)
+            {
+                if (SaveData.I_Row_1[i].itemData != null)
+                {
+                    inventory[0, i] = SaveData.I_Row_1[i];
+                }
+                else
+                {
+                    inventory[0, i] = null;
+                }
+                
+            }
+            for (int i = 0; i < SaveData.I_Row_2.GetLength(0); i++)
+            {
+                if (SaveData.I_Row_2[i].itemData != null)
+                {
+                    inventory[1, i] = SaveData.I_Row_2[i];
+                }
+                else
+                {
+                    inventory[1, i] = null;
+                }
+            }
+            for (int i = 0; i < SaveData.I_Row_3.GetLength(0); i++)
+            {
+                
+                if (SaveData.I_Row_3[i].itemData != null)
+                {
+                    inventory[2, i] = SaveData.I_Row_3[i];
+                }
+                else
+                {
+                    inventory[2, i] = null;
+                }
+            }
+            for (int i = 0; i < SaveData.I_Row_4.GetLength(0); i++)
+            {
+                
+                if (SaveData.I_Row_4[i].itemData != null)
+                {
+                    inventory[3, i] = SaveData.I_Row_4[i];
+                }
+                else
+                {
+                    inventory[3, i] = null;
+                }
+            }
+            return inventory;
+        }
+
+        public static void SetEquipment(ItemInstance[,] equip)
+        {
+            for (int i = 0; i < equip.GetLength(1); i++)
+            {
+                SaveData.E_Row_1[i] = equip[0, i];
+            }
+            for (int i = 0; i < equip.GetLength(1); i++)
+            {
+                SaveData.E_Row_2[i] = equip[1, i];
+            }
+            for (int i = 0; i < equip.GetLength(1); i++)
+            {
+                SaveData.E_Row_3[i] = equip[2, i];
+            }
+        }
+
+        public static ItemInstance[,] GetEquipment()
+        {
+            ItemInstance[,] equip = new ItemInstance[3, 2];
+            for (int i = 0; i < SaveData.E_Row_1.GetLength(0); i++)
+            {
+                
+                if (SaveData.E_Row_1[i].itemData != null)
+                {
+                    equip[0, i] = SaveData.E_Row_1[i];
+                }
+                else
+                {
+                    equip[0, i] = null;
+                }
+            }
+            for (int i = 0; i < SaveData.E_Row_2.GetLength(0); i++)
+            {
+                
+                if (SaveData.E_Row_2[i].itemData != null)
+                {
+                    equip[1, i] = SaveData.E_Row_2[i];
+                }
+                else
+                {
+                    equip[1, i] = null;
+                }
+            }
+            for (int i = 0; i < SaveData.E_Row_3.GetLength(0); i++)
+            {
+                
+                if (SaveData.E_Row_3[i].itemData != null)
+                {
+                    equip[2, i] = SaveData.E_Row_3[i];
+                }
+                else
+                {
+                    equip[2, i] = null;
+                }
+            }
+
+            return equip;
+        }
     }
 }

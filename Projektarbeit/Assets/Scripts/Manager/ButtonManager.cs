@@ -49,6 +49,8 @@ namespace Manager
             SaveSystemManager.SetPlayerRotation(player.transform.forward);
             SaveSystemManager.SetPlayerPosition(player.transform.position);
             SaveSystemManager.SetCamRotation(player.transform.Find("FirstPersonCam").transform.forward);
+            SaveSystemManager.SetInventory(player.GetComponent<Inventory>().getInventory());
+            SaveSystemManager.SetEquipment(player.GetComponent<Inventory>().getEquipment());
             SaveSystemManager.Save();
         }
     }
