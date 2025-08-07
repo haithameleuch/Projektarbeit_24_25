@@ -2112,7 +2112,15 @@ MonoBehaviour:
     itemQuantity: 3
   - itemData: {fileID: 11400000, guid: 18522e9a77233e84c9255f82839d2297, type: 2}
     itemQuantity: 1
-  minigamePrefabs:
+  - itemData: {fileID: 11400000, guid: 5a54fbdc0a0a8e04fb4a927b64639cd9, type: 2}
+    itemQuantity: 1
+  - itemData: {fileID: 11400000, guid: 5a54fbdc0a0a8e04fb4a927b64639cd9, type: 2}
+    itemQuantity: 1
+  - itemData: {fileID: 11400000, guid: 5a54fbdc0a0a8e04fb4a927b64639cd9, type: 2}
+    itemQuantity: 1
+  - itemData: {fileID: 11400000, guid: 5a54fbdc0a0a8e04fb4a927b64639cd9, type: 2}
+    itemQuantity: 1
+  miniGamePrefabs:
   - {fileID: 5611471497110757971, guid: 4da05c4d5e1d899408b0f2dddd9bc012, type: 3}
   - {fileID: 424014852115387458, guid: 950c49bd7e0b271409e0132ec74d30d9, type: 3}
   enemyPrefabs:
@@ -2443,7 +2451,6 @@ MonoBehaviour:
   destroyableWall: {fileID: 2725483830217079802, guid: 2ee0bf17ebf372e41ab59a0b15d9ea4a, type: 3}
   size: 40
   numPoints: 10
-  seed: 42
   minDoorEdgeLength: 4
   showPoints: 1
   showCenters: 0
