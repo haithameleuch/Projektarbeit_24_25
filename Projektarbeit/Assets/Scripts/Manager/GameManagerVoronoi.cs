@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using ItemPlacement;
+using Saving;
 using Spawning;
 using UnityEngine;
 
@@ -35,7 +36,7 @@ namespace Manager
         
         [SerializeField] private List<ItemInstance> items;
 
-        [SerializeField] private List<GameObject> minigamePrefabs;
+        [SerializeField] private List<GameObject> miniGamePrefabs;
         
         [SerializeField] private List<GameObject> enemyPrefabs;
 
@@ -65,122 +66,121 @@ namespace Manager
 
             Instance = this;
         
-            DontDestroyOnLoad(gameObject);
-        }
-
-        public void StartNewRun()
-        {
-            int newSeed = Random.Range(100000, 999999);
-            SaveSystemManager.StartNewRun(newSeed);
-            UnityEngine.SceneManagement.SceneManager.LoadScene(0); // optional: Szene neuladen
+            //DontDestroyOnLoad(gameObject);
         }
         
         /// <summary>
         /// Initializes the game by starting the dungeon wait coroutine.
         /// </summary>
-        void Start()
+        private void Start()
         {
-            
-            // StartCoroutine(WaitForDungeon());
-            int seed = SaveSystemManager.GetSeed();
+            GenerateDungeon();
+            RestoreVisitedAndCurrentRoom();
+            SpawnPlayer();
+            InitializeSpawners();
+            RestoreBossDoorState();
+        }
+        
+        private void GenerateDungeon()
+        {
+            var seed = SaveSystemManager.GetSeed();
             voronoiGenerator.GenerateDungeon(seed);
-            
             _dungeon = voronoiGenerator.GetDungeonGraph();
-            List<Room> rooms = _dungeon.GetAllItemRooms();
-            List<Room> minigameRooms = _dungeon.GetAllMiniGameRooms();
-            List<Room> enemyRooms = _dungeon.GetAllEnemyRooms();
-            
-            _spawners = new List<ISpawnerVoronoi>()
-            {
-                new ItemSpawnerVoronoi(items, rooms, transform),
-                new MiniGameSpawnerVoronoi(minigameRooms, minigamePrefabs, transform)
-            };
-            
-            PopulateDungeon();
-            SpawnPlayerAtStartRoom();
-            _enemySpawner = new EnemySpawnerVoronoi(enemyRooms, enemyPrefabs, this.transform);
-
         }
-
-        /// <summary>
-        /// Waits until the dungeon generation is complete before spawning the player.
-        /// </summary>
-        /// <returns>Coroutine enumerator.</returns>
-        private IEnumerator WaitForDungeon()
+        
+        private void RestoreVisitedAndCurrentRoom()
         {
-            while (voronoiGenerator.GetDungeonGraph() is null || voronoiGenerator.GetDungeonGraph().GetStartRoom() is null)
+            var savedVisited = SaveSystemManager.GetVisitedRooms();
+            
+            if (savedVisited == null || savedVisited.Count != _dungeon.rooms.Count)
             {
-                yield return null;
+                SaveSystemManager.InitializeVisitedRooms(_dungeon.rooms.Count);
+                var startID = _dungeon.GetStartRoom().id;
+                SaveSystemManager.SetRoomVisited(startID, true);
+                SaveSystemManager.SetCurrentRoomID(startID);
             }
-
-            _dungeon = voronoiGenerator.GetDungeonGraph();
-            List<Room> rooms = _dungeon.GetAllItemRooms();
-            List<Room> minigameRooms = _dungeon.GetAllMiniGameRooms();
-            List<Room> enemyRooms = _dungeon.GetAllEnemyRooms();
             
+            savedVisited = SaveSystemManager.GetVisitedRooms();
+            for (int i = 0; i < _dungeon.rooms.Count; i++)
+                _dungeon.rooms[i].visited = savedVisited[i];
+            
+            int savedID = SaveSystemManager.GetCurrentRoomID();
+            _currentRoom = _dungeon.GetRoomByID(savedID);
+        }
+        
+        private void InitializeSpawners()
+        {
+            var rooms     = _dungeon.GetAllItemRooms();
+            var miniGameRooms = _dungeon.GetAllMiniGameRooms();
+            var enemies   = _dungeon.GetAllEnemyRooms();
+
             _spawners = new List<ISpawnerVoronoi>()
             {
                 new ItemSpawnerVoronoi(items, rooms, transform),
-                new MiniGameSpawnerVoronoi(minigameRooms, minigamePrefabs, transform)
+                new MiniGameSpawnerVoronoi(miniGameRooms, miniGamePrefabs, transform)
             };
-            
-            
             PopulateDungeon();
-            SpawnPlayerAtStartRoom();
-            _enemySpawner = new EnemySpawnerVoronoi(enemyRooms, enemyPrefabs, this.transform);
+            _enemySpawner = new EnemySpawnerVoronoi(enemies, enemyPrefabs, transform);
         }
-
-        /// <summary>
-        /// Spawns the player in the start room and sets up all required references.
-        /// Also sets the initial current room and triggers the room entry logic.
-        /// </summary>
-        private void SpawnPlayerAtStartRoom()
+        
+        private void SpawnPlayer()
         {
-            var spawnPosition = Vector3.zero;
-            var rotation = Vector3.zero;
-            var cam_rotation = Vector3.zero;
+            var spawnPos    = Vector3.zero;
+            var rotation    = Vector3.zero;
+            var camRotation = Vector3.zero;
+
             if (SaveSystemManager.GetPlayerPosition() == Vector3.zero)
             {
                 var startRoom = _dungeon.GetStartRoom();
-                spawnPosition = new Vector3(startRoom.center.x, 1f, startRoom.center.y);
-                _currentRoom = startRoom;
+                spawnPos      = new Vector3(startRoom.center.x, 1f, startRoom.center.y);
+                _currentRoom  = startRoom;
                 OnRoomEntered(_currentRoom);
             }
             else
             {
-                spawnPosition = SaveSystemManager.GetPlayerPosition();
-                rotation = SaveSystemManager.GetPlayerRotation();
-                cam_rotation = SaveSystemManager.GetCamRotation();
+                spawnPos    = SaveSystemManager.GetPlayerPosition();
+                rotation    = SaveSystemManager.GetPlayerRotation();
+                camRotation = SaveSystemManager.GetCamRotation();
             }
-            _player = Instantiate(playerPrefab, spawnPosition, Quaternion.identity);
+
+            _player = Instantiate(playerPrefab, spawnPos, Quaternion.identity);
             _player.transform.forward = rotation;
             
-            // Initialize references
+            var cameraTransform = _player.transform.Find("FirstPersonCam");
+            if (cameraTransform != null)
+                cameraTransform.forward = camRotation;
+
             var inputManager = FindFirstObjectByType<GameInputManager>();
-            var poolManager = FindFirstObjectByType<ObjectPoolManager>();
+            var poolManager  = FindFirstObjectByType<ObjectPoolManager>();
 
             var controller = _player.GetComponent<FirstPersonPlayerController>();
             if (controller is not null && inputManager is not null)
+            {
                 controller.Init(inputManager);
+                controller.SyncLoadedRotation();
+            }
 
             var shooter = _player.GetComponent<PlayerShooting>();
-            if (shooter is not null && poolManager is not null)
-                shooter.Init(poolManager);
+            if (shooter is not null && poolManager is not null) shooter.Init(poolManager);
 
             UIManager.Instance?.SetPlayer(_player);
             CameraManager.Instance?.SetPlayer(_player);
-            _player.transform.Find("FirstPersonCam").transform.forward = cam_rotation;
             
             SaveSystemManager.SetPlayerPosition(_player.transform.position);
             SaveSystemManager.SetPlayerRotation(_player.transform.forward);
-            SaveSystemManager.SetCamRotation(_player.transform.Find("FirstPersonCam").transform.forward);
-            SaveSystemManager.Save();
+            SaveSystemManager.SetCamRotation(cameraTransform != null ? cameraTransform.forward : Vector3.zero);
+        }
+        
+        private void RestoreBossDoorState()
+        {
+            if (SaveSystemManager.GetBossRoomOpen())
+                StartCoroutine(OpenBossDoorsNextFrame());
         }
 
         /// <summary>
         /// Called once per frame to track player behavior and transitions.
         /// </summary>
-        void Update()
+        private void Update()
         {
             if (_player is null || _dungeon is null || _currentRoom is null) return;
 
@@ -193,17 +193,17 @@ namespace Manager
         /// </summary>
         private void TrackCurrentRoom()
         {
-            Vector2 playerPos = new Vector2(_player.transform.position.x, _player.transform.position.z);
-            float minDist = Vector2.Distance(playerPos, new Vector2(_currentRoom.center.x, _currentRoom.center.y));
+            var playerPos = new Vector2(_player.transform.position.x, _player.transform.position.z);
+            var minDist = Vector2.Distance(playerPos, new Vector2(_currentRoom.center.x, _currentRoom.center.y));
 
             if (minDist <= roomSwitchThreshold)
                 return;
 
-            Room closest = _currentRoom;
+            var closest = _currentRoom;
 
             foreach (Room neighbor in _currentRoom.neighbors)
             {
-                float dist = Vector2.Distance(playerPos, new Vector2(neighbor.center.x, neighbor.center.y));
+                var dist = Vector2.Distance(playerPos, new Vector2(neighbor.center.x, neighbor.center.y));
                 if (dist < minDist)
                 {
                     minDist = dist;
@@ -227,12 +227,11 @@ namespace Manager
         {
             Debug.Log($"[GameManager] Player entered room {newRoom.id} (Type: {newRoom.type})");
             
-            if (newRoom.visited)
-            {
-                return;
-            }
-
+            if (newRoom.visited) return;
             newRoom.visited = true;
+            
+            SaveSystemManager.SetRoomVisited(newRoom.id, true);
+            SaveSystemManager.SetCurrentRoomID(newRoom.id);
 
             switch (newRoom.type)
             {
@@ -246,10 +245,7 @@ namespace Manager
                     EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Enemy:
-                    //if (!newRoom.visited)
-                    {
-                        _enemySpawner.ActivateEnemyInRoom(newRoom);
-                    }
+                    _enemySpawner.ActivateEnemyInRoom(newRoom);
                     EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Boss:
@@ -276,17 +272,26 @@ namespace Manager
         /// </summary>
         public bool OnBossKeyUsed()
         {
-            Room bossRoom = _dungeon.GetBossRoom();
+            var bossRoom = _dungeon.GetBossRoom();
     
             if (_currentRoom != null && bossRoom != null && _currentRoom.neighbors.Contains(bossRoom))
             {
                 Debug.Log("[GameManager] Boss doors are opened!");
                 EventManager.Instance.TriggerOpenBossDoors();
+                
+                SaveSystemManager.SetBossRoomOpen(true);
                 return true;
             }
     
             Debug.Log("[GameManager] Boss key used, but not in front of the boss room.");
             return false;
         }
+        
+        private IEnumerator OpenBossDoorsNextFrame()
+        {
+            yield return null;
+            EventManager.Instance.TriggerOpenBossDoors();
+        }
+
     }
 }

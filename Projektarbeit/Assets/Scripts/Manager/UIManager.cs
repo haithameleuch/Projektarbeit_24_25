@@ -51,7 +51,7 @@ public class UIManager : MonoBehaviour
 
         Instance = this; // Assign this instance as the singleton.
 
-        DontDestroyOnLoad(gameObject); // Ensure this GameObject persists across scenes.
+        //DontDestroyOnLoad(gameObject); // Ensure this GameObject persists across scenes.
         
         inventoryManager = GetComponentInChildren<InventoryManager>(true);
     }

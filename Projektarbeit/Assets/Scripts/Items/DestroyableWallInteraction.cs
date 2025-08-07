@@ -1,6 +1,7 @@
 using Controller;
 using TMPro;
 using UnityEngine;
+using Saving;
 
 namespace Items
 {
@@ -15,10 +16,14 @@ namespace Items
         private int _hitPoints;
         private Color _currentColor;
         private bool _waitingForClick;
-
-        private void Awake()
+        
+        // ---- DESTROYABLE WALL ----
+        public int edgeID;
+        
+        public void InitializeFromSave()
         {
-            _hitPoints = Random.Range(1, 6);
+            _hitPoints = SaveSystemManager.GetDestroyableWallHealth(edgeID);
+
             if (lifeTextFront != null && lifeTextBack != null)
             {
                 float pct = _hitPoints / 5f;
@@ -28,12 +33,12 @@ namespace Items
                 lifeTextBack.color  = _currentColor;
                 lifeTextFront.text  = _hitPoints.ToString();
                 lifeTextBack.text   = _hitPoints.ToString();
-                
                 lifeTextFront.gameObject.SetActive(false);
                 lifeTextBack.gameObject.SetActive(false);
             }
         }
-
+        // ---- DESTROYABLE WALL ----
+        
         public void Interact(GameObject interactor)
         {
             var inv    = interactor.GetComponent<Inventory>();
@@ -63,6 +68,7 @@ namespace Items
                 player.AnimateSwing();
 
                 _hitPoints--;
+                SaveSystemManager.SetDestroyableWallHealth(edgeID, _hitPoints);
                 
                 if (lifeTextFront != null && lifeTextBack != null)
                 {
@@ -82,8 +88,13 @@ namespace Items
                     StartCoroutine(HideLifeText());
                 }
 
+                // ---- DESTROYABLE WALL ----
                 if (_hitPoints <= 0)
-                    Destroy(gameObject, player.SwingTotalDuration());
+                {
+                    SaveSystemManager.SetDestroyableWallActive(edgeID, false);
+                    StartCoroutine(DisableAfterDelay(player.SwingTotalDuration()));
+                }
+                // ---- DESTROYABLE WALL ----
             }
         }
 
@@ -101,5 +112,13 @@ namespace Items
             lifeTextFront.gameObject.SetActive(false);
             lifeTextBack.gameObject.SetActive(false);
         }
+        
+        // ---- DESTROYABLE WALL ----
+        private System.Collections.IEnumerator DisableAfterDelay(float delay)
+        {
+            yield return new WaitForSeconds(delay);
+            gameObject.SetActive(false);
+        }
+        // ---- DESTROYABLE WALL ----
     }
 }

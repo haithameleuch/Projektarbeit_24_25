@@ -34,7 +34,7 @@ public class GameInputManager : MonoBehaviour
 
         Instance = this;
         
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
         
         // Initialize and enable the input action map
         _inputSystemActions = new InputSystem_Actions();
@@ -94,6 +94,16 @@ public class GameInputManager : MonoBehaviour
     /// </summary>
     private void OnDestroy()
     {
+        if (_inputSystemActions != null)
+        {
+            _inputSystemActions.Player.Disable();
+            _inputSystemActions.Dispose();
+            _inputSystemActions = null;
+        }
+
+        if (Instance == this)
+            Instance = null;
+
         MouseLocked(false);
     }
 }

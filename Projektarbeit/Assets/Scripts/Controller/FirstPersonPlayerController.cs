@@ -202,5 +202,14 @@ public class FirstPersonPlayerController : MonoBehaviour
         this.gameInput = inputManager;
         
     }
-
+    
+    public void SyncLoadedRotation()
+    {
+        _currentRotation       = transform.rotation;
+        _currentCameraRotation = cameraTransform.localRotation;
+        
+        _rotationY = transform.eulerAngles.y;
+        var pitchEuler = cameraTransform.localEulerAngles.x;
+        _rotationX = pitchEuler > 180 ? pitchEuler - 360f : pitchEuler;
+    }
 }
