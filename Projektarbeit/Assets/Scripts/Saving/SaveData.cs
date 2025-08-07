@@ -17,8 +17,16 @@ namespace Saving
         public bool PickaxeEquipped = false;
     
         // Inventory
-        public ItemInstance[,] Inventory = new ItemInstance[4,5];
-        public ItemInstance[,] Equipment = new ItemInstance[3,2];
+        public ItemInstance[] I_Row_1 = new ItemInstance[5];
+        public ItemInstance[] I_Row_2 = new ItemInstance[5];
+        public ItemInstance[] I_Row_3 = new ItemInstance[5];
+        public ItemInstance[] I_Row_4 = new ItemInstance[5];
+        //public ItemInstance[,] Inventory = new ItemInstance[4,5];
+        //public ItemInstance[,] Equipment = new ItemInstance[3,2];
+        public ItemInstance[] E_Row_1 = new ItemInstance[2];
+        public ItemInstance[] E_Row_2 = new ItemInstance[2];
+        public ItemInstance[] E_Row_3 = new ItemInstance[2];
+        
     
         // Items
         public List<bool> Items = new List<bool>();
