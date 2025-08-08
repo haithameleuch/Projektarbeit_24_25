@@ -1,3 +1,4 @@
+using MiniGame;
 using Unity.Cinemachine;
 using UnityEngine;
 
