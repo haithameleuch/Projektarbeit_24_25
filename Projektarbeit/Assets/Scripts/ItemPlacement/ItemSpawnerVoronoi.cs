@@ -44,6 +44,9 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
     public void SpawnInRoom()
     {
         Random.InitState(SaveSystemManager.GetSeed());
+
+        var collectibleIndex = 0;
+        
         foreach (var room in _rooms)
         {
             var itemCount = Random.Range(1, 4); // 1–3 items per room
@@ -51,6 +54,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
 
             for (var i = 0; i < itemCount; i++)
             {
+                var idx = collectibleIndex++;
                 var itemInstance = _itemsDistributor.GetRandomElement();
             
                 // Place items in a circular pattern
@@ -75,13 +79,21 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                     material.SetColor("_ColorB", itemInstance.itemData.getRarityColor());
                 }
                 
-                spawnedItem.SetActive(true);
-            
                 var collectible = spawnedItem.GetComponent<CollectibleItem>();
                 if (collectible is not null)
                 {
-                    //collectible.item = itemInstance;
+                    collectible.saveIndex = idx;
+                    collectible.Initialize(itemInstance.itemData);
+                    collectible.amount = itemInstance.itemQuantity;
                 }
+
+                if (!SaveSystemManager.IsCollectibleActive(idx))
+                {
+                    spawnedItem.SetActive(false);
+                    continue;
+                }
+                
+                spawnedItem.SetActive(true);
             }
         }
     }

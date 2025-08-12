@@ -9,6 +9,15 @@ public class Stats : MonoBehaviour
     [SerializeField]
     private List<float> curStats = new List<float>();
 
+    public List<float> GetMaxStatsList() => maxStats;
+    public List<float> GetCurStatsList() => curStats;
+
+    public void SetStats(List<float> cur, List<float> max)
+    {
+        maxStats = max;
+        curStats = cur;
+    }
+
     public float GetMaxStats(int stat)
     {
         return maxStats[stat];

@@ -10,7 +10,8 @@ namespace Manager
         public void startGame()
         {
             Debug.Log("StartButton [NEW GAME]");
-            int seed = Random.Range(100000, 999999);
+            
+            var seed = Random.Range(100000, 999999);
             SaveSystemManager.StartNewRun(seed);
             SceneManager.LoadScene("Scenes/VoronoiTest");
         }
@@ -18,6 +19,7 @@ namespace Manager
         public void loadGame()
         {
             Debug.Log("LoadButton [LOAD GAME]");
+            
             SaveSystemManager.Load();
             Time.timeScale = 1;
             
@@ -34,6 +36,7 @@ namespace Manager
         public void exitGame()
         {
             Debug.Log("ExitButton [EXIT GAME]");
+            
             #if UNITY_STANDALONE
                 Application.Quit();
             #endif
@@ -45,12 +48,18 @@ namespace Manager
         public void saveGame()
         {
             Debug.Log("SaveButton [SAVE GAME]");
-            GameObject player = GameObject.Find("Player(Clone)");
+            
+            var player = GameObject.Find("Player(Clone)");
+            var playerCam = player.transform.Find("FirstPersonCam");
+            var inventory = player.GetComponent<Inventory>();
+            var playerStats = player.GetComponent<Stats>();
+            
             SaveSystemManager.SetPlayerRotation(player.transform.forward);
             SaveSystemManager.SetPlayerPosition(player.transform.position);
-            SaveSystemManager.SetCamRotation(player.transform.Find("FirstPersonCam").transform.forward);
-            SaveSystemManager.SetInventory(player.GetComponent<Inventory>().getInventory());
-            SaveSystemManager.SetEquipment(player.GetComponent<Inventory>().getEquipment());
+            SaveSystemManager.SetCamRotation(playerCam.transform.forward);
+            SaveSystemManager.SetInventory(inventory.getInventory());
+            SaveSystemManager.SetEquipment(inventory.getEquipment());
+            SaveSystemManager.SetStats(playerStats.GetCurStatsList(), playerStats.GetMaxStatsList());
             SaveSystemManager.Save();
         }
     }
