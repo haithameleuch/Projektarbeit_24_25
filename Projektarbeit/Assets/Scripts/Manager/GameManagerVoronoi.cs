@@ -169,6 +169,13 @@ namespace Manager
             SaveSystemManager.SetPlayerPosition(_player.transform.position);
             SaveSystemManager.SetPlayerRotation(_player.transform.forward);
             SaveSystemManager.SetCamRotation(cameraTransform != null ? cameraTransform.forward : Vector3.zero);
+            
+            var stats = SaveSystemManager.GetStats();
+
+            if (stats.Item1.Count > 0)
+            {
+                _player.GetComponent<Stats>().SetStats(stats.Item1, stats.Item2);
+            }
         }
         
         private void RestoreBossDoorState()

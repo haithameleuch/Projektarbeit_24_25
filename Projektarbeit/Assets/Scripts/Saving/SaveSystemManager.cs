@@ -11,6 +11,13 @@ namespace Saving
 
         public static SaveData SaveData { get; private set; }
 
+        public static void Save()
+        {
+            string json = JsonUtility.ToJson(SaveData, true);
+            File.WriteAllText(SavePath, json);
+            Debug.Log("Save written to: " + SavePath);
+        }
+        
         public static void Load()
         {
             if (File.Exists(SavePath))
@@ -25,13 +32,6 @@ namespace Saving
             }
         }
 
-        public static void Save()
-        {
-            string json = JsonUtility.ToJson(SaveData, true);
-            File.WriteAllText(SavePath, json);
-            Debug.Log("Save written to: " + SavePath);
-        }
-
         public static void StartNewRun(int newSeed)
         {
             SaveData = new SaveData
@@ -42,7 +42,26 @@ namespace Saving
             };
             Save();
         }
+        
+        /// -------------------------------------------------------
+        /// GETTER AND SETTER METHODS
+        /// -------------------------------------------------------
     
+        // ------- GLOBAL --------
+        public static int GetSeed() => SaveData.Seed;
+        public static int GetLevel() => SaveData.Level;
+        
+        // ------- CURRENT ROOM ID --------
+        public static int GetCurrentRoomID() => SaveData.CurrentRoomID;
+        public static void SetCurrentRoomID(int id) => SaveData.CurrentRoomID = id;
+        
+        // ------- BOSS ROOM DOOR OPEN --------
+        public static bool GetBossRoomOpen() => SaveData.BossRoomOpen;
+        public static void SetBossRoomOpen(bool open) => SaveData.BossRoomOpen = open;
+        
+        // ------- VISITED ROOMS --------
+        public static List<bool> GetVisitedRooms() => SaveData.VisitedRooms;
+        public static void InitializeVisitedRooms(int roomCount) => SaveData.VisitedRooms = new List<bool>(new bool[roomCount]);
         public static void SetRoomVisited(int roomId, bool visited)
         {
             if (SaveData.VisitedRooms != null
@@ -52,25 +71,8 @@ namespace Saving
                 SaveData.VisitedRooms[roomId] = visited;
             }
         }
-    
-        // Getter and Setter
-        public static void InitializeVisitedRooms(int roomCount) => SaveData.VisitedRooms = new List<bool>(new bool[roomCount]);
-        public static void SetCurrentRoomID(int id) => SaveData.CurrentRoomID = id;
-        public static List<bool> GetVisitedRooms() => SaveData.VisitedRooms;
-        public static int GetCurrentRoomID() => SaveData.CurrentRoomID;
-        public static int GetSeed() => SaveData.Seed;
-        public static int GetLevel() => SaveData.Level;
-        public static Vector3 GetPlayerPosition() => SaveData.PlayerPosition;
-        public static void SetPlayerPosition(Vector3 pos) => SaveData.PlayerPosition = pos;
-    
-        public static Vector3 GetPlayerRotation() => SaveData.PlayerForward;
-        public static void SetPlayerRotation(Vector3 direct) => SaveData.PlayerForward = direct;
-    
-        public static Vector3 GetCamRotation() => SaveData.CameraForward;
-        public static void SetCamRotation(Vector3 direct) => SaveData.CameraForward = direct;
         
-        // -------- DESTROYABLE WALLS ACTIVE ---------
-        
+        // ------- DESTROYABLE WALLS ACTIVE --------
         public static List<bool> GetDestroyableWallsActive()
         {
             if (SaveData.DestroyableWallsActive == null)
@@ -85,8 +87,7 @@ namespace Saving
                 list[idx] = active;
         }
         
-        // -------- DESTROYABLE WALLS HEALTH ---------
-        
+        // ------- DESTROYABLE WALLS HEALTH --------
         public static List<int> GetDestroyableWallsHealth()
         {
             if (SaveData.DestroyableWallsHealth == null)
@@ -109,149 +110,82 @@ namespace Saving
             return 0;
         }
         
-        // -------- PICKAXE --------
-        public static bool GetPickaxeEquipped() => SaveData.PickaxeEquipped;
-
-        public static void SetPickaxeEquipped(bool equipped) => SaveData.PickaxeEquipped = equipped;
-        
-        // ------- BOSS ROOM DOOR OPEN --------
-        public static bool GetBossRoomOpen() => SaveData.BossRoomOpen;
-        
-        public static void SetBossRoomOpen(bool open) => SaveData.BossRoomOpen = open;
-
-        // ------------Inventory------------
-        public static void SetInventory(ItemInstance[,] item)
+        // ------- PLAYER --------
+        public static Vector3 GetPlayerPosition() => SaveData.PlayerPosition;
+        public static void SetPlayerPosition(Vector3 pos) => SaveData.PlayerPosition = pos;
+        public static Vector3 GetPlayerRotation() => SaveData.PlayerForward;
+        public static void SetPlayerRotation(Vector3 direct) => SaveData.PlayerForward = direct;
+        public static Vector3 GetCamRotation() => SaveData.CameraForward;
+        public static void SetCamRotation(Vector3 direct) => SaveData.CameraForward = direct;
+    
+        // -------- STATS ---------
+        public static (List<float>,List<float>) GetStats() => (SaveData.CurrentStats, SaveData.MaxStats);
+        public static void SetStats(List<float> currStats, List<float> maxStats)
         {
-            for (int i = 0; i < item.GetLength(1); i++)
-            {
-                SaveData.I_Row_1[i] = item[0, i];
-            }
-            for (int i = 0; i < item.GetLength(1); i++)
-            {
-                SaveData.I_Row_2[i] = item[1, i];
-            }
-            for (int i = 0; i < item.GetLength(1); i++)
-            {
-                SaveData.I_Row_3[i] = item[2, i];
-
-            }
-            for (int i = 0; i < item.GetLength(1); i++)
-            {
-                SaveData.I_Row_4[i] = item[3, i];
-            }
+            SaveData.CurrentStats = currStats;
+            SaveData.MaxStats = maxStats;
+        }
+        
+        // ------- ITEMS --------
+        public static bool IsCollectibleActive(int idx)
+        {
+            if (SaveData.Items == null)
+                SaveData.Items = new List<bool>();
+    
+            while (SaveData.Items.Count <= idx)
+                SaveData.Items.Add(true);
+            
+            return SaveData.Items[idx];
         }
 
+        public static void SetCollectibleActive(int idx, bool active)
+        {
+            if (SaveData.Items == null)
+                SaveData.Items = new List<bool>();
+    
+            while (SaveData.Items.Count <= idx)
+                SaveData.Items.Add(true);
+
+            SaveData.Items[idx] = active;
+        }
+
+        // ------- INVENTORY --------
         public static ItemInstance[,] GetInventory()
         {
-            Debug.Log("ItemLadenHIERTEXTZUMFINDEN:"+(SaveData.I_Row_1[4].itemData == null));
-            ItemInstance[,] inventory = new ItemInstance[4, 5];
-            for (int i = 0; i < SaveData.I_Row_1.GetLength(0); i++)
-            {
-                if (SaveData.I_Row_1[i].itemData != null)
+            var grid = new ItemInstance[4, 5];
+            for (var row = 0; row < 4; row++)
+                for (var col = 0; col < 5; col++)
                 {
-                    inventory[0, i] = SaveData.I_Row_1[i];
+                    var inst = SaveData.Inventory[row * 5 + col];
+                    grid[row, col] = (inst != null && inst.itemData != null) ? inst : null;
                 }
-                else
-                {
-                    inventory[0, i] = null;
-                }
-                
-            }
-            for (int i = 0; i < SaveData.I_Row_2.GetLength(0); i++)
-            {
-                if (SaveData.I_Row_2[i].itemData != null)
-                {
-                    inventory[1, i] = SaveData.I_Row_2[i];
-                }
-                else
-                {
-                    inventory[1, i] = null;
-                }
-            }
-            for (int i = 0; i < SaveData.I_Row_3.GetLength(0); i++)
-            {
-                
-                if (SaveData.I_Row_3[i].itemData != null)
-                {
-                    inventory[2, i] = SaveData.I_Row_3[i];
-                }
-                else
-                {
-                    inventory[2, i] = null;
-                }
-            }
-            for (int i = 0; i < SaveData.I_Row_4.GetLength(0); i++)
-            {
-                
-                if (SaveData.I_Row_4[i].itemData != null)
-                {
-                    inventory[3, i] = SaveData.I_Row_4[i];
-                }
-                else
-                {
-                    inventory[3, i] = null;
-                }
-            }
-            return inventory;
+            return grid;
         }
 
-        public static void SetEquipment(ItemInstance[,] equip)
+        public static void SetInventory(ItemInstance[,] grid)
         {
-            for (int i = 0; i < equip.GetLength(1); i++)
-            {
-                SaveData.E_Row_1[i] = equip[0, i];
-            }
-            for (int i = 0; i < equip.GetLength(1); i++)
-            {
-                SaveData.E_Row_2[i] = equip[1, i];
-            }
-            for (int i = 0; i < equip.GetLength(1); i++)
-            {
-                SaveData.E_Row_3[i] = equip[2, i];
-            }
+            for (var row = 0; row < 4; row++)
+                for (var col = 0; col < 5; col++)
+                    SaveData.Inventory[row * 5 + col] = grid[row, col];
         }
 
         public static ItemInstance[,] GetEquipment()
         {
-            ItemInstance[,] equip = new ItemInstance[3, 2];
-            for (int i = 0; i < SaveData.E_Row_1.GetLength(0); i++)
-            {
-                
-                if (SaveData.E_Row_1[i].itemData != null)
+            var grid = new ItemInstance[3, 2];
+            for (var row = 0; row < 3; row++)
+                for (var col = 0; col < 2; col++)
                 {
-                    equip[0, i] = SaveData.E_Row_1[i];
+                    var inst = SaveData.Equipment[row * 2 + col];
+                    grid[row, col] = (inst != null && inst.itemData != null) ? inst : null;
                 }
-                else
-                {
-                    equip[0, i] = null;
-                }
-            }
-            for (int i = 0; i < SaveData.E_Row_2.GetLength(0); i++)
-            {
-                
-                if (SaveData.E_Row_2[i].itemData != null)
-                {
-                    equip[1, i] = SaveData.E_Row_2[i];
-                }
-                else
-                {
-                    equip[1, i] = null;
-                }
-            }
-            for (int i = 0; i < SaveData.E_Row_3.GetLength(0); i++)
-            {
-                
-                if (SaveData.E_Row_3[i].itemData != null)
-                {
-                    equip[2, i] = SaveData.E_Row_3[i];
-                }
-                else
-                {
-                    equip[2, i] = null;
-                }
-            }
+            return grid;
+        }
 
-            return equip;
+        public static void SetEquipment(ItemInstance[,] grid)
+        {
+            for (var row = 0; row < 3; row++)
+                for (var col = 0; col < 2; col++)
+                    SaveData.Equipment[row * 2 + col] = grid[row, col];
         }
     }
 }
