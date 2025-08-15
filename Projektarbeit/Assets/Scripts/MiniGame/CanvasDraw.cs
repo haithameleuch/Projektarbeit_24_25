@@ -157,13 +157,14 @@ namespace MiniGame
                 {
                     switch (_answered)
                     {
-                        case true when _rightAnswersCount < questionCount:
-                            _answered = false;
-                            SetQuestion();
-                            break;
-                        case true when _rightAnswersCount == questionCount:
+                        case true when _rightAnswersCount >= questionCount:
                             _answered = false;
                             questionText.text = "No Question!";
+                            break;
+
+                        case true:
+                            _answered = false;
+                            SetQuestion();
                             break;
                     }
                 }
@@ -468,7 +469,7 @@ namespace MiniGame
             if (!questionManager.CheckAnswer(currDigit)) return;
             string unlockMessage;
             _answered = true;
-            if (_rightAnswersCount < 2)
+            if (_rightAnswersCount < questionCount)
             {
                 _rightAnswersCount++;
                 string message = _rightAnswersCount+ "/" + questionCount;
@@ -478,6 +479,7 @@ namespace MiniGame
             else
             {
                 const string message = "unlocked";
+                ToDraw = false;
                 unlockMessage = $"<color=green>{message}</color>"; // Mark the correct digit as green
                 randNumberText.text = unlockMessage;
                 EventManager.Instance.TriggerOpenDoors(); // Open all necessary doors using Event

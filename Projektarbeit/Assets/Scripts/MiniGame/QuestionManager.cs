@@ -57,7 +57,7 @@ namespace MiniGame
         {
             if (questions.Count == 0) return;
             _currentQuestion = questions[Random.Range(0, questions.Count)];
-            Debug.Log("Question: " + _currentQuestion.text);
+            Debug.Log("Question: " + _currentQuestion.text+ "----> Answer:" + _currentQuestion.answer);
         }
 
         // Check if user's predicted digit (from classifier) is correct
