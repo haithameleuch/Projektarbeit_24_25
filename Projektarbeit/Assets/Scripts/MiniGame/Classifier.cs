@@ -163,11 +163,7 @@ namespace MiniGame
 
                         seenGlyphs.Add(glyph);
 
-                        // Bar: max 25 chars, smoothly scaled
-                        int barCount = Mathf.Clamp(Mathf.RoundToInt(value * 10f), 1, 10);
-                        string bar = new string('█', barCount);
-
-                        string line = $"{glyph,-7}: {bar}";
+                        string line = $"{glyph,-7}\n{value}";
 
                         if (seenGlyphs.Count == 1)
                         {

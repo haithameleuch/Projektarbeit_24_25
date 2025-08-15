@@ -194,9 +194,9 @@ MonoBehaviour:
   m_fontSize: 6
   m_fontSizeBase: 6
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 1
+  m_fontSizeMax: 10
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 256
@@ -471,7 +471,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questionManager: {fileID: 0}
-  questionCount: 3
+  questionCount: 10
+  refGlyph: air
   generatedTexture: {fileID: 0}
   glyph: 0
   totalXPixels: 200
