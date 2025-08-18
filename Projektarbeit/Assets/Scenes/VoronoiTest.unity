@@ -2112,6 +2112,8 @@ MonoBehaviour:
     itemQuantity: 3
   - itemData: {fileID: 11400000, guid: 18522e9a77233e84c9255f82839d2297, type: 2}
     itemQuantity: 1
+  - itemData: {fileID: 11400000, guid: b1acef839d1ff4e43855ff24420de126, type: 2}
+    itemQuantity: 3
   mustItems:
   - itemData: {fileID: 11400000, guid: 5a54fbdc0a0a8e04fb4a927b64639cd9, type: 2}
     itemQuantity: 1
