@@ -51,7 +51,7 @@ public class UIManager : MonoBehaviour
 
         Instance = this; // Assign this instance as the singleton.
 
-        DontDestroyOnLoad(gameObject); // Ensure this GameObject persists across scenes.
+        //DontDestroyOnLoad(gameObject); // Ensure this GameObject persists across scenes.
         
         inventoryManager = GetComponentInChildren<InventoryManager>(true);
     }
@@ -106,7 +106,9 @@ public class UIManager : MonoBehaviour
             if (isPauseVisible)
             {
                 //player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                _player.SetActive(true);
+                _player.GetComponent<FirstPersonPlayerController>().enabled = true;
+                _player.GetComponent<PlayerShooting>().enabled = true;
+                //_player.SetActive(true);
                 pause.gameObject.SetActive(false);
 
                 //Lock Cursor in the game view
@@ -120,7 +122,9 @@ public class UIManager : MonoBehaviour
             else
             {
                 //player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                _player.SetActive(false);
+                //_player.SetActive(false);
+                _player.GetComponent<FirstPersonPlayerController>().enabled = false;
+                _player.GetComponent<PlayerShooting>().enabled = false;
                 HidePanel();
                 pause.gameObject.SetActive(true);
 

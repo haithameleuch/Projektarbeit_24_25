@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Geometry;
+using Items;
+using Saving;
 
 public class VoronoiGenerator : MonoBehaviour
 {
@@ -21,7 +23,7 @@ public class VoronoiGenerator : MonoBehaviour
     [Header("Dungeon Settings")]
     [SerializeField] private float size = 40;
     [SerializeField] private int numPoints = 5;
-    [SerializeField] private int seed;
+    private int _seed;
     [SerializeField] private float minDoorEdgeLength = 4f;
     
     public float DungeonSize => size;
@@ -29,6 +31,10 @@ public class VoronoiGenerator : MonoBehaviour
     private System.Random _rng;
     private readonly HashSet<string> _forcedDoorPairs = new();
     private const double DoorProbability = 0.5;
+    
+    // ---- DESTROYABLE WALL ----
+    private int _breakableWallCounter = 0;
+    // ---- DESTROYABLE WALL ----
     
     #region Debug Settings (Gizmos)
     [Header("Gizmos Debugging")]
@@ -56,9 +62,13 @@ public class VoronoiGenerator : MonoBehaviour
     /// <summary>
     /// Initializes dungeon generation
     /// </summary>
-    private void Start()
+    public void GenerateDungeon(int seed)
     {
-        _rng = new System.Random(seed);
+        _seed = seed;
+        _rng = new System.Random(_seed);
+        // ---- DESTROYABLE WALL ----
+        _breakableWallCounter = 0;
+        // ---- DESTROYABLE WALL ----
         
         GenerateDebugData();
         
@@ -178,7 +188,7 @@ public class VoronoiGenerator : MonoBehaviour
     /// </summary>
     public void buildDungeon()
     {
-        var mode = seed % 3;
+        var mode = _seed % 3;
 
         if (mode == 0)
         {
@@ -216,7 +226,7 @@ public class VoronoiGenerator : MonoBehaviour
             };
 
             // Same index for both Color lists
-            var index = (seed / 3) % baseColors.Count;
+            var index = (_seed / 3) % baseColors.Count;
 
             mat.SetColor("_BaseColor", baseColors[index]);
             mat.SetColor("_EdgeColor", edgeColors[index]);
@@ -359,10 +369,33 @@ public class VoronoiGenerator : MonoBehaviour
             else if (candidate && !forbidBreakable)
             {
                 // Place a breakable wall instead of a door
-                Vector3 mid = (segStart + segEnd) * 0.5f;
-                Quaternion rot = Quaternion.FromToRotation(Vector3.right, segEnd - segStart);
-                var brkObj = Instantiate(destroyableWall, mid, rot, transform);
-                brkObj.transform.localScale = new Vector3(scaleOfSegment, 1f, 1f);
+                
+                // ---- DESTROYABLE WALL ----
+                int localIdx = _breakableWallCounter++;
+                
+                var activeList = SaveSystemManager.GetDestroyableWallsActive();
+                while (activeList.Count <= localIdx)
+                    activeList.Add(true);
+                
+                var healthList = SaveSystemManager.GetDestroyableWallsHealth();
+                while (healthList.Count <= localIdx)
+                    healthList.Add(Random.Range(1, 6));
+                
+                if (activeList[localIdx])
+                {
+                    Vector3 mid = (segStart + segEnd) * 0.5f;
+                    Quaternion rot = Quaternion.FromToRotation(Vector3.right, segEnd - segStart);
+                    var brkObj = Instantiate(destroyableWall, mid, rot, transform);
+                    brkObj.transform.localScale = new Vector3(scaleOfSegment, 1f, 1f);
+                    
+                    var interaction = brkObj.GetComponent<DestroyableWallInteraction>();
+                    if (interaction != null)
+                    {
+                        interaction.edgeID = localIdx;
+                        interaction.InitializeFromSave();
+                    }
+                }
+                // ---- DESTROYABLE WALL ----
             }
             else
             {
@@ -674,7 +707,6 @@ public class VoronoiGenerator : MonoBehaviour
         // Generate three edges from every circumcenter to the edge of the triangle
         foreach (Triangle triangle in triangulation)
         {
-            
             Point center = triangle.getCircumcircle().center;
             
             // Only Centers within the map
@@ -698,9 +730,9 @@ public class VoronoiGenerator : MonoBehaviour
         int edgeCount = bisectors.Count;
 
         // Connect two bisectors that meet to one big edge
-        for (int i = 0; i < edgeCount-1; i++)
+        for (int i = 0; i < edgeCount - 1; i++)
         {
-            for (int j = i+1; j < edgeCount; j++)
+            for (int j = i + 1; j < edgeCount; j++)
             {
                 if (Point.equals(bisectors[i].B, bisectors[j].B))
                 {
@@ -722,7 +754,6 @@ public class VoronoiGenerator : MonoBehaviour
         // Remove all bisectors that have been connected
         foreach (int count in toRemove)
         {
-
             bisectors.RemoveAt(count - offset);
             offset++;
         }
@@ -730,50 +761,44 @@ public class VoronoiGenerator : MonoBehaviour
         // For each remaining bisector, so every bisector that goes to the outside of the dungeon
         foreach (Edge e in bisectors)
         {
+            // Finde das eine Dreieck, dem dieser Bisektor entstammt
+            Triangle owner = null;
             foreach (Triangle tri in triangulation)
             {
-                // Get every bisector of the triangle
-                Edge bisector_1 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[0].A.x + tri.edges[0].B.x) / 2), ((tri.edges[0].A.y + tri.edges[0].B.y) / 2)));
-                Edge bisector_2 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[1].A.x + tri.edges[1].B.x) / 2), ((tri.edges[1].A.y + tri.edges[1].B.y) / 2)));
-                Edge bisector_3 = new Edge(tri.getCircumcircle().center, new Point(((tri.edges[2].A.x + tri.edges[2].B.x) / 2), ((tri.edges[2].A.y + tri.edges[2].B.y) / 2)));
-
-                // Check if the bisector we want is in the triangle
-                if (Edge.equals(e, bisector_1) || Edge.equals(e, bisector_2) || Edge.equals(e, bisector_3))
+                if (Point.equals(tri.getCircumcircle().center, e.A))
                 {
-                    // Direction vector of the bisector
-                    float diffX = e.B.x - e.A.x;
-                    float diffY = e.B.y - e.A.y;
-                    Vector2 dir = new Vector2(diffX, diffY);
-
-                    // Normalize and shorten the direction vector
-                    dir.Normalize();
-                    Vector2 shortend = new Vector2(dir[0] * 0.01f, dir[1] * 0.01f);
-                    
-                    // Now check a point a little bit before and after the intersection of the bisector and the triangle edge
-                    // Then build the edge AWAY from the triangle (if one point is inside the triangle, use the other)
-                    if (!PointOutTriangle(new Point(e.B.x + shortend[0], e.B.y + shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
-                    {
-                        Point inter = FindIntersectionWithMapBoundary(e, size);
-                        _debugVoronoiIntersections.Add(inter);
-                        Edge newEdge = new Edge(e.A, inter);
-                        newEdge.Room1 = e.Room1;
-                        newEdge.Room2 = e.Room2;
-                        newEdge.giveID();
-                        voronoi.Add(newEdge);
-                    }
-                    else if (!PointOutTriangle(new Point(e.B.x - shortend[0], e.B.y - shortend[1]), tri.points[0], tri.points[1], tri.points[2]))
-                    {
-                        Point inter = FindIntersectionWithMapBoundary(e, size);
-                        _debugVoronoiIntersections.Add(inter);
-                        Edge newEdge = new Edge(e.A, inter);
-                        newEdge.Room1 = e.Room1;
-                        newEdge.Room2 = e.Room2;
-                        newEdge.giveID();
-                        voronoi.Add(newEdge);
-                    }
-
+                    owner = tri;
+                    break;
                 }
             }
+            if (owner == null) continue;
+
+            // direction bisector
+            Vector2 dir = new Vector2(e.B.x - e.A.x, e.B.y - e.A.y);
+            dir.Normalize();
+
+            // Checkpoints slightly forward and backward
+            Point forwardTest = new Point(e.B.x + dir.x * 0.01f, e.B.y + dir.y * 0.01f);
+            bool forwardInside = !PointOutTriangle(forwardTest, owner.points[0], owner.points[1], owner.points[2]);
+
+            // If the forward point is inside,
+            // we have to extend backwards outwards, otherwise forwards.
+            Vector2 rayDir = forwardInside ? new Vector2(-dir.x, -dir.y) : dir;
+
+            // Build a ray from the circumcenter far outwards
+            Point far = new Point(e.A.x + rayDir.x * size * 2f, e.A.y + rayDir.y * size * 2f);
+            Edge ray = new Edge(e.A, far);
+
+            // Intersection with the map boundary
+            Point inter = FindIntersectionWithMapBoundary(ray, size);
+            _debugVoronoiIntersections.Add(inter);
+
+            // New Voronoi-Edge
+            Edge newEdge = new Edge(e.A, inter);
+            newEdge.Room1 = e.Room1;
+            newEdge.Room2 = e.Room2;
+            newEdge.giveID();
+            voronoi.Add(newEdge);
         }
         // Return the voronoi diagramm as a list of Edges
         return voronoi;
