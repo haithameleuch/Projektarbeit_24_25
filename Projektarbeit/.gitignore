@@ -74,8 +74,8 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # Unity specific asset plugins
-/[Aa]ssets/ML-Agents/
-/[Aa]ssets/TextMesh Pro/
+/[Aa]ssets/ML-Agents/*
+/[Aa]ssets/TextMesh Pro/*
 
 # OS-specific files
 # macOS
