@@ -1333,7 +1333,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 1
-  m_Color: {r: 1, g: 0.95686275, b: 0.8392157, a: 1}
+  m_Color: {r: 0.23529412, g: 0.26666668, b: 0.49019608, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -2452,6 +2452,10 @@ MonoBehaviour:
   size: 40
   numPoints: 10
   minDoorEdgeLength: 4
+  skyboxMaterials:
+  - {fileID: 2100000, guid: af5ac1e56181a78459217153373059a6, type: 2}
+  - {fileID: 2100000, guid: 3ef91239f631f6d46ae3bcd6831ef06b, type: 2}
+  - {fileID: 2100000, guid: 7319e559729571847a34a19f6768fe62, type: 2}
   showPoints: 1
   showCenters: 0
   showTriangles: 1
