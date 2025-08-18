@@ -25,6 +25,9 @@ public class VoronoiGenerator : MonoBehaviour
     [SerializeField] private int numPoints = 5;
     private int _seed;
     [SerializeField] private float minDoorEdgeLength = 4f;
+    [SerializeField] private Material[] skyboxMaterials;
+
+    private Light _light = new Light();
     
     public float DungeonSize => size;
     private DungeonGraph _dungeonGraph;
@@ -69,6 +72,8 @@ public class VoronoiGenerator : MonoBehaviour
         // ---- DESTROYABLE WALL ----
         _breakableWallCounter = 0;
         // ---- DESTROYABLE WALL ----
+        
+        _light = FindFirstObjectByType<Light>();
         
         GenerateDebugData();
         
@@ -225,11 +230,20 @@ public class VoronoiGenerator : MonoBehaviour
                 new Color(118f / 255f, 238f / 255f, 0f, 0f)             // Light Green
             };
 
+            List<Color> lightColors = new List<Color>
+            {
+                new Color(42f / 255f, 96f / 255f, 111f / 255f),
+                new Color(183f / 255f, 9f / 255f, 0f / 255f),
+                new Color(76f / 255f, 1f, 101f / 255f),
+            };
+
             // Same index for both Color lists
             var index = (_seed / 3) % baseColors.Count;
 
             mat.SetColor("_BaseColor", baseColors[index]);
             mat.SetColor("_EdgeColor", edgeColors[index]);
+            _light.color = lightColors[index];
+            RenderSettings.skybox = skyboxMaterials[index];
         }
         else
         {
