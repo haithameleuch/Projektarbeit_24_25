@@ -1,3 +1,4 @@
+using Saving;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -97,10 +98,9 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
     private void OnEnable()
     {
         if (_isSetup || _player == null) return;
-        
+      
         _playerInventory = _inventory.getInventory();
         _playerEquipment = _inventory.getEquipment();
-        
         _dummies[0, 0] = helmet;
         _dummies[0, 1] = body;
         _dummies[1, 0] = legs;
@@ -109,6 +109,7 @@ public class InventoryManager : MonoBehaviour, IPointerClickHandler
         _dummies[2, 1] = leftHand;
 
         SetupUI();
+        
         _isSetup = true;
     }
     

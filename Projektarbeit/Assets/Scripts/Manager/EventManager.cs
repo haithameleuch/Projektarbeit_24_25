@@ -1,4 +1,5 @@
 using System;
+using Saving;
 using UnityEngine;
 
 /// <summary>
@@ -56,7 +57,7 @@ public class EventManager : MonoBehaviour
 
         Instance = this;
         
-        DontDestroyOnLoad(gameObject);
+        //DontDestroyOnLoad(gameObject);
     }
 
     /// <summary>
@@ -77,7 +78,11 @@ public class EventManager : MonoBehaviour
         }
         
         //  Press K to Open Boss a door (only for debugging)
-        if (Input.GetKeyDown(KeyCode.K)) OnOpenBossDoors?.Invoke();
+        if (Input.GetKeyDown(KeyCode.K))
+        {
+            OnOpenBossDoors?.Invoke();
+            SaveSystemManager.SetBossRoomOpen(true);
+        }
     }
 
     /// <summary>

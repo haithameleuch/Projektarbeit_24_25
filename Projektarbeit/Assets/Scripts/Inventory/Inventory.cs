@@ -1,4 +1,6 @@
+using System;
 using UnityEngine;
+using Saving;
 
 public class Inventory : MonoBehaviour
 {
@@ -6,6 +8,12 @@ public class Inventory : MonoBehaviour
     private ItemInstance[,] inventory = new ItemInstance[4,5];
     [SerializeField]
     private ItemInstance[,] equipment = new ItemInstance[3,2];
+
+    private void Awake()
+    {
+        inventory = SaveSystemManager.GetInventory();
+        equipment = SaveSystemManager.GetEquipment();
+    }
 
     public bool addItem(ItemInstance toAdd)
     {
@@ -92,6 +100,17 @@ public class Inventory : MonoBehaviour
         }
     }
 
+    public void SetInventory(ItemInstance[,] item)
+    {
+        Array.Copy(item,inventory,inventory.Length);
+        //inventory = item.Clone() as ItemInstance[,];
+    }
+
+    public void SetEquipment(ItemInstance[,] equip)
+    {
+        Array.Copy(equip,equipment,equip.Length);
+        //equipment = equip.Clone() as ItemInstance[,];
+    }
     public ItemInstance[,] getInventory() { return inventory; }
     public ItemInstance[,] getEquipment() { return equipment; }
 
