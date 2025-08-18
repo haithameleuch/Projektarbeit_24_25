@@ -33,8 +33,10 @@ namespace Manager
         /// Distance threshold used to determine when the player has left the current room.
         /// </summary>
         [SerializeField] private float roomSwitchThreshold = 5f;
-        
+
         [SerializeField] private List<ItemInstance> items;
+        
+        [SerializeField] private List<ItemInstance> mustItems;
 
         [SerializeField] private List<GameObject> miniGamePrefabs;
         
@@ -116,7 +118,7 @@ namespace Manager
 
             _spawners = new List<ISpawnerVoronoi>()
             {
-                new ItemSpawnerVoronoi(items, rooms, transform),
+                new ItemSpawnerVoronoi(items, rooms, transform, mustItems),
                 new MiniGameSpawnerVoronoi(miniGameRooms, miniGamePrefabs, transform)
             };
             PopulateDungeon();

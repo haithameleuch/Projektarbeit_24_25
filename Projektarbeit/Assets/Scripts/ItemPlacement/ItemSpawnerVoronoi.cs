@@ -36,6 +36,13 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
         _rooms = rooms;
         _parent = parent;
     }
+
+    public ItemSpawnerVoronoi(List<ItemInstance> items, List<Room> rooms, Transform parent, List<ItemInstance> mustItems)
+    {
+        _itemsDistributor = new Distributor<ItemInstance>(items, mustItems);
+        _rooms = rooms;
+        _parent = parent;
+    }
     
     /// <summary>
     /// Spawns 1–3 items in each room, arranged in a circle around the room center.
@@ -55,7 +62,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
             for (var i = 0; i < itemCount; i++)
             {
                 var idx = collectibleIndex++;
-                var itemInstance = _itemsDistributor.GetRandomElement();
+                var itemInstance = _itemsDistributor.GetRandomElementIncludingMust();
             
                 // Place items in a circular pattern
                 var angle = i * (360f / itemCount);
