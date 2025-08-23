@@ -22,6 +22,9 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private RectTransform pause; // Reference to the pause screen
     
+    [SerializeField]
+    private RectTransform gameOver; // Reference to the pause screen
+    
     [SerializeField] 
     private GameObject miniMapPanel;  // Reference to the mini map
 
@@ -100,6 +103,26 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (_player.GetComponent<Stats>().GetCurStats(0) < 1)
+        {
+            // Game over
+            _player.GetComponent<FirstPersonPlayerController>().enabled = false;
+            _player.GetComponent<PlayerShooting>().enabled = false;
+            HidePanel();
+            gameOver.gameObject.SetActive(true);
+
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
+
+            Time.timeScale = 0;
+        }
+        else if (!isPauseVisible && !isInvVisible) // only resume if not paused or in inventory
+        {
+            Time.timeScale = 1;
+            _player.GetComponent<FirstPersonPlayerController>().enabled = true;
+            _player.GetComponent<PlayerShooting>().enabled = true;
+        }
+        
         //Check weather "P" is pressed to toggle the pause menu
         if (Input.GetKeyDown(KeyCode.P))
         {
