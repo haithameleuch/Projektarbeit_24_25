@@ -71,8 +71,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   leftHandHolder: {fileID: 1552045929758306905}
-  pickaxePrefab: {fileID: 8537086612862231424, guid: 19cbb01d1113228408dbf16ea7819238,
-    type: 3}
+  pickaxePrefab: {fileID: 8537086612862231424, guid: 19cbb01d1113228408dbf16ea7819238, type: 3}
   swingAngle: 60
   swingDuration: 0.25
 --- !u!114 &6026498069539602025
@@ -101,6 +100,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d6700e8c5700064780ff8b9ac6cc99c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &1817297916470957439
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3632200126607871566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxStats:
+  - 250
+  - 25
+  - 7
+  curStats:
+  - 100
+  - 5
+  - 7
+--- !u!114 &-6843795123550766924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3632200126607871566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ec74838f1e42f081baf8c5266b5610, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 0}
 --- !u!1 &4243333667503106905
 GameObject:
   m_ObjectHideFlags: 0
@@ -132,39 +164,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6872177338288242892}
   m_LocalEulerAnglesHint: {x: 5, y: 10, z: 0}
---- !u!114 &1817297916470957439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3632200126607871566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e1a1bb457c910a84093381eab786f0c9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxStats:
-  - 1000
-  - 10
-  - 5
-  curStats:
-  - 1000
-  - 10
-  - 5
---- !u!114 &-6843795123550766924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3632200126607871566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13ec74838f1e42f081baf8c5266b5610, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthBar: {fileID: 0}
 --- !u!1 &5165029188938454683
 GameObject:
   m_ObjectHideFlags: 0
@@ -194,7 +193,8 @@ Transform:
   m_LocalPosition: {x: 0, y: 0.5, z: 0.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: [{fileID: 1552045929758306905}]
+  m_Children:
+  - {fileID: 1552045929758306905}
   m_Father: {fileID: 7929234784204982106}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &6005806881019853559
