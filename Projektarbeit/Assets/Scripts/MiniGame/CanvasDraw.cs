@@ -469,9 +469,10 @@ namespace MiniGame
             if (!questionManager.CheckAnswer(currDigit)) return;
             string unlockMessage;
             _answered = true;
+            _rightAnswersCount++;
+            
             if (_rightAnswersCount < questionCount)
             {
-                _rightAnswersCount++;
                 string message = _rightAnswersCount+ "/" + questionCount;
                 unlockMessage = $"<color=yellow>{message}</color>"; // Mark the correct digit as green
                 randNumberText.text = unlockMessage;
