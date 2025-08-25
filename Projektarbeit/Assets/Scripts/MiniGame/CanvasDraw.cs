@@ -17,11 +17,17 @@ namespace MiniGame
         // The last Question is answered
         private bool _answered = true;
 
-        // Counter for the right guesses
+        // Counter for the right answer guesses
         private int _rightAnswersCount;
+        
+        // Counter for the right glyphs guesses
+        private int _rightGlyphsCount;
         
         // Set the count of the questions
         [SerializeField] public int questionCount;
+        
+        // Set the count of the glyphs
+        [SerializeField] public int glyphCount;
         
         // Reference current glyph
         [SerializeField] private string refGlyph = "air";
@@ -492,11 +498,17 @@ namespace MiniGame
         private bool ValidGlyph(int digit)
         {
             // Retrieve the corresponding glyph name, or return "Unknown" if the digit is invalid
-            string text = _digitToString.ContainsKey(digit) ? _digitToString[digit] : "Unknown";
-
-            bool valid = (text == refGlyph);
-
-            return valid;
+            string label = _digitToString.ContainsKey(digit) ? _digitToString[digit] : "Unknown";
+            // Check if the label is correct
+            if (label != refGlyph) return false;
+            // Increment the right glyphs count
+            _rightGlyphsCount++;
+            Debug.Log($"Count right glyphs: {_rightGlyphsCount}");
+            // Check if the right glyphs count is correct
+            if (_rightGlyphsCount != glyphCount) return false;
+            Debug.Log("You have the boss key!");
+            //TODO: spawn boss key
+            return true;
         }
     }
 }
