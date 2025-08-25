@@ -22,18 +22,25 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private RectTransform pause; // Reference to the pause screen
     
+    [SerializeField]
+    private RectTransform gameOver; // Reference to the pause screen
+    
     [SerializeField] 
     private GameObject miniMapPanel;  // Reference to the mini map
 
     // Toggle bools for UIs
     bool isPauseVisible = false;
     
+    // Player reference
     private GameObject _player;
+    
+    // Inventory bool
     bool isInvVisible = false;
 
     // Reference to important onjects
     private GameObject itemUI;
     
+    // Inventory manager
     private InventoryManager inventoryManager;
 
     /// <summary>
@@ -56,6 +63,9 @@ public class UIManager : MonoBehaviour
         inventoryManager = GetComponentInChildren<InventoryManager>(true);
     }
 
+    // <summary>
+    /// Sets the player reference.
+    /// </summary>
     public void SetPlayer(GameObject newPlayer)
     {
         _player = newPlayer;
@@ -100,6 +110,33 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        // Game over logic
+        // Check if the player is dead
+        if (_player.GetComponent<Stats>().GetCurStats(0) < 1)
+        {
+            // Pause the game
+            _player.GetComponent<FirstPersonPlayerController>().enabled = false;
+            _player.GetComponent<PlayerShooting>().enabled = false;
+            
+            // Lock the cursor in the game view
+            HidePanel();
+            gameOver.gameObject.SetActive(true);
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = true;
+
+            // Pause the game time
+            Time.timeScale = 0;
+        }
+        else if (!isPauseVisible && !isInvVisible) // only resume if not paused or in inventory
+        {
+            // Resume the game time
+            Time.timeScale = 1;
+            
+            // Unlock the cursor
+            _player.GetComponent<FirstPersonPlayerController>().enabled = true;
+            _player.GetComponent<PlayerShooting>().enabled = true;
+        }
+        
         //Check weather "P" is pressed to toggle the pause menu
         if (Input.GetKeyDown(KeyCode.P))
         {
