@@ -231,6 +231,7 @@ namespace Enemy
             // When the timer reaches zero, spawn a prefab instance
             if (_spawnTimer <= 0f)
             {
+                SpawnPrefab();
                 _spawnTimer = spawnInterval; // Reset timer
             }
         }
