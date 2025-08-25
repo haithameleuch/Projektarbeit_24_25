@@ -121,8 +121,7 @@ public class UIManager : MonoBehaviour
             // Lock the cursor in the game view
             HidePanel();
             gameOver.gameObject.SetActive(true);
-            Cursor.lockState = CursorLockMode.Confined;
-            Cursor.visible = true;
+            GameInputManager.Instance.MouseLocked(false);
 
             // Pause the game time
             Time.timeScale = 0;
@@ -149,8 +148,7 @@ public class UIManager : MonoBehaviour
                 pause.gameObject.SetActive(false);
 
                 //Lock Cursor in the game view
-                UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-                UnityEngine.Cursor.visible = false;
+                GameInputManager.Instance.MouseLocked(true);
 
                 //Resume time to normal value
                 Time.timeScale = 1;
@@ -166,52 +164,11 @@ public class UIManager : MonoBehaviour
                 pause.gameObject.SetActive(true);
 
                 //Make the cursor moveable within the game window
-                UnityEngine.Cursor.lockState = CursorLockMode.Confined;
-                UnityEngine.Cursor.visible = true;
+                GameInputManager.Instance.MouseLocked(false);
 
                 //Pause the game
                 Time.timeScale = 0;
                 isPauseVisible=true;
-            }
-        }
-        
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            GameObject inv = gameObject.transform.Find("Inventory").gameObject;
-
-            if (!isInvVisible)
-            {
-                if (isPauseVisible)
-                {
-                    _player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                    _player.GetComponent<PlayerShooting>().enabled = true;
-
-                    pause.gameObject.SetActive(false);
-
-                    //Lock Cursor in the game view
-                    UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-                    UnityEngine.Cursor.visible = false;
-
-                    //Resume time to normal value
-                    Time.timeScale = 1;
-                    isPauseVisible = false;
-                }
-                else
-                {
-                    _player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                    _player.GetComponent<PlayerShooting>().enabled = false;
-
-                    HidePanel();
-                    pause.gameObject.SetActive(true);
-
-                    //Make the cursor moveable within the game window
-                    UnityEngine.Cursor.lockState = CursorLockMode.Confined;
-                    UnityEngine.Cursor.visible = true;
-
-                    //Pause the game
-                    Time.timeScale = 0;
-                    isPauseVisible = true;
-                }
             }
         }
 
@@ -229,8 +186,7 @@ public class UIManager : MonoBehaviour
                     itemUI.transform.parent.gameObject.SetActive(true);
 
                     //Make the cursor moveable within the game window
-                    UnityEngine.Cursor.lockState = CursorLockMode.Confined;
-                    UnityEngine.Cursor.visible = true;
+                    GameInputManager.Instance.MouseLocked(false);
 
                     //Pause the game
                     Time.timeScale = 0;
@@ -246,8 +202,7 @@ public class UIManager : MonoBehaviour
                     itemUI.transform.parent.gameObject.SetActive(false);
 
                     //Make the cursor unmoveable within the game window
-                    UnityEngine.Cursor.lockState = CursorLockMode.Locked;
-                    UnityEngine.Cursor.visible = false;
+                    GameInputManager.Instance.MouseLocked(true);
 
                     //Pause the game
                     Time.timeScale = 1;
