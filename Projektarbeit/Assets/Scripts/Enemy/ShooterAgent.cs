@@ -108,18 +108,7 @@ namespace Enemy
 
             // Now it's safe to use target
             var directionToTarget = (target.transform.position - shootPoint.position).normalized;
-            Debug.Log(directionToTarget);
             transform.forward = directionToTarget;
-        }
-
-
-        /// <summary>
-        /// Called at the beginning of each new episode.
-        /// Resets target's position and health.
-        /// </summary>
-        public override void OnEpisodeBegin()
-        {
-
         }
 
         /// <summary>

@@ -1,3 +1,4 @@
+using Manager;
 using TMPro; // Import TextMeshPro namespace for using TMP_Text components
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -137,7 +138,8 @@ public class UIManager : MonoBehaviour
         }
         
         //Check weather "P" is pressed to toggle the pause menu
-        if (Input.GetKeyDown(KeyCode.P))
+        var checkRoomType = (GameManagerVoronoi.Instance.CurrentRoom.type != RoomType.Enemy) && (GameManagerVoronoi.Instance.CurrentRoom.type != RoomType.Boss);
+        if (Input.GetKeyDown(KeyCode.P) && checkRoomType)
         {
             if (isPauseVisible)
             {
