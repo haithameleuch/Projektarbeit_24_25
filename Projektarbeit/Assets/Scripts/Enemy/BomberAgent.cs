@@ -66,6 +66,11 @@ namespace Enemy
             StartCoroutine(FindPlayerCoroutine());
         }
 
+        protected override void OnDisable()
+        {
+            StopAllCoroutines();
+        }
+
         // Coroutine to find the player in the scene
         // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator FindPlayerCoroutine()
@@ -95,6 +100,14 @@ namespace Enemy
         // Collects observations for the ML model
         public override void CollectObservations(VectorSensor sensor)
         {
+            if (!target)
+            {
+                sensor.AddObservation(Vector3.zero);
+                sensor.AddObservation(transform.forward);
+                sensor.AddObservation(0f);
+                return;
+            }
+            
             Vector3 toTarget = target.transform.localPosition - transform.localPosition;
             Vector3 forward = transform.forward;
 
@@ -108,6 +121,8 @@ namespace Enemy
         // Receives actions from the model
         public override void OnActionReceived(ActionBuffers actions)
         {
+            if (!target) { AddReward(-0.001f); return; }
+            
             var moveInput = actions.ContinuousActions[0];
             var turnInput = actions.ContinuousActions[1];
 

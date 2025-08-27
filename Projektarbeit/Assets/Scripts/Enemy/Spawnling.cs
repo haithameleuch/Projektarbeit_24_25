@@ -103,6 +103,11 @@ namespace Enemy
             _spawnTimer = spawnInterval;
 
         }
+        
+        protected override void OnDisable()
+        {
+            StopAllCoroutines();
+        }
 
         // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator FindPlayerCoroutine()
@@ -127,6 +132,8 @@ namespace Enemy
         public override void OnEpisodeBegin()
         {
             _stuckTimer = 0f;
+            if (!target) return;
+            
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
 
             // Reset spawn timer
@@ -141,6 +148,14 @@ namespace Enemy
         /// <param name="sensor">The sensor collecting environment data.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
+            if (!target)
+            {
+                sensor.AddObservation(Vector3.zero);
+                sensor.AddObservation(transform.forward);
+                sensor.AddObservation(0f);
+                return;
+            }
+            
             Vector3 toTarget = target.transform.localPosition - transform.localPosition;
             Vector3 forward = transform.forward;
 
@@ -159,6 +174,8 @@ namespace Enemy
         /// <param name="actions">Agent action buffers.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
+            if (!target) { AddReward(-0.001f); return; }
+            
             float moveInput = actions.ContinuousActions[0]; // Forward/backward
             float turnInput = actions.ContinuousActions[1]; // Left/right turn
 
@@ -223,7 +240,7 @@ namespace Enemy
         /// </summary>
         private void Update()
         {
-            if (!_isInitialized) return;
+            if (!_isInitialized || !prefabToSpawn) return;
 
             // Countdown spawn timer
             _spawnTimer -= Time.deltaTime;
@@ -241,7 +258,7 @@ namespace Enemy
         /// </summary>
         private void SpawnPrefab()
         {
-            if (prefabToSpawn != null)
+            if (prefabToSpawn is not null)
             {
                 Instantiate(prefabToSpawn, transform.position, transform.rotation, transform.parent);
             }
