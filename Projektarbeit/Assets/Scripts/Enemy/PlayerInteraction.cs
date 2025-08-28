@@ -12,8 +12,6 @@ public class PlayerInteraction : MonoBehaviour, IInteractable
     /// Health-bar to show the life of the player during the game 
     /// </summary>
     public Image healthBar;
-    private float lerpSpeed = 1f;
-
     private void Update()
     {
         // Cache references in Start for performance
@@ -21,7 +19,7 @@ public class PlayerInteraction : MonoBehaviour, IInteractable
         playerStats = GameObject.Find("Player(Clone)").GetComponent<Stats>();
         healthBar = GameObject.FindGameObjectsWithTag("Health")[0].GetComponent<Image>();
         float targetFill = playerStats.GetCurStats(0) / playerStats.GetMaxStats(0);
-        healthBar.fillAmount = Mathf.Lerp(healthBar.fillAmount, targetFill, Time.deltaTime * lerpSpeed);
+        healthBar.fillAmount = targetFill;
     }
     
     

@@ -557,7 +557,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7606263280591153303}
   - component: {fileID: 318595777074852898}
-  - component: {fileID: 6207822617127381313}
+  - component: {fileID: 6214898338112721349}
   - component: {fileID: 7860309267575327205}
   - component: {fileID: 7443956525079628268}
   - component: {fileID: 5307257811667064105}
@@ -614,8 +614,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &6207822617127381313
-MeshCollider:
+--- !u!136 &6214898338112721349
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -632,10 +632,11 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4277936243970900915, guid: 9ad131497dd2d1545b6c35e7cc732b35, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.3671924
+  m_Height: 1.3919044
+  m_Direction: 1
+  m_Center: {x: -0.0054345727, y: 0.5262904, z: -0.033289373}
 --- !u!114 &7860309267575327205
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -727,12 +728,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStats:
   - 20
-  - 15
-  - 5
+  - 8
+  - 7
   curStats:
   - 20
-  - 15
-  - 5
+  - 8
+  - 7
 --- !u!1 &8287177783003240088
 GameObject:
   m_ObjectHideFlags: 0

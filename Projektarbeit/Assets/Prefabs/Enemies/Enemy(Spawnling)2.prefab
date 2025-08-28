@@ -42,7 +42,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5058296999730819711}
   - component: {fileID: 5950159920871530937}
-  - component: {fileID: 7729048733157240066}
+  - component: {fileID: 1474027443643207117}
   - component: {fileID: 7813552574530837865}
   - component: {fileID: 3233507221141836110}
   - component: {fileID: 1778115050723205342}
@@ -99,8 +99,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &7729048733157240066
-MeshCollider:
+--- !u!136 &1474027443643207117
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -117,10 +117,11 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4277936243970900915, guid: 9ad131497dd2d1545b6c35e7cc732b35, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.3671924
+  m_Height: 1.3919044
+  m_Direction: 1
+  m_Center: {x: -0.0054345727, y: 0.5262904, z: -0.033289373}
 --- !u!114 &7813552574530837865
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133,7 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5140ef1eba9d1d441ad84de5e8fda728, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LifeText: {fileID: 4102014092469371325}
+  lifeText: {fileID: 4102014092469371325}
 --- !u!114 &3233507221141836110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,7 +184,7 @@ MonoBehaviour:
   MaxStep: 0
   target: {fileID: 0}
   movementSpeed: 4
-  spawnInterval: 5
+  spawnInterval: 4
   prefabToSpawn: {fileID: 1492595859040446326, guid: bfbb7efcb67cbd145ac403f29bece29e, type: 3}
 --- !u!114 &1288640495772881767
 MonoBehaviour:
@@ -213,12 +214,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStats:
+  - 500
   - 20
-  - 15
   - 5
   curStats:
+  - 500
   - 20
-  - 15
   - 5
 --- !u!1 &1505516672048614632
 GameObject:

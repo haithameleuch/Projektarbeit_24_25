@@ -42,7 +42,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4375913299302485507}
   - component: {fileID: 4375913299302485506}
-  - component: {fileID: 4375913299302485505}
   - component: {fileID: 7174293039573403619}
   - component: {fileID: 8705717491461825726}
   - component: {fileID: 752592993701942226}
@@ -100,28 +99,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &4375913299302485505
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4375913299302485504}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4277936243970900915, guid: 9ad131497dd2d1545b6c35e7cc732b35, type: 3}
 --- !u!136 &7174293039573403619
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -235,13 +212,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStats:
-  - 20
+  - 50
   - 15
-  - 5
+  - 3
   curStats:
-  - 20
+  - 50
   - 15
-  - 5
+  - 3
 --- !u!1 &4375913299420751562
 GameObject:
   m_ObjectHideFlags: 0
