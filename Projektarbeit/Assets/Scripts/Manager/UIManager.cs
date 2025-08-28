@@ -1,9 +1,5 @@
-using Manager;
-using TMPro; // Import TextMeshPro namespace for using TMP_Text components
+using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UI;
-using static UnityEngine.Rendering.DebugUI.Table;
 
 /// <summary>
 /// Manages the UI elements, including panels and text updates.
@@ -29,6 +25,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] 
     private GameObject miniMapPanel;  // Reference to the mini map
 
+    private bool isCombatLocked = false;
+    
     // Toggle bools for UIs
     bool isPauseVisible = false;
     
@@ -138,8 +136,7 @@ public class UIManager : MonoBehaviour
         }
         
         //Check weather "P" is pressed to toggle the pause menu
-        var checkRoomType = (GameManagerVoronoi.Instance.CurrentRoom.type != RoomType.Enemy) && (GameManagerVoronoi.Instance.CurrentRoom.type != RoomType.Boss);
-        if (Input.GetKeyDown(KeyCode.P) && checkRoomType)
+        if (Input.GetKeyDown(KeyCode.P) && !isCombatLocked)
         {
             if (isPauseVisible)
             {
@@ -220,5 +217,42 @@ public class UIManager : MonoBehaviour
             bool isActive = miniMapPanel.activeSelf;
             miniMapPanel.SetActive(!isActive);
         }
+    }
+    
+    private void OnEnable()
+    {
+        EventManager.OnCloseDoors     += HandleCloseDoors;      // Enemy Room: Battle begins
+        EventManager.OnOpenDoors      += HandleOpenDoors;       // Enemy Room: Fight over
+        EventManager.OnCloseBossDoors += HandleCloseBossDoors;  // Boss Room: Battle begins
+        EventManager.OnOpenBossDoors  += HandleOpenBossDoors;   // Boss Room: Fight over
+    }
+
+    private void OnDisable()
+    {
+        EventManager.OnCloseDoors     -= HandleCloseDoors;
+        EventManager.OnOpenDoors      -= HandleOpenDoors;
+        EventManager.OnCloseBossDoors -= HandleCloseBossDoors;
+        EventManager.OnOpenBossDoors  -= HandleOpenBossDoors;
+    }
+    
+    private void HandleCloseDoors()     => EnterCombatLock();
+    private void HandleOpenDoors()      => ExitCombatLock();
+    private void HandleCloseBossDoors() => EnterCombatLock();
+    private void HandleOpenBossDoors()  => ExitCombatLock();
+
+    private void EnterCombatLock()
+    {
+        isCombatLocked = true;
+
+        if (!isPauseVisible) return;
+        pause.gameObject.SetActive(false);
+        GameInputManager.Instance.MouseLocked(true);
+        Time.timeScale = 1;
+        isPauseVisible = false;
+    }
+
+    private void ExitCombatLock()
+    {
+        isCombatLocked = false;
     }
 }
