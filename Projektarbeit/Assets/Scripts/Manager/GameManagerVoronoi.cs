@@ -41,6 +41,8 @@ namespace Manager
         [SerializeField] private List<GameObject> miniGamePrefabs;
         
         [SerializeField] private List<GameObject> enemyPrefabs;
+        
+        [SerializeField] private List<GameObject> bossEnemyPrefabs;
 
 
         private GameObject _player;
@@ -49,6 +51,8 @@ namespace Manager
         
         private List<ISpawnerVoronoi> _spawners;
         private EnemySpawnerVoronoi _enemySpawner;
+        private BossSpawnerVoronoi _bossSpawner;
+
         
         public DungeonGraph Graph => _dungeon;
         public Room CurrentRoom => _currentRoom;
@@ -115,6 +119,7 @@ namespace Manager
             var rooms     = _dungeon.GetAllItemRooms();
             var miniGameRooms = _dungeon.GetAllMiniGameRooms();
             var enemies   = _dungeon.GetAllEnemyRooms();
+            var bossRoom = _dungeon.GetBossRoom();
 
             _spawners = new List<ISpawnerVoronoi>()
             {
@@ -123,6 +128,7 @@ namespace Manager
             };
             PopulateDungeon();
             _enemySpawner = new EnemySpawnerVoronoi(enemies, enemyPrefabs, transform);
+            _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, transform);
         }
         
         private void SpawnPlayer()
@@ -258,6 +264,7 @@ namespace Manager
                     EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Boss:
+                    _bossSpawner?.ActivateBossInRoom(newRoom);
                     EventManager.Instance.TriggerCloseBossDoors();
                     break;
                 default:
