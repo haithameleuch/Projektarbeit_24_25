@@ -2888,6 +2888,10 @@ MonoBehaviour:
   - {fileID: 512451288073534109, guid: 0fb212acfd8f4f3ce854afb1733fa27a, type: 3}
   obstaclePrefabs:
   - {fileID: 16038835297913163, guid: 72721064132927245be3916890356670, type: 3}
+  - {fileID: 8282443301468609096, guid: 4d790c67944421841bb6447eefc1820b, type: 3}
+  - {fileID: 5189026170745247752, guid: 062650a093f1f9b4697af650f06aa6f3, type: 3}
+  - {fileID: 3462767149046690451, guid: 848fee487828c4f49b10f25d30333835, type: 3}
+  - {fileID: 1323790577600378448, guid: bae18c60720e0a64fa1df4e1f5ed16ae, type: 3}
 --- !u!4 &1582340271
 Transform:
   m_ObjectHideFlags: 0

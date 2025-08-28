@@ -56,6 +56,29 @@ namespace ItemPlacement
 
             _bossInstancesPerRoom[bossRoom.id] = spawned;
             _alivePerRoom[bossRoom.id] = spawned.Count;
+            
+            // random 1–5 Obstacles
+            var center = new Vector3(bossRoom.center.x, 0f, bossRoom.center.y);
+            var roomCircleRadius = bossRoom.getIncircleRadius();
+            
+            // count scaled with room size (1–5)
+            var obsCount = Mathf.Clamp(Mathf.RoundToInt(roomCircleRadius * 0.8f), 1, 5);
+            
+            const float wallPadding = 0.6f;
+            var bossRing  = Mathf.Min(roomCircleRadius * 0.6f, 3f);
+            var obsRing   = Mathf.Clamp(bossRing + 0.8f, 1f, roomCircleRadius - wallPadding);
+
+            for (var i = 0; i < obsCount; i++)
+            {
+                var angleDeg = i * (360f / obsCount);
+                var rad      = angleDeg * Mathf.Deg2Rad;
+
+                var pos = center + new Vector3(Mathf.Cos(rad) * obsRing, 0f, Mathf.Sin(rad) * obsRing);
+                var rot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                
+                var prefab = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Count)];
+                Object.Instantiate(prefab, pos, rot, parent);
+            }
         }
         
         public void ActivateBossInRoom(Room room)
@@ -77,7 +100,7 @@ namespace ItemPlacement
 
             if (_alivePerRoom[roomId] != 0 || roomId != _bossRoomId) return;
             
-            // All bosses defeated -> Boss doors open + save flag
+            // All bosses defeated -> Boss doors open + save the flag
             EventManager.Instance?.TriggerOpenBossDoors();
             SaveSystemManager.SetBossRoomOpen(true);
         }
