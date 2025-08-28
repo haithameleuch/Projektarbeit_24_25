@@ -86,11 +86,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStats:
-  - 20
+  - 30
   - 15
   - 5
   curStats:
-  - 20
+  - 30
   - 15
   - 5
 --- !u!114 &-1812616890988779595
