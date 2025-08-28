@@ -13,11 +13,11 @@ namespace ItemPlacement
         
         private static BossSpawnerVoronoi _instance;
 
-        public BossSpawnerVoronoi(Room bossRoom, List<GameObject> bossPrefabs, Transform parent)
+        public BossSpawnerVoronoi(Room bossRoom, List<GameObject> bossPrefabs, List<GameObject> obstaclePrefabs, Transform parent)
         {
             _instance = this;
             
-            if (bossRoom == null || bossPrefabs == null || bossPrefabs.Count == 0) return;
+            if (bossRoom == null || obstaclePrefabs.Count == 0 || bossPrefabs == null || bossPrefabs.Count == 0) return;
 
             _bossRoomId = bossRoom.id;
 
