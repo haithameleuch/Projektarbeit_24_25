@@ -2887,7 +2887,7 @@ MonoBehaviour:
   - {fileID: 8645800439622117225, guid: 8a996f45cfadf12fe84f4a0034fff505, type: 3}
   - {fileID: 512451288073534109, guid: 0fb212acfd8f4f3ce854afb1733fa27a, type: 3}
   obstaclePrefabs:
-  - {fileID: 3350310082442330094, guid: 60678c0bf945f4cc19539846270ba91c, type: 3}
+  - {fileID: 16038835297913163, guid: 72721064132927245be3916890356670, type: 3}
 --- !u!4 &1582340271
 Transform:
   m_ObjectHideFlags: 0
