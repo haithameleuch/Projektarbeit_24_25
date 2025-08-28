@@ -97,7 +97,7 @@ public class FirstPersonPlayerController : MonoBehaviour
     private void HandleMovement(Vector3 moveDir)
     {
         float moveDistance = moveSpeed * Time.deltaTime; // Maximum distance the player can move this frame.
-        float playerRadius = 0.95f; // Radius of the player's capsule for collision detection.
+        float playerRadius = 0.9f; // Radius of the player's capsule for collision detection.
         float playerHeight = 2f; // Height of the player's capsule for collision detection.
 
         // Check for collisions in the movement direction using CapsuleCast.
@@ -140,6 +140,10 @@ public class FirstPersonPlayerController : MonoBehaviour
             // If no collision is detected, move the player normally.
             transform.position += moveDir * moveDistance;
         }
+        
+        var pos = transform.position;
+        pos.y = 1f;
+        transform.position = pos;
     }
 
     /// <summary>
