@@ -532,6 +532,7 @@ GameObject:
   - component: {fileID: 6493072091100428320}
   - component: {fileID: 4772425001740388093}
   - component: {fileID: -5230255876404980581}
+  - component: {fileID: 8986487424920273126}
   m_Layer: 0
   m_Name: MiniHunter
   m_TagString: Enemy
@@ -702,3 +703,15 @@ MonoBehaviour:
   - 20
   - 15
   - 5
+--- !u!114 &8986487424920273126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8042708415579397192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f2cc45c32a24dd1a1c0114a8e642b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

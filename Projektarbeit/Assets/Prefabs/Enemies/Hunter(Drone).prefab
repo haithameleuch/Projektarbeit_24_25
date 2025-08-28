@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1570367694671834177}
   - component: {fileID: 437247074489789302}
   - component: {fileID: 7673829330218642013}
+  - component: {fileID: -1812616890988779595}
   m_Layer: 0
   m_Name: Hunter(Drone)
   m_TagString: Enemy
@@ -92,6 +93,18 @@ MonoBehaviour:
   - 20
   - 15
   - 5
+--- !u!114 &-1812616890988779595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492595859040446326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f2cc45c32a24dd1a1c0114a8e642b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2622381101086740025
 GameObject:
   m_ObjectHideFlags: 0
