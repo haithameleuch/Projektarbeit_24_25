@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using Enemy;
 
 namespace ItemPlacement
 {
@@ -13,6 +14,10 @@ namespace ItemPlacement
         /// Stores all enemies per room, keyed by room ID.
         /// </summary>
         private readonly Dictionary<int, List<GameObject>> _enemyInstancesPerRoom = new();
+        
+        private readonly Dictionary<int, int> _alivePerRoom = new();
+        
+        private static EnemySpawnerVoronoi _instance;
 
         /// <summary>
         /// Initializes the enemy spawner by instantiating enemies in all enemy rooms.
@@ -23,6 +28,8 @@ namespace ItemPlacement
         /// <param name="parent">Parent transform under which the enemies are spawned</param>
         public EnemySpawnerVoronoi(List<Room> enemyRooms, List<GameObject> enemyPrefabs, Transform parent)
         {
+            _instance = this;
+            
             foreach (var room in enemyRooms)
             {
                 List<GameObject> enemiesInRoom = new();
@@ -48,11 +55,16 @@ namespace ItemPlacement
 
                     var enemy = Object.Instantiate(chosenPrefab, spawnPosition, rotation, parent);
                     enemy.SetActive(false);
+                    
+                    // Report death
+                    var reporter = enemy.AddComponent<EnemyDeathReporter>();
+                    reporter.Init(room.id, OnEnemyDied);
 
                     enemiesInRoom.Add(enemy);
                 }
 
                 _enemyInstancesPerRoom[room.id] = enemiesInRoom;
+                _alivePerRoom[room.id] = enemiesInRoom.Count;
             }
         }
     
@@ -67,6 +79,36 @@ namespace ItemPlacement
             {
                 enemy.SetActive(true);
             }
+        }
+        
+        private void OnEnemyDied(int roomId)
+        {
+            if (!_alivePerRoom.ContainsKey(roomId)) return;
+
+            _alivePerRoom[roomId] = Mathf.Max(0, _alivePerRoom[roomId] - 1);
+
+            if (_alivePerRoom[roomId] == 0)
+            {
+                // All enemies defeated -> doors open
+                EventManager.Instance?.TriggerOpenDoors();
+            }
+        }
+        
+        public static void RegisterEnemyMinionSpawn(int roomId)
+        {
+            _instance?.IncrementAlive(roomId);
+        }
+
+        public static void RegisterEnemyMinionDeath(int roomId)
+        {
+            _instance?.OnEnemyDied(roomId);
+        }
+
+        private void IncrementAlive(int roomId)
+        {
+            if (!_alivePerRoom.ContainsKey(roomId))
+                _alivePerRoom[roomId] = 0;
+            _alivePerRoom[roomId] += 1;
         }
     }
 }
