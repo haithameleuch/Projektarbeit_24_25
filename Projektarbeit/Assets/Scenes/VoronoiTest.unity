@@ -1354,6 +1354,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98386f1477e23c94d8b1c509f080f1e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lerpSpeed: 0.6
+  fullHealthColor: {r: 0, g: 0, b: 0, a: 0}
+  halfHealthColor: {r: 1, g: 0.5, b: 0, a: 0.6}
+  lowHealthColor: {r: 1, g: 0, b: 0, a: 0.75}
 --- !u!114 &786261645
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2866,19 +2870,19 @@ MonoBehaviour:
   - itemData: {fileID: 11400000, guid: 5a54fbdc0a0a8e04fb4a927b64639cd9, type: 2}
     itemQuantity: 1
   glyphItems:
-  - itemData: {fileID: 11400000, guid: 680fbd78d1ba1d34c8c303558bf938e7, type: 2}
+  - itemData: {fileID: 11400000, guid: 2c66818ac812ab7419b1b86e02e828eb, type: 2}
     itemQuantity: 1
-  - itemData: {fileID: 11400000, guid: 8ae3a901d9b2972c5a6b2a0c1e4e9aa3, type: 2}
+  - itemData: {fileID: 11400000, guid: 888a67c3c0696fc4d9ddc07606b899b6, type: 2}
     itemQuantity: 1
-  - itemData: {fileID: 11400000, guid: 38b1ad5c035c648daa3ea5ce969af4f7, type: 2}
+  - itemData: {fileID: 11400000, guid: c5925937ce88ce14799bb38649bc99e3, type: 2}
     itemQuantity: 1
-  - itemData: {fileID: 11400000, guid: 00d4f96ec6e8708c0861f3987fdbf968, type: 2}
+  - itemData: {fileID: 11400000, guid: 09bfe4bcebfa27942a84816018ad0583, type: 2}
     itemQuantity: 1
-  - itemData: {fileID: 11400000, guid: 751e727db808cbf1e84a4b5dbaed6ecd, type: 2}
+  - itemData: {fileID: 11400000, guid: fdd8b9e0152fd5c4fb49a766138ee865, type: 2}
     itemQuantity: 1
-  - itemData: {fileID: 11400000, guid: 4b472662268de7487a9facae9311fa86, type: 2}
+  - itemData: {fileID: 11400000, guid: 7112df3146d84324193dc7e31244e4e2, type: 2}
     itemQuantity: 1
-  - itemData: {fileID: 11400000, guid: 9db2cccf494af7a33b2e71e5f6bd943e, type: 2}
+  - itemData: {fileID: 11400000, guid: 8a8c970e4c5a40544838b3fb18d92057, type: 2}
     itemQuantity: 1
   miniGamePrefabs:
   - {fileID: 5611471497110757971, guid: 4da05c4d5e1d899408b0f2dddd9bc012, type: 3}

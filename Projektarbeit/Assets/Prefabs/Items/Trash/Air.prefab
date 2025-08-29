@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94368bb6936e6bf4496a947433dbe798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item: {fileID: 11400000, guid: 680fbd78d1ba1d34c8c303558bf938e7, type: 2}
+  item: {fileID: 11400000, guid: 2c66818ac812ab7419b1b86e02e828eb, type: 2}
   amount: 1
   saveIndex: 0
 --- !u!1 &994692717641011360
