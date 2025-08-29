@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 1042781483250249348}
   - component: {fileID: 5190763530049963575}
   - component: {fileID: 6026498069539602025}
+  - component: {fileID: -6843795123550766924}
   - component: {fileID: 3974673090526580785}
   - component: {fileID: 1817297916470957439}
-  - component: {fileID: -6843795123550766924}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -88,6 +88,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectPoolManager: {fileID: 0}
   shootPoint: {fileID: 1961652736631884286}
+--- !u!114 &-6843795123550766924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3632200126607871566}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 13ec74838f1e42f081baf8c5266b5610, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  healthBar: {fileID: 8470843299888050080, guid: edcefd7a10d34659c8b8b71ec1ee20bb, type: 3}
 --- !u!114 &3974673090526580785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -120,19 +133,6 @@ MonoBehaviour:
   - 250
   - 5
   - 7
---- !u!114 &-6843795123550766924
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3632200126607871566}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13ec74838f1e42f081baf8c5266b5610, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  healthBar: {fileID: 0}
 --- !u!1 &4243333667503106905
 GameObject:
   m_ObjectHideFlags: 0
