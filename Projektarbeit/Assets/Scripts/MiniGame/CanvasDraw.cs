@@ -20,18 +20,14 @@ namespace MiniGame
         // Counter for the right answer guesses
         private int _rightAnswersCount;
         
-        // Counter for the right glyphs guesses
-        private int _rightGlyphsCount;
-        
         // Set the count of the questions
         [SerializeField] public int questionCount;
         
-        // Set the count of the glyphs
-        [SerializeField] public int glyphCount;
-        
-        // Reference current glyph
-        [SerializeField] private string refGlyph = "air";
-
+        [Header("Glyph System")]
+        // Flag to indicate if the glyph mode is enabled (e.g., for digit input mode)
+        [SerializeField] private bool glyph = true;
+        // Backing field (hidden in Inspector)
+        private static List<int> _refGlyph = new List<int> { 0 };
         // All the given labels
         private readonly Dictionary<int, string> _digitToString = new Dictionary<int, string>
         {
@@ -44,6 +40,12 @@ namespace MiniGame
             { 6, "time" },
             { 7, "water" },
         };
+        
+        [Header("Key System")]
+        // Key prefab to spawn
+        [SerializeField] private GameObject keyPrefab;
+        // The key spawn position
+        [SerializeField] private Vector3 keySpawnOffset = new Vector3(0, 1, 0);
         
         // Drawing-related variables
         // Camera used to render the canvas (e.g., for capturing input or displaying the canvas)
@@ -66,9 +68,6 @@ namespace MiniGame
 
         // The texture that gets updated while drawing (e.g., for digit recognition)
         public Texture2D generatedTexture;
-
-        // Flag to indicate if the glyph mode is enabled (e.g., for digit input mode)
-        [SerializeField] public bool glyph = true;
 
         // Canvas dimensions in pixels
         [SerializeField] public int totalXPixels = 200;
@@ -174,10 +173,18 @@ namespace MiniGame
                             break;
                     }
                 }
-
-                if (glyph)
+                else
                 {
-                    randNumberText.text = refGlyph;
+                    if (_refGlyph.Count == 0)
+                    {
+                        randNumberText.text = "No Glyphs!";
+                    }
+                    else
+                    {
+                        // Show the name from the dictionary for readability
+                        int currentGlyph = _refGlyph[0];
+                        randNumberText.text = _digitToString[currentGlyph];
+                    }   
                 }
                 // Start drawing when the mouse button is pressed
                 if (Input.GetMouseButtonDown(0))
@@ -207,8 +214,7 @@ namespace MiniGame
                     if (glyph)
                     {
                         (_predictedDigit, _text) = classifier.PredictGlyph(preprocessedTexture); // Call the Predict method
-                        bool valid = ValidGlyph(_predictedDigit);
-                        Debug.Log("Predicted glyph is : " + valid);
+                        ValidGlyph(_predictedDigit);
                     }
                     else
                     {
@@ -464,6 +470,23 @@ namespace MiniGame
             questionText.text = question;
         }
         
+                /// <summary>
+        /// The expected glyph indices.
+        /// Use this property to get or set glyphs safely.
+        /// </summary>
+        public static List<int> SetRefGlyph
+        {
+            set
+            {
+                if (value == null || value.Count == 0)
+                {
+                    Debug.LogWarning("RefGlyph cannot be null or empty. Keeping old value.");
+                    return;
+                }
+                _refGlyph = value;
+            }
+        }
+        
         // ReSharper disable Unity.PerformanceAnalysis
         /// <summary>
         /// Updates the random digit display and checks if the player enters the correct digits.
@@ -495,20 +518,32 @@ namespace MiniGame
         
         // Returns the corresponding glyph name for a given digit.
         // If the digit is not found in the dictionary, returns "Unknown".
-        private bool ValidGlyph(int digit)
+        private void ValidGlyph(int glyphDigit)
         {
-            // Retrieve the corresponding glyph name, or return "Unknown" if the digit is invalid
-            string label = _digitToString.ContainsKey(digit) ? _digitToString[digit] : "Unknown";
-            // Check if the label is correct
-            if (label != refGlyph) return false;
-            // Increment the right glyphs count
-            _rightGlyphsCount++;
-            Debug.Log($"Count right glyphs: {_rightGlyphsCount}");
-            // Check if the right glyphs count is correct
-            if (_rightGlyphsCount != glyphCount) return false;
-            Debug.Log("You have the boss key!");
-            //TODO: spawn boss key
-            return true;
+            // If digit is not in the list → invalid guess
+            if (!_refGlyph.Contains(glyphDigit)) return;
+
+            // Remove the correct glyph from the list
+            _refGlyph.Remove(glyphDigit);
+
+            // If all glyphs have been guessed → spawn boss key
+            if (_refGlyph.Count != 0) return;
+            if (keyPrefab)
+            {
+                // Spawn near canvas position
+                var spawnPos = transform.TransformPoint(keySpawnOffset);
+                Instantiate(keyPrefab, spawnPos, Quaternion.identity);
+                Debug.Log("You have the boss key!");
+            }
+            else
+            {
+                Debug.LogWarning("Key prefab is not assigned in the inspector!");
+            }
         }
+
     }
 }
+
+ 
+ 
+ 

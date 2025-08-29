@@ -4,6 +4,7 @@ using ItemPlacement;
 using Saving;
 using Spawning;
 using UnityEngine;
+using MiniGame;
 
 namespace Manager
 {
@@ -131,6 +132,7 @@ namespace Manager
             PopulateDungeon();
             _enemySpawner = new EnemySpawnerVoronoi(enemies, enemyPrefabs, transform);
             _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, obstaclePrefabs, transform);
+            CanvasDraw.SetRefGlyph = new List<int> { 1 };
         }
         
         private void SpawnPlayer()
