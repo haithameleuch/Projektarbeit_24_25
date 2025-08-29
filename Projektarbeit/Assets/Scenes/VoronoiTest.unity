@@ -2870,6 +2870,8 @@ MonoBehaviour:
   mustItems:
   - itemData: {fileID: 11400000, guid: 5a54fbdc0a0a8e04fb4a927b64639cd9, type: 2}
     itemQuantity: 1
+  - itemData: {fileID: 11400000, guid: 680fbd78d1ba1d34c8c303558bf938e7, type: 2}
+    itemQuantity: 1
   miniGamePrefabs:
   - {fileID: 5611471497110757971, guid: 4da05c4d5e1d899408b0f2dddd9bc012, type: 3}
   - {fileID: 424014852115387458, guid: 950c49bd7e0b271409e0132ec74d30d9, type: 3}
