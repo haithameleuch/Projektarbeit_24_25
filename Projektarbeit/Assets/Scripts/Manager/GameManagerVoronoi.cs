@@ -5,6 +5,7 @@ using Saving;
 using Spawning;
 using UnityEngine;
 using MiniGame;
+using System.Linq;
 
 namespace Manager
 {
@@ -116,12 +117,12 @@ namespace Manager
             int savedID = SaveSystemManager.GetCurrentRoomID();
             _currentRoom = _dungeon.GetRoomByID(savedID);
         }
-        
+
         private void InitializeSpawners()
         {
-            var rooms     = _dungeon.GetAllItemRooms();
+            var rooms = _dungeon.GetAllItemRooms();
             var miniGameRooms = _dungeon.GetAllMiniGameRooms();
-            var enemies   = _dungeon.GetAllEnemyRooms();
+            var enemies = _dungeon.GetAllEnemyRooms();
             var bossRoom = _dungeon.GetBossRoom();
 
             _spawners = new List<ISpawnerVoronoi>()
@@ -132,7 +133,32 @@ namespace Manager
             PopulateDungeon();
             _enemySpawner = new EnemySpawnerVoronoi(enemies, enemyPrefabs, transform);
             _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, obstaclePrefabs, transform);
-            CanvasDraw.SetRefGlyph = new List<int> { 1 };
+
+            // Set random glyphs
+            var seed = SaveSystemManager.GetSeed();
+            CanvasDraw.SetRefGlyph = GenerateRandomGlyphs(seed);
+        }
+
+        private static List<int> GenerateRandomGlyphs(int seed = -1)
+        {
+            var setRefGlyph = new List<int>();
+
+            // Create Random with optional seed
+            var rand = seed >= 0 ? new System.Random(seed) : new System.Random();
+
+            // Decide how many additional numbers to add (2 to 5)
+            var x = rand.Next(2, 5);
+
+            // Candidates: 0-7 excluding 5. since it repeated two times in glyphs
+            var candidates = Enumerable.Range(0, 8).Where(n => n != 5).ToList();
+
+            // Shuffle candidates
+            candidates = candidates.OrderBy(n => rand.Next()).ToList();
+
+            // Take x numbers and add
+            setRefGlyph.AddRange(candidates.Take(x));
+            
+            return setRefGlyph;
         }
         
         private void SpawnPlayer()
