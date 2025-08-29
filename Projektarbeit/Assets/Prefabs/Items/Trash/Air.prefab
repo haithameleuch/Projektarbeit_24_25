@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3312602592914604386}
   - component: {fileID: -2124455285214203910}
   m_Layer: 0
-  m_Name: Item
+  m_Name: Air
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,8 +122,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94368bb6936e6bf4496a947433dbe798, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  item: {fileID: 11400000, guid: 938db7f234030ae4e8c651e08b6d9bb7, type: 2}
+  item: {fileID: 11400000, guid: 680fbd78d1ba1d34c8c303558bf938e7, type: 2}
   amount: 1
+  saveIndex: 0
 --- !u!1 &994692717641011360
 GameObject:
   m_ObjectHideFlags: 0
