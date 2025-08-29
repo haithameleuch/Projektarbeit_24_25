@@ -2,8 +2,10 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class VignetteControler : MonoBehaviour
+public class VignetteController : MonoBehaviour
 {
+
+    [SerializeField] private float lerpSpeed = 0.6f;
 
     public Color fullHealthColor = new Color(0, 0, 0, 0);   // transparent oder dunkel
     public Color halfHealthColor = new Color(1, 0.5f, 0, 0.6f);
@@ -46,17 +48,26 @@ public class VignetteControler : MonoBehaviour
             playerStats= player.GetComponent<Stats>();
         }
         
-        float health01 = Mathf.Clamp01(playerStats.GetCurStats(0) / playerStats.GetMaxStats(0));
-        if (health01 > 0.3f && health01 <= 0.5f)
+        float normalizedHealth = Mathf.Clamp01(playerStats.GetCurStats(0) / playerStats.GetMaxStats(0));
+        float targetIntensity;
+        Color targetColor;
+        if (normalizedHealth > 0.3f && normalizedHealth <= 0.5f)
         {
-            vignette.color.value = Color.Lerp(halfHealthColor, fullHealthColor, health01);
-            vignette.intensity.value = Mathf.Lerp(0.3f, 0.0f, health01);
+            targetIntensity = 0.3f;
+            targetColor = halfHealthColor;
         }
-        else if (health01 <= 0.3f)
+        else if (normalizedHealth <= 0.3f)
         {
-            vignette.color.value = Color.Lerp(lowHealthColor, halfHealthColor, health01);
-            vignette.intensity.value = Mathf.Lerp(0.5f, 0.3f, health01);
+            targetIntensity = 0.6f;
+            targetColor = lowHealthColor;
+        }
+        else
+        {
+            targetIntensity = 0.0f;
+            targetColor = fullHealthColor;
         }
         
+        vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, targetIntensity, Time.deltaTime * lerpSpeed);
+        vignette.color.value = Color.Lerp(vignette.color.value, targetColor, Time.deltaTime * lerpSpeed);
     }
 }
