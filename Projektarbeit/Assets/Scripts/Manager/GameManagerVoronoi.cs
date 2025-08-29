@@ -39,6 +39,8 @@ namespace Manager
         [SerializeField] private List<ItemInstance> items;
         
         [SerializeField] private List<ItemInstance> mustItems;
+        
+        [SerializeField] private List<ItemInstance> glyphItems;
 
         [SerializeField] private List<GameObject> miniGamePrefabs;
         
@@ -124,6 +126,13 @@ namespace Manager
             var miniGameRooms = _dungeon.GetAllMiniGameRooms();
             var enemies = _dungeon.GetAllEnemyRooms();
             var bossRoom = _dungeon.GetBossRoom();
+            
+            // Set random glyphs keys and values and add them to MustItems
+            var seed = SaveSystemManager.GetSeed();
+            var glyphKeys = GenerateRandomGlyphs(seed);
+            var glyphNames = GetGlyphItem(glyphKeys);
+            glyphItems.RemoveAll(item => !glyphNames.Contains(item.itemData._name));
+            mustItems.AddRange(glyphItems);
 
             _spawners = new List<ISpawnerVoronoi>()
             {
@@ -133,32 +142,51 @@ namespace Manager
             PopulateDungeon();
             _enemySpawner = new EnemySpawnerVoronoi(enemies, enemyPrefabs, transform);
             _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, obstaclePrefabs, transform);
+            
+            // Pass the list of glyphs to the canvas draw script
+            CanvasDraw.SetRefGlyph = glyphKeys;
+        }
 
-            // Set random glyphs
-            var seed = SaveSystemManager.GetSeed();
-            CanvasDraw.SetRefGlyph = GenerateRandomGlyphs(seed);
+        private static List<string> GetGlyphItem(List<int> glyphKeys)
+        {
+            // Map of keys to glyph names
+            var keyMapGlyph = new Dictionary<int, string>
+            {
+                { 0, "Air" },
+                { 1, "Earth" },
+                { 2, "Energy" },
+                { 3, "Fire" },
+                { 4, "Power" },
+                { 5, "Power" },
+                { 6, "Time" },
+                { 7, "Water" },
+            };
+
+            // Get the glyph names for the given keys
+            var glyphNames = glyphKeys
+                .Where(key => keyMapGlyph.ContainsKey(key)) // ensures only valid keys
+                .Select(key => keyMapGlyph[key])
+                .ToList();
+            
+            return glyphNames;
         }
 
         private static List<int> GenerateRandomGlyphs(int seed = -1)
         {
-            var setRefGlyph = new List<int>();
-
+            var setRefGlyphKeys = new List<int>();
             // Create Random with optional seed
             var rand = seed >= 0 ? new System.Random(seed) : new System.Random();
-
             // Decide how many additional numbers to add (2 to 5)
             var x = rand.Next(2, 5);
-
+            
             // Candidates: 0-7 excluding 5. since it repeated two times in glyphs
             var candidates = Enumerable.Range(0, 8).Where(n => n != 5).ToList();
-
             // Shuffle candidates
             candidates = candidates.OrderBy(n => rand.Next()).ToList();
-
             // Take x numbers and add
-            setRefGlyph.AddRange(candidates.Take(x));
+            setRefGlyphKeys.AddRange(candidates.Take(x));
             
-            return setRefGlyph;
+            return setRefGlyphKeys;
         }
         
         private void SpawnPlayer()
