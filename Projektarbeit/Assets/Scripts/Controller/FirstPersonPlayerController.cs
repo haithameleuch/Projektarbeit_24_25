@@ -22,6 +22,9 @@ public class FirstPersonPlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField]
     private float moveSpeed = 7f;
+    
+    [SerializeField] 
+    private int speedStatIndex = 2;
 
     /// <summary>
     /// Sensitivity of the mouse input for player rotation.
@@ -39,6 +42,8 @@ public class FirstPersonPlayerController : MonoBehaviour
     [SerializeField] 
     private bool allowPitchRotation = true;
 
+    private Stats _stats;
+    
     /// <summary>
     /// Current X-axis rotation of the player.
     /// </summary>
@@ -71,6 +76,8 @@ public class FirstPersonPlayerController : MonoBehaviour
     {
         _currentRotation = transform.rotation;
         _currentCameraRotation = cameraTransform.localRotation;
+        
+        _stats = GetComponent<Stats>();
     }
 
     /// <summary>
@@ -96,7 +103,15 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// <param name="moveDir">The direction vector for movement.</param>
     private void HandleMovement(Vector3 moveDir)
     {
-        var moveDistance = moveSpeed * Time.deltaTime; // Maximum distance the player can move this frame.
+        float speed = moveSpeed;
+        if (_stats != null)
+        {
+            var curList = _stats.GetCurStatsList();
+            if (speedStatIndex >= 0 && speedStatIndex < curList.Count)
+                speed = _stats.GetCurStats(speedStatIndex);
+        }
+        
+        var moveDistance = speed * Time.deltaTime; // Maximum distance the player can move this frame.
         const float playerRadius = 0.85f; // Radius of the player's capsule for collision detection.
         const float playerHeight = 2f; // Height of the player's capsule for collision detection.
 
