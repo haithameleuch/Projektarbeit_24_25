@@ -525,6 +525,18 @@ namespace MiniGame
 
             // Remove the correct glyph from the list
             _refGlyph.Remove(glyphDigit);
+            
+            // remove the glyph from inventory
+            var player = GameObject.FindWithTag("Player");
+            var inventory   = player.GetComponent<Inventory>();
+            
+            var itemName = _digitToString[glyphDigit];
+
+            if (!string.IsNullOrEmpty(itemName))
+            {
+                var removeItemIndex = inventory.getItemByName(CapitalizeFirstLetter(itemName));
+                inventory.removeItem(removeItemIndex.Item1, removeItemIndex.Item2);
+            }
 
             // If all glyphs have been guessed → spawn boss key
             if (_refGlyph.Count != 0) return;
@@ -541,6 +553,13 @@ namespace MiniGame
             }
         }
 
+        private string CapitalizeFirstLetter(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return input;
+
+            return char.ToUpper(input[0]) + input.Substring(1);
+        }
     }
 }
 

@@ -10,12 +10,21 @@ namespace ItemPlacement
         private readonly Dictionary<int, List<GameObject>> _bossInstancesPerRoom = new();
         private readonly Dictionary<int, int> _alivePerRoom = new();
         private readonly int _bossRoomId = -1;
+
+        private readonly Transform _parent;
+        private readonly GameObject _levelExitPrefab;
+        private Room _bossRoomRef;
+        private bool _exitSpawned;
         
         private static BossSpawnerVoronoi _instance;
 
-        public BossSpawnerVoronoi(Room bossRoom, List<GameObject> bossPrefabs, List<GameObject> obstaclePrefabs, Transform parent)
+        public BossSpawnerVoronoi(Room bossRoom, List<GameObject> bossPrefabs, List<GameObject> obstaclePrefabs, Transform parent, GameObject levelExitPrefab = null)
         {
             _instance = this;
+            
+            _parent = parent;
+            _levelExitPrefab = levelExitPrefab;
+            _bossRoomRef = bossRoom;
             
             if (bossRoom == null || obstaclePrefabs.Count == 0 || bossPrefabs == null || bossPrefabs.Count == 0) return;
 
@@ -100,9 +109,31 @@ namespace ItemPlacement
 
             if (_alivePerRoom[roomId] != 0 || roomId != _bossRoomId) return;
             
-            // All bosses defeated -> Boss doors open + save the flag
+            // All bosses defeated -> Boss doors open
             EventManager.Instance?.TriggerOpenBossDoors();
-            SaveSystemManager.SetBossRoomOpen(true);
+
+            if (_exitSpawned) return;
+            SpawnLevelExit();
+            _exitSpawned = true;
+        }
+        
+        private void SpawnLevelExit()
+        {
+            if (_bossRoomRef == null) return;
+
+            if (_levelExitPrefab == null)
+            {
+                Debug.LogWarning("BossSpawnerVoronoi: levelExitPrefab is not assigned.");
+                return;
+            }
+
+            var pos = new Vector3(_bossRoomRef.center.x, 0f, _bossRoomRef.center.y);
+            var rot = Quaternion.identity;
+
+            var exit = Object.Instantiate(_levelExitPrefab, pos, rot, _parent);
+            
+            if (exit.GetComponent<LevelExitInteraction>() == null)
+                exit.AddComponent<LevelExitInteraction>();
         }
         
         public static void RegisterBossMinionSpawn(int roomId)

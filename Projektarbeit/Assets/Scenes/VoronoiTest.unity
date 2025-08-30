@@ -2880,6 +2880,8 @@ MonoBehaviour:
     itemQuantity: 1
   - itemData: {fileID: 11400000, guid: fdd8b9e0152fd5c4fb49a766138ee865, type: 2}
     itemQuantity: 1
+  - itemData: {fileID: 11400000, guid: fdd8b9e0152fd5c4fb49a766138ee865, type: 2}
+    itemQuantity: 1
   - itemData: {fileID: 11400000, guid: 7112df3146d84324193dc7e31244e4e2, type: 2}
     itemQuantity: 1
   - itemData: {fileID: 11400000, guid: 8a8c970e4c5a40544838b3fb18d92057, type: 2}
@@ -2905,6 +2907,7 @@ MonoBehaviour:
   - {fileID: 5189026170745247752, guid: 062650a093f1f9b4697af650f06aa6f3, type: 3}
   - {fileID: 3462767149046690451, guid: 848fee487828c4f49b10f25d30333835, type: 3}
   - {fileID: 1323790577600378448, guid: bae18c60720e0a64fa1df4e1f5ed16ae, type: 3}
+  levelExitPrefab: {fileID: 759015875620576390, guid: 1b5e2e62086f261448ef5c57f498b029, type: 3}
 --- !u!4 &1582340271
 Transform:
   m_ObjectHideFlags: 0
