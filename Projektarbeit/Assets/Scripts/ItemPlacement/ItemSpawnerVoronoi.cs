@@ -56,7 +56,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
         
         foreach (var room in _rooms)
         {
-            var itemCount = Random.Range(1, 4); // 1–3 items per room
+            var itemCount = Random.Range(1, 5); // 1–4 items per room
             var radius = room.getIncircleRadius();
 
             for (var i = 0; i < itemCount; i++)
