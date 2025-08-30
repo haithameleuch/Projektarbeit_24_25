@@ -49,6 +49,8 @@ namespace Manager
         [SerializeField] private List<GameObject> bossEnemyPrefabs;
         
         [SerializeField] private List<GameObject> obstaclePrefabs;
+        
+        [SerializeField] private GameObject levelExitPrefab;
 
 
         private GameObject _player;
@@ -153,7 +155,7 @@ namespace Manager
             };
             PopulateDungeon();
             _enemySpawner = new EnemySpawnerVoronoi(enemies, enemyPrefabs, transform);
-            _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, obstaclePrefabs, transform);
+            _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, obstaclePrefabs, transform, levelExitPrefab);
             
             // Pass the list of glyphs to the canvas draw script
             CanvasDraw.SetRefGlyph = glyphKeys;
@@ -327,7 +329,7 @@ namespace Manager
                 case RoomType.Item:
                     break;
                 case RoomType.MiniGame:
-                    EventManager.Instance.TriggerCloseDoors();
+                    //EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Enemy:
                     _enemySpawner.ActivateEnemyInRoom(newRoom);

@@ -508,11 +508,22 @@ namespace MiniGame
             }
             else
             {
-                const string message = "unlocked";
-                ToDraw = false;
-                unlockMessage = $"<color=green>{message}</color>"; // Mark the correct digit as green
-                randNumberText.text = unlockMessage;
-                EventManager.Instance.TriggerOpenDoors(); // Open all necessary doors using Event
+                if (keyPrefab)
+                {
+                    const string message = "Ring Spawned";
+                    ToDraw = false;
+                    unlockMessage = $"<color=green>{message}</color>"; // Mark the correct digit as green
+                    randNumberText.text = unlockMessage;
+                    
+                    // Spawn near canvas position
+                    var spawnPos = transform.TransformPoint(keySpawnOffset);
+                    Instantiate(keyPrefab, spawnPos, Quaternion.identity);
+                    Debug.Log("You have the One Ring!");
+                }
+                else
+                {
+                    Debug.LogWarning("Key prefab is not assigned in the inspector!");
+                }
             }
         }
         

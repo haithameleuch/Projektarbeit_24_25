@@ -2907,7 +2907,7 @@ MonoBehaviour:
   - {fileID: 5189026170745247752, guid: 062650a093f1f9b4697af650f06aa6f3, type: 3}
   - {fileID: 3462767149046690451, guid: 848fee487828c4f49b10f25d30333835, type: 3}
   - {fileID: 1323790577600378448, guid: bae18c60720e0a64fa1df4e1f5ed16ae, type: 3}
-  levelExitPrefab: {fileID: 759015875620576390, guid: 1b5e2e62086f261448ef5c57f498b029, type: 3}
+  levelExitPrefab: {fileID: 2339620133042939471, guid: 22300cd4c700bd84e98084896b6ac861, type: 3}
 --- !u!4 &1582340271
 Transform:
   m_ObjectHideFlags: 0
