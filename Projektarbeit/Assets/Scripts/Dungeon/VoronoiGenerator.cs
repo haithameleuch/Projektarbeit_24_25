@@ -27,7 +27,7 @@ public class VoronoiGenerator : MonoBehaviour
     [SerializeField] private float minDoorEdgeLength = 4f;
     [SerializeField] private Material[] skyboxMaterials;
     
-    // NEW
+    [Header("Dungeon Settings for Grass, Trees and Rocks")]
     [SerializeField] private List<GameObject> grassSmallPrefabs;
     [SerializeField] private List<GameObject> grassBigPrefabs;
     [SerializeField] private List<GameObject> treePrefabs;
@@ -84,6 +84,8 @@ public class VoronoiGenerator : MonoBehaviour
     {
         _seed = seed;
         _rng = new System.Random(_seed);
+        RandomizeSizeAndPoints();
+        
         // ---- DESTROYABLE WALL ----
         _breakableWallCounter = 0;
         // ---- DESTROYABLE WALL ----
@@ -118,6 +120,27 @@ public class VoronoiGenerator : MonoBehaviour
             .Select(t => t.getCircumcircle().center)
             .Where(c => c.x >= 0 && c.x <= size && c.y >= 0 && c.y <= size)
             .ToList();
+    }
+    
+    private void RandomizeSizeAndPoints()
+    {
+        var level = Mathf.Max(1, Saving.SaveSystemManager.GetLevel());
+        var rnd = new System.Random(_seed ^ 0xA2C2A);
+        
+        var t = Mathf.Clamp01((level - 1) / 9f);
+
+        // Size 40..80 + small Seed-Noise (±5)
+        var baseSize  = Mathf.Lerp(40f, 80f, t);
+        var sizeNoise = (float)(rnd.NextDouble() * 2 - 1) * 5f;   // ±5
+        size = Mathf.Clamp(Mathf.Round(baseSize + sizeNoise), 40f, 80f);
+
+        // numPoints proportional with size 10..20 + Jitter (±2)
+        var prop = (size - 40f) / 40f; // 0..1
+        var basePoints = Mathf.RoundToInt(Mathf.Lerp(10f, 20f, prop));
+        var jitter = rnd.Next(-2, 3);
+        numPoints = Mathf.Clamp(basePoints + jitter, 10, 20);
+
+        Debug.Log($"[Voronoi] Level{level} -> size={size}, numPoints={numPoints}");
     }
     #endregion
     
