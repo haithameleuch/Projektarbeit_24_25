@@ -49,6 +49,9 @@ namespace Enemy
             gameObject.GetComponent<Stats>().DecreaseCurStat(0, GameObject.Find("Player(Clone)").GetComponent<Stats>().GetCurStats(1) * 0.5f);
             if (gameObject.GetComponent<Stats>().GetCurStats(0) <= 0f)
             {
+                var reporter = GetComponent<EnemyDeathReporter>();
+                if (reporter != null) reporter.ReportDeath();
+                
                 Destroy(gameObject);
             }
             collision.gameObject.SetActive(false);

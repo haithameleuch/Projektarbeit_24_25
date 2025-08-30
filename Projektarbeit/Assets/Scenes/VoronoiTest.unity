@@ -250,7 +250,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2082147090}
         m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-        m_MethodName: exitGame
+        m_MethodName: ExitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -945,7 +945,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2082147090}
         m_TargetAssemblyTypeName: Manager.ButtonManager, Assembly-CSharp
-        m_MethodName: startGame
+        m_MethodName: StartGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2264,7 +2264,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2082147090}
         m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-        m_MethodName: loadGame
+        m_MethodName: LoadGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3007,7 +3007,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2082147090}
         m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-        m_MethodName: saveGame
+        m_MethodName: SaveGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3140,7 +3140,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2082147090}
         m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-        m_MethodName: exitGame
+        m_MethodName: ExitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3856,7 +3856,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2082147090}
         m_TargetAssemblyTypeName: ButtonManager, Assembly-CSharp
-        m_MethodName: loadGame
+        m_MethodName: LoadGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

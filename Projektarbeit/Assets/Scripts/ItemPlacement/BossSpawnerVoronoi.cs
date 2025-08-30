@@ -119,18 +119,19 @@ namespace ItemPlacement
         
         private void SpawnLevelExit()
         {
-            if (_bossRoomRef == null) return;
-
-            if (_levelExitPrefab == null)
-            {
-                Debug.LogWarning("BossSpawnerVoronoi: levelExitPrefab is not assigned.");
-                return;
-            }
+            if (_bossRoomRef == null || _levelExitPrefab == null) return;
 
             var pos = new Vector3(_bossRoomRef.center.x, 0f, _bossRoomRef.center.y);
             var rot = Quaternion.identity;
 
-            var exit = Object.Instantiate(_levelExitPrefab, pos, rot, _parent);
+            Transform safeParent = null;
+            if (_parent != null && _parent.gameObject != null &&
+                _parent.gameObject.scene.IsValid() && _parent.gameObject.scene.isLoaded)
+            {
+                safeParent = _parent;
+            }
+            
+            var exit = Object.Instantiate(_levelExitPrefab, pos, rot, safeParent);
             
             if (exit.GetComponent<LevelExitInteraction>() == null)
                 exit.AddComponent<LevelExitInteraction>();

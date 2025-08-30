@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ItemPlacement;
 using Saving;
+using Enemy;
 using Spawning;
 using UnityEngine;
 using MiniGame;
@@ -88,6 +89,8 @@ namespace Manager
         /// </summary>
         private void Start()
         {
+            EnemyDeathReporter.SetSceneChanging(false);
+            
             GenerateDungeon();
             RestoreVisitedAndCurrentRoom();
             SpawnPlayer();
@@ -193,7 +196,7 @@ namespace Manager
             // Decide how many additional numbers to add (2 to 4)
             var x = rand.Next(2, 5);
             
-            // Candidates: 0-7 excluding 5. since it repeated two times in glyphs
+            // candidates: 0-7 excluding 5. since it repeated two times in glyphs
             var candidates = Enumerable.Range(0, 8).Where(n => n != 5 && n != 4).ToList();
             // Shuffle candidates
             candidates = candidates.OrderBy(n => rand.Next()).ToList();
