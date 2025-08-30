@@ -190,7 +190,7 @@ namespace Manager
             var setRefGlyphKeys = new List<int>();
             // Create Random with optional seed
             var rand = seed >= 0 ? new System.Random(seed) : new System.Random();
-            // Decide how many additional numbers to add (2 to 5)
+            // Decide how many additional numbers to add (2 to 4)
             var x = rand.Next(2, 5);
             
             // Candidates: 0-7 excluding 5. since it repeated two times in glyphs
