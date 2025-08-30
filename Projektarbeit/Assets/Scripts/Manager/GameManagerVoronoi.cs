@@ -49,6 +49,8 @@ namespace Manager
         [SerializeField] private List<GameObject> bossEnemyPrefabs;
         
         [SerializeField] private List<GameObject> obstaclePrefabs;
+        
+        [SerializeField] private GameObject levelExitPrefab;
 
 
         private GameObject _player;
@@ -186,7 +188,7 @@ namespace Manager
             };
             PopulateDungeon();
             _enemySpawner = new EnemySpawnerVoronoi(enemies, enemyPrefabs, transform);
-            _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, obstaclePrefabs, transform);
+            _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, obstaclePrefabs, transform, levelExitPrefab);
         }
         
         private void SpawnPlayer()
