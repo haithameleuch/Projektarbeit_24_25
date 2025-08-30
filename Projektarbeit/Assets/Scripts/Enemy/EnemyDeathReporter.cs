@@ -24,5 +24,10 @@ namespace Enemy
         }
         
         public static void SetSceneChanging(bool value) => _sceneChanging = value;
+        
+        private void OnDestroy()
+        {
+            ReportDeath();
+        }
     }
 }
