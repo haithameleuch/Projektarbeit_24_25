@@ -2902,7 +2902,6 @@ MonoBehaviour:
   - {fileID: 512451288073534109, guid: 0fb212acfd8f4f3ce854afb1733fa27a, type: 3}
   - {fileID: 1129301940669938787, guid: 4f3b3ed37d18f0446a2c4ed0a947f848, type: 3}
   obstaclePrefabs:
-  - {fileID: 16038835297913163, guid: 72721064132927245be3916890356670, type: 3}
   - {fileID: 8282443301468609096, guid: 4d790c67944421841bb6447eefc1820b, type: 3}
   - {fileID: 5189026170745247752, guid: 062650a093f1f9b4697af650f06aa6f3, type: 3}
   - {fileID: 3462767149046690451, guid: 848fee487828c4f49b10f25d30333835, type: 3}
@@ -3368,6 +3367,36 @@ MonoBehaviour:
   - {fileID: 2100000, guid: af5ac1e56181a78459217153373059a6, type: 2}
   - {fileID: 2100000, guid: 3ef91239f631f6d46ae3bcd6831ef06b, type: 2}
   - {fileID: 2100000, guid: 7319e559729571847a34a19f6768fe62, type: 2}
+  grassSmallPrefabs:
+  - {fileID: 8787243797529262264, guid: 2455c640bd4ccf84a81420ceed8f1492, type: 3}
+  - {fileID: 8120378621411392693, guid: 6e96eb214c0753a4db8abc5435435161, type: 3}
+  grassBigPrefabs:
+  - {fileID: 6798620097567352829, guid: 377085b0372fdcc4fad4a8e27931c879, type: 3}
+  - {fileID: 5241429352069070010, guid: 0e7fa840f2f61604e98fb3eceb158e29, type: 3}
+  - {fileID: 5582168676053536589, guid: da4e1805a651896409230b45b9f453fe, type: 3}
+  - {fileID: 5506990802643187567, guid: 091a0a10e8dc3894da9afe772ffc7dc8, type: 3}
+  - {fileID: 8660174145068581429, guid: 76fdd9196b5c70e41b35ed8952df063e, type: 3}
+  - {fileID: 3653217374370461953, guid: 7083d37901e5b7a4eb0d8b51260aa17e, type: 3}
+  - {fileID: 4395865068017431172, guid: b114121a3fbdbd244b190f39aeb2ab7c, type: 3}
+  treePrefabs:
+  - {fileID: 8512795395128913195, guid: 5b03bb1b767250b428ffd81cdccf9cc1, type: 3}
+  - {fileID: 8025866222497128294, guid: c969d1625f240b9489ebc12feaaf5e81, type: 3}
+  - {fileID: 8543551515767196129, guid: 9fe22d53784c8144584993094a8e6644, type: 3}
+  - {fileID: 4162616308950158020, guid: 5db0d1d6a9493014ba50be9f22a9f051, type: 3}
+  - {fileID: 4661960032706109221, guid: 830da55775f20244c80866875d591999, type: 3}
+  - {fileID: 2998492988264951485, guid: 169fe883f24f7c4479909e4b44aaa23d, type: 3}
+  rockPrefabs:
+  - {fileID: 3457507255690485109, guid: e7f2329ab18e6ed42ad1e67ac68dd9f1, type: 3}
+  - {fileID: 414655530003621356, guid: a1898727a4bb48e4d98dc2a504722fc0, type: 3}
+  - {fileID: 4939572951345659784, guid: e2000f8c64a9ba24d92efdc8494c2da3, type: 3}
+  - {fileID: 9007755586123386416, guid: 1360e6c4f3ad0f14eb9561a3da8f45ae, type: 3}
+  - {fileID: 3725245861005748552, guid: a6b42f6d142db8d40867f7fc9c3b3450, type: 3}
+  grassSmallCount: 1000
+  grassBigCount: 250
+  treeCount: 30
+  rockCount: 50
+  spawnMargin: 1
+  spawnY: 0
   showPoints: 1
   showCenters: 0
   showTriangles: 1

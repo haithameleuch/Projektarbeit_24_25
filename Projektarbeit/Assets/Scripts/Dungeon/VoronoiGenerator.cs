@@ -26,6 +26,21 @@ public class VoronoiGenerator : MonoBehaviour
     private int _seed;
     [SerializeField] private float minDoorEdgeLength = 4f;
     [SerializeField] private Material[] skyboxMaterials;
+    
+    // NEW
+    [SerializeField] private List<GameObject> grassSmallPrefabs;
+    [SerializeField] private List<GameObject> grassBigPrefabs;
+    [SerializeField] private List<GameObject> treePrefabs;
+    [SerializeField] private List<GameObject> rockPrefabs;
+
+    [SerializeField] private int grassSmallCount = 600;
+    [SerializeField] private int grassBigCount = 80;
+    [SerializeField] private int treeCount  = 40;
+    [SerializeField] private int rockCount  = 80;
+
+    [SerializeField] private float spawnMargin = 1f;
+    [SerializeField] private float spawnY = 0f;
+
 
     private Light _light = new Light();
     
@@ -260,12 +275,40 @@ public class VoronoiGenerator : MonoBehaviour
             mat.SetFloat("_GridSize", gridSize);
         }
         
+        ScatterCategory(grassSmallPrefabs, grassSmallCount, 0x1111);
+        ScatterCategory(grassBigPrefabs, grassBigCount, 0x2222);
+        ScatterCategory(treePrefabs,  treeCount,  0x3333);
+        ScatterCategory(rockPrefabs,  rockCount,  0x4444);
+        
         // Create outside walls of the dungeon
         CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0), -1);
         CreateWall(new Vector3(size, 0, 0), new Vector3(size, 0, size), -2);
         CreateWall(new Vector3(size, 0, size), new Vector3(0, 0, size), -3);
         CreateWall(new Vector3(0, 0, size), new Vector3(0, 0, 0), -4);
     }
+    
+    private void ScatterCategory(List<GameObject> prefabs, int count, int seedSalt)
+    {
+        if (prefabs == null || prefabs.Count == 0 || count <= 0) return;
+        
+        var rng = new System.Random(_seed ^ seedSalt);
+
+        float minX = spawnMargin;
+        float maxX = size - spawnMargin;
+        float minZ = spawnMargin;
+        float maxZ = size - spawnMargin;
+
+        for (int i = 0; i < count; i++)
+        {
+            float x = Mathf.Lerp(minX, maxX, (float)rng.NextDouble());
+            float z = Mathf.Lerp(minZ, maxZ, (float)rng.NextDouble());
+
+            var prefab = prefabs[rng.Next(prefabs.Count)];
+            var rotY   = (float)(rng.NextDouble() * 360.0);
+            Instantiate(prefab, new Vector3(x, spawnY, z), Quaternion.Euler(0f, rotY, 0f), transform);
+        }
+    }
+
     
     /// <summary>
     /// Builds only the segmented Walls for the voronoi-edges
