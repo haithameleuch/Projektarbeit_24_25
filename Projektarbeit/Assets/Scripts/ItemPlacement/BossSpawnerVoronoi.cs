@@ -121,7 +121,7 @@ namespace ItemPlacement
         {
             if (_bossRoomRef == null || _levelExitPrefab == null) return;
 
-            var pos = new Vector3(_bossRoomRef.center.x, 0f, _bossRoomRef.center.y);
+            var pos = new Vector3(_bossRoomRef.center.x + 0.75f, 0f, _bossRoomRef.center.y);
             var rot = Quaternion.identity;
 
             Transform safeParent = null;
