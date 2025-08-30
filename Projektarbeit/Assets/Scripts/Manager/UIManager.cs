@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using Saving;
 
 /// <summary>
 /// Manages the UI elements, including panels and text updates.
@@ -20,11 +21,19 @@ public class UIManager : MonoBehaviour
     private RectTransform pause; // Reference to the pause screen
     
     [SerializeField]
-    private RectTransform gameOver; // Reference to the pause screen
+    private RectTransform gameOver; // Reference to the gameOver screen
+    
+    [SerializeField] 
+    private TMP_Text pauseLevelText; // Text-Object "level" in pause screen
+    
+    [SerializeField] 
+    private TMP_Text gameOverLevelText; // Text-Object "level" in gameOver screen
     
     [SerializeField] 
     private GameObject miniMapPanel;  // Reference to the mini map
 
+    private bool _gameOverShown = false;
+    
     private bool isCombatLocked = false;
     
     // Toggle bools for UIs
@@ -119,6 +128,21 @@ public class UIManager : MonoBehaviour
             
             // Lock the cursor in the game view
             HidePanel();
+            
+            if (!_gameOverShown)
+            {
+                if (gameOverLevelText is null && gameOver is not null)
+                {
+                    var t = gameOver.transform.Find("Level");
+                    if (t is not null) gameOverLevelText = t.GetComponent<TMP_Text>();
+                }
+
+                if (gameOverLevelText is not null)
+                    gameOverLevelText.text = $"Level: {SaveSystemManager.GetLevel()}";
+
+                _gameOverShown = true;
+            }
+            
             gameOver.gameObject.SetActive(true);
             GameInputManager.Instance.MouseLocked(false);
 
@@ -127,6 +151,8 @@ public class UIManager : MonoBehaviour
         }
         else if (!isPauseVisible && !isInvVisible) // only resume if not paused or in inventory
         {
+            _gameOverShown = false;
+            
             // Resume the game time
             Time.timeScale = 1;
             
@@ -160,6 +186,16 @@ public class UIManager : MonoBehaviour
                 _player.GetComponent<FirstPersonPlayerController>().enabled = false;
                 _player.GetComponent<PlayerShooting>().enabled = false;
                 HidePanel();
+                
+                // Set level text on pause menu
+                if (pauseLevelText is null && pause is not null)
+                {
+                    var t = pause.transform.Find("Level");
+                    if (t is not null) pauseLevelText = t.GetComponent<TMP_Text>();
+                }
+                if (pauseLevelText is not null)
+                    pauseLevelText.text = $"Level: {SaveSystemManager.GetLevel()}";
+                
                 pause.gameObject.SetActive(true);
 
                 //Make the cursor moveable within the game window
