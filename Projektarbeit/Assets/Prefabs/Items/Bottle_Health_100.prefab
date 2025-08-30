@@ -100,7 +100,7 @@ GameObject:
   - component: {fileID: 1080257823400343115}
   - component: {fileID: 1827627619497950146}
   m_Layer: 0
-  m_Name: Bottle_Health
+  m_Name: Bottle_Health_100
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
