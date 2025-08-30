@@ -875,7 +875,7 @@ MonoBehaviour:
   questionCount: 0
   glyph: 1
   keyPrefab: {fileID: 7750535106047154682, guid: 4cdc387a02a35754a9a0355fd3c65ad2, type: 3}
-  keySpawnOffset: {x: 0, y: 1, z: 0}
+  keySpawnOffset: {x: 0, y: 1.5, z: 0}
   generatedTexture: {fileID: 0}
   totalXPixels: 200
   totalYPixels: 200

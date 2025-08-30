@@ -473,8 +473,8 @@ MonoBehaviour:
   questionManager: {fileID: 0}
   questionCount: 10
   glyph: 0
-  keyPrefab: {fileID: 7750535106047154682, guid: 4cdc387a02a35754a9a0355fd3c65ad2, type: 3}
-  keySpawnOffset: {x: 0, y: 1, z: 0}
+  keyPrefab: {fileID: 5858338320085958206, guid: 6efce455ba14d37499b4577bcfacfa4f, type: 3}
+  keySpawnOffset: {x: 0, y: 1.5, z: 0}
   generatedTexture: {fileID: 0}
   totalXPixels: 200
   totalYPixels: 200
@@ -578,7 +578,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.306, y: -0.648, z: 0.17796695}
-  m_LocalScale: {x: 0.6000001, y: 0.2, z: 0.04}
+  m_LocalScale: {x: 1, y: 0.2, z: 0.04}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2292303403703026839}
@@ -1087,7 +1087,7 @@ RectTransform:
   m_GameObject: {fileID: 8997112503826230039}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1.049}
-  m_LocalScale: {x: 0.14, y: 0.4, z: 4.9}
+  m_LocalScale: {x: 0.1, y: 0.4, z: 4.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8064771134009182663}
