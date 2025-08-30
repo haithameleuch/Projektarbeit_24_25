@@ -20,13 +20,15 @@ namespace Enemy
 
             // generate new level
             var newSeed = Random.Range(100000, 999999);
-            SaveSystemManager.StartNewRun(newSeed);
+            
+            EnemyDeathReporter.SetSceneChanging(true);
+            
+            SaveSystemManager.AdvanceLevel(newSeed);
             
             if (inv   != null) SaveSystemManager.SetInventory(inv);
             if (equip != null) SaveSystemManager.SetEquipment(equip);
             if (cur != null && max != null) SaveSystemManager.SetStats(cur, max);
-
-            SaveSystemManager.Save();
+            
             SceneManager.LoadScene("Scenes/VoronoiTest");
         }
 

@@ -27,6 +27,10 @@ namespace Enemy
         
         private void OnDestroy()
         {
+            if (_reported) return;
+            if (_sceneChanging) return;
+            if (!gameObject.scene.IsValid() || !gameObject.scene.isLoaded) return;
+            
             ReportDeath();
         }
     }

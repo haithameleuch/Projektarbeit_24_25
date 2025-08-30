@@ -26,9 +26,43 @@ namespace ItemPlacement
             _levelExitPrefab = levelExitPrefab;
             _bossRoomRef = bossRoom;
             
-            if (bossRoom == null || obstaclePrefabs.Count == 0 || bossPrefabs == null || bossPrefabs.Count == 0) return;
+            var bossCleared = SaveSystemManager.GetBossCleared();
+            
+            if (bossRoom == null || obstaclePrefabs == null || obstaclePrefabs.Count == 0) return;
+            if (!bossCleared && (bossPrefabs == null || bossPrefabs.Count == 0)) return;
 
             _bossRoomId = bossRoom.id;
+
+            // random 1–5 Obstacles
+            var center = new Vector3(bossRoom.center.x, 0f, bossRoom.center.y);
+            var roomCircleRadius = bossRoom.getIncircleRadius();
+            
+            // count scaled with room size (1–5)
+            var obsCount = Mathf.Clamp(Mathf.RoundToInt(roomCircleRadius * 0.8f), 1, 5);
+            
+            const float wallPadding = 0.6f;
+            var bossRing  = Mathf.Min(roomCircleRadius * 0.6f, 3f);
+            var obsRing   = Mathf.Clamp(bossRing + 0.8f, 1f, roomCircleRadius - wallPadding);
+
+            for (var i = 0; i < obsCount; i++)
+            {
+                var angleDeg = i * (360f / obsCount);
+                var rad      = angleDeg * Mathf.Deg2Rad;
+
+                var pos = center + new Vector3(Mathf.Cos(rad) * obsRing, 0f, Mathf.Sin(rad) * obsRing);
+                var rot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
+                
+                var prefab = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Count)];
+                Object.Instantiate(prefab, pos, rot, parent);
+            }
+
+            // If boss already cleared -> spawn exit and return (no bosses)
+            if (bossCleared)
+            {
+                SpawnLevelExit();
+                _exitSpawned = true;
+                return;
+            }
 
             List<GameObject> spawned = new();
             
@@ -65,29 +99,6 @@ namespace ItemPlacement
 
             _bossInstancesPerRoom[bossRoom.id] = spawned;
             _alivePerRoom[bossRoom.id] = spawned.Count;
-            
-            // random 1–5 Obstacles
-            var center = new Vector3(bossRoom.center.x, 0f, bossRoom.center.y);
-            var roomCircleRadius = bossRoom.getIncircleRadius();
-            
-            // count scaled with room size (1–5)
-            var obsCount = Mathf.Clamp(Mathf.RoundToInt(roomCircleRadius * 0.8f), 1, 5);
-            
-            const float wallPadding = 0.6f;
-            var bossRing  = Mathf.Min(roomCircleRadius * 0.6f, 3f);
-            var obsRing   = Mathf.Clamp(bossRing + 0.8f, 1f, roomCircleRadius - wallPadding);
-
-            for (var i = 0; i < obsCount; i++)
-            {
-                var angleDeg = i * (360f / obsCount);
-                var rad      = angleDeg * Mathf.Deg2Rad;
-
-                var pos = center + new Vector3(Mathf.Cos(rad) * obsRing, 0f, Mathf.Sin(rad) * obsRing);
-                var rot = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-                
-                var prefab = obstaclePrefabs[Random.Range(0, obstaclePrefabs.Count)];
-                Object.Instantiate(prefab, pos, rot, parent);
-            }
         }
         
         public void ActivateBossInRoom(Room room)
@@ -111,6 +122,8 @@ namespace ItemPlacement
             
             // All bosses defeated -> Boss doors open
             EventManager.Instance?.TriggerOpenBossDoors();
+            SaveSystemManager.SetBossRoomOpen(true);
+            SaveSystemManager.SetBossCleared(true);
 
             if (_exitSpawned) return;
             SpawnLevelExit();
