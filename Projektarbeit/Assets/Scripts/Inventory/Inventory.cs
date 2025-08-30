@@ -120,7 +120,7 @@ public class Inventory : MonoBehaviour
         {
             for (int j = 0; j < inventory.GetLength(1); j++)
             {
-                if (inventory[i, j].itemData is not null)
+                if (inventory[i, j] != null)
                 {
                     if (inventory[i, j].itemData._name == name)
                     {

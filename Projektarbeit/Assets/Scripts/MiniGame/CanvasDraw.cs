@@ -483,7 +483,7 @@ namespace MiniGame
                     Debug.LogWarning("RefGlyph cannot be null or empty. Keeping old value.");
                     return;
                 }
-                _refGlyph = new List<int>(value);
+                _refGlyph = value;
             }
         }
         
