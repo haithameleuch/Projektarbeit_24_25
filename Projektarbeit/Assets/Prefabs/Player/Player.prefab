@@ -55,6 +55,7 @@ MonoBehaviour:
   gameInput: {fileID: 0}
   cameraTransform: {fileID: 6872177338288242892}
   moveSpeed: 7
+  speedStatIndex: 2
   mouseSensitivity: 0.2
   rotationSmoothness: 0.3
   allowPitchRotation: 1
@@ -100,7 +101,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13ec74838f1e42f081baf8c5266b5610, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  healthBar: {fileID: 8470843299888050080, guid: edcefd7a10d34659c8b8b71ec1ee20bb, type: 3}
 --- !u!114 &3974673090526580785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -126,11 +126,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStats:
-  - 250
-  - 25
+  - 100
+  - 5
   - 7
   curStats:
-  - 250
+  - 100
   - 5
   - 7
 --- !u!1 &4243333667503106905

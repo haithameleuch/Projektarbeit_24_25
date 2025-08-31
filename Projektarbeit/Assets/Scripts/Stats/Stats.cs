@@ -40,6 +40,12 @@ public class Stats : MonoBehaviour
         {
             maxStats[stat] = 0;
         }
+        
+        if (stat >= 0 && stat < curStats.Count && stat < maxStats.Count)
+        {
+            if (curStats[stat] > maxStats[stat])
+                curStats[stat] = maxStats[stat];
+        }
     }
 
     public void IncreaseCurStat(int stat, float amount)
@@ -59,4 +65,20 @@ public class Stats : MonoBehaviour
             curStats[stat] = 0;
         }
     }
+    
+    public void AddToMaxPreserveRatio(int stat, float delta)
+    {
+        if (stat < 0) return;
+        while (maxStats.Count <= stat) maxStats.Add(0f);
+        while (curStats.Count <= stat) curStats.Add(0f);
+
+        var oldMax = maxStats[stat];
+        var ratio  = oldMax > 0f ? (curStats[stat] / oldMax) : 0f;
+        var newMax = Mathf.Max(0f, oldMax + delta);
+
+        maxStats[stat] = newMax;
+        curStats[stat] = Mathf.Clamp(newMax * ratio, 0f, newMax);
+    }
+
+
 }
