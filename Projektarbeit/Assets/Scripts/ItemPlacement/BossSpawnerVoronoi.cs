@@ -89,6 +89,10 @@ namespace ItemPlacement
                 var rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
                 var boss = Object.Instantiate(prefab, spawnPos, rotation, parent);
                 boss.SetActive(false);
+                
+                // per-level scaling
+                var s = boss.GetComponent<Stats>();
+                EnemyLevelScaler.Apply(s, isBoss: true);
 
                 // Report death
                 var reporter = boss.AddComponent<EnemyDeathReporter>();
