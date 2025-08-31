@@ -56,6 +56,10 @@ namespace ItemPlacement
                     var enemy = Object.Instantiate(chosenPrefab, spawnPosition, rotation, parent);
                     enemy.SetActive(false);
                     
+                    // per-level scaling
+                    var s = enemy.GetComponent<Stats>();
+                    EnemyLevelScaler.Apply(s, isBoss: false);
+                    
                     // Report death
                     var reporter = enemy.AddComponent<EnemyDeathReporter>();
                     reporter.Init(room.id, OnEnemyDied);

@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: The_One_Ring
   m_EditorClassIdentifier: 
   _name: The One Ring
-  _model: {fileID: 0}
+  _model: {fileID: 5858338320085958206, guid: 6efce455ba14d37499b4577bcfacfa4f, type: 3}
   rarity: 60
   item_icon: {fileID: 21300000, guid: 7d590572748c03e45bea7f1fd7037a2b, type: 3}
   equip_slot: 5
