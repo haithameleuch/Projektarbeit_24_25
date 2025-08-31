@@ -42,6 +42,10 @@ public class UIManager : MonoBehaviour
     // Player reference
     private GameObject _player;
     
+    private FirstPersonPlayerController _controller;
+    
+    private PlayerShooting _shooter;
+    
     // Inventory bool
     bool isInvVisible = false;
 
@@ -77,6 +81,9 @@ public class UIManager : MonoBehaviour
     public void SetPlayer(GameObject newPlayer)
     {
         _player = newPlayer;
+        
+        _controller = newPlayer.GetComponent<FirstPersonPlayerController>();
+        _shooter    = newPlayer.GetComponent<PlayerShooting>();
         
         if (inventoryManager != null)
         {
@@ -118,16 +125,18 @@ public class UIManager : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (_player is null) return;
+        
         // Game over logic
         // Check if the player is dead
         if (_player.GetComponent<Stats>().GetCurStats(0) < 1)
         {
             // Pause the game
-            _player.GetComponent<FirstPersonPlayerController>().enabled = false;
-            _player.GetComponent<PlayerShooting>().enabled = false;
+            DisableGameplay();
             
             // Lock the cursor in the game view
             HidePanel();
+            CloseAllUIExcept(null);
             
             if (!_gameOverShown)
             {
@@ -148,8 +157,10 @@ public class UIManager : MonoBehaviour
 
             // Pause the game time
             Time.timeScale = 0;
+            return;
         }
-        else if (!isPauseVisible && !isInvVisible) // only resume if not paused or in inventory
+
+        if (!isPauseVisible && !isInvVisible) // only resume if not paused or in inventory
         {
             _gameOverShown = false;
             
@@ -157,35 +168,31 @@ public class UIManager : MonoBehaviour
             Time.timeScale = 1;
             
             // Unlock the cursor
-            _player.GetComponent<FirstPersonPlayerController>().enabled = true;
-            _player.GetComponent<PlayerShooting>().enabled = true;
+            EnableGameplay();
         }
-        
+
         //Check weather "P" is pressed to toggle the pause menu
         if (Input.GetKeyDown(KeyCode.P) && !isCombatLocked)
         {
             if (isPauseVisible)
             {
-                //player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                _player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                _player.GetComponent<PlayerShooting>().enabled = true;
                 //_player.SetActive(true);
                 pause.gameObject.SetActive(false);
-
+                
                 //Lock Cursor in the game view
                 GameInputManager.Instance.MouseLocked(true);
-
+                
                 //Resume time to normal value
                 Time.timeScale = 1;
+                
+                EnableGameplay();
+                
                 isPauseVisible=false;
             }
             else
             {
-                //player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                //_player.SetActive(false);
-                _player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                _player.GetComponent<PlayerShooting>().enabled = false;
-                HidePanel();
+                // Only one overlay at a time
+                CloseAllUIExcept("pause");
                 
                 // Set level text on pause menu
                 if (pauseLevelText is null && pause is not null)
@@ -195,6 +202,9 @@ public class UIManager : MonoBehaviour
                 }
                 if (pauseLevelText is not null)
                     pauseLevelText.text = $"Level: {SaveSystemManager.GetLevel()}";
+                
+                DisableGameplay();
+                HidePanel();
                 
                 pause.gameObject.SetActive(true);
 
@@ -209,49 +219,64 @@ public class UIManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.I))
         {
-            if (!isPauseVisible)
+            if (isPauseVisible) return;
+            if (!isInvVisible)
             {
-                if (!isInvVisible)
-                {
-                    HidePanel();
+                HidePanel();
 
-                    _player.GetComponent<FirstPersonPlayerController>().enabled = false;
-                    _player.GetComponent<PlayerShooting>().enabled = false;
+                DisableGameplay();
+                
+                CloseAllUIExcept("inventory");
 
-                    itemUI.transform.parent.gameObject.SetActive(true);
+                itemUI.transform.parent.gameObject.SetActive(true);
 
-                    //Make the cursor moveable within the game window
-                    GameInputManager.Instance.MouseLocked(false);
+                //Make the cursor moveable within the game window
+                GameInputManager.Instance.MouseLocked(false);
 
-                    //Pause the game
-                    Time.timeScale = 0;
+                //Pause the game
+                Time.timeScale = 0;
 
-                    isInvVisible = true;
-                }
-                else
-                {
+                isInvVisible = true;
+            }
+            else
+            {
+                EnableGameplay();
 
-                    _player.GetComponent<FirstPersonPlayerController>().enabled = true;
-                    _player.GetComponent<PlayerShooting>().enabled = true;
+                itemUI.transform.parent.gameObject.SetActive(false);
 
-                    itemUI.transform.parent.gameObject.SetActive(false);
+                //Make the cursor unmoveable within the game window
+                GameInputManager.Instance.MouseLocked(true);
 
-                    //Make the cursor unmoveable within the game window
-                    GameInputManager.Instance.MouseLocked(true);
+                //Pause the game
+                Time.timeScale = 1;
 
-                    //Pause the game
-                    Time.timeScale = 1;
-
-                    isInvVisible = false;
-                }
+                isInvVisible = false;
             }
         }
         
         if (Input.GetKeyDown(KeyCode.M))
         {
             if (miniMapPanel is null) return;
-            bool isActive = miniMapPanel.activeSelf;
-            miniMapPanel.SetActive(!isActive);
+            
+            // don't allow the map while game over or pause
+            if ((gameOver is not null && gameOver.gameObject.activeSelf) || isPauseVisible) return;
+            
+            var isActive = miniMapPanel.activeSelf;
+            
+            if (!isActive)
+            {
+                // only one overlay at a time
+                CloseAllUIExcept("map");
+
+                // Ensure gameplay is running (map does not pause)
+                ResumeGameplayIfNotGameOver();
+
+                miniMapPanel.SetActive(true);
+            }
+            else
+            {
+                miniMapPanel.SetActive(false);
+            }
         }
     }
     
@@ -290,5 +315,50 @@ public class UIManager : MonoBehaviour
     private void ExitCombatLock()
     {
         isCombatLocked = false;
+    }
+    
+    /// <summary>
+    /// Closes all overlay UIs except the one named in `except` ("pause" | "inventory" | "map").
+    /// Pass null to close all.
+    /// </summary>
+    /// <param name="except"></param>
+    private void CloseAllUIExcept(string except)
+    {
+        if (except != "pause" && pause != null)
+        {
+            pause.gameObject.SetActive(false);
+            isPauseVisible = false;
+        }
+        if (except != "inventory" && itemUI != null)
+        {
+            itemUI.transform.parent.gameObject.SetActive(false);
+            isInvVisible = false;
+        }
+        if (except != "map" && miniMapPanel != null)
+        {
+            miniMapPanel.SetActive(false);
+        }
+    }
+    
+    // Ensures gameplay is running
+    private void ResumeGameplayIfNotGameOver()
+    {
+        if (gameOver != null && gameOver.gameObject.activeSelf) return;
+
+        Time.timeScale = 1;
+        EnableGameplay();
+        GameInputManager.Instance.MouseLocked(true);
+    }
+    
+    private void EnableGameplay()
+    {
+        if (_controller != null) _controller.enabled = true;
+        if (_shooter    != null) _shooter.enabled    = true;
+    }
+
+    private void DisableGameplay()
+    {
+        if (_controller != null) _controller.enabled = false;
+        if (_shooter    != null) _shooter.enabled    = false;
     }
 }
