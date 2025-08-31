@@ -9,15 +9,17 @@ using UnityEngine;
 public class Distributor<T> where T : ItemInstance, new()
 {
     /// <summary>
-    /// elements which should be distributed
+    /// elements, which should be distributed
     /// </summary>
     private List<T> _randomElements;
     private List<T> _mustElements;
     /// <summary>
-    /// probabilities of elements normalized if the cumulated probablity of _randomElements != 100
-    /// is calculated when object will be instantiated
+    /// probabilities of elements normalized if the cumulated probability of _randomElements != 100
+    /// is calculated when an object will be instantiated
     /// </summary>
     private List<float> _normalizedProbabilities;
+    
+    public int MustCount => _mustElements?.Count ?? 0;
 
     /// <summary>
     /// Initializes a new instance of the Distributor class, sets the _randomElements
@@ -29,17 +31,17 @@ public class Distributor<T> where T : ItemInstance, new()
         {
             return;
         }
-        float cumulativeProbability = 0.0f;
+        var cumulativeProbability = 0.0f;
         
         foreach (T element in randomElements)
         {
             cumulativeProbability += element.itemData.rarity;
         }
         
-        float elementProbability = 0.0f;
-        foreach (T element in randomElements)
+        var elementProbability = 0.0f;
+        foreach (var element in randomElements)
         {
-            float normalizedProbability = element.itemData.rarity / cumulativeProbability;
+            var normalizedProbability = element.itemData.rarity / cumulativeProbability;
             if (elementProbability == 0.0f)
             {
                 elementProbability += normalizedProbability;
@@ -67,8 +69,8 @@ public class Distributor<T> where T : ItemInstance, new()
     public T GetRandomElement()
     {
         if (_randomElements.Count == 0) return new T();
-        float randomValue = Random.Range(0.0f, 1.0f);
-        int elementIndex = _normalizedProbabilities.FindIndex(x => x >= randomValue);
+        var randomValue = Random.Range(0.0f, 1.0f);
+        var elementIndex = _normalizedProbabilities.FindIndex(x => x >= randomValue);
         return _randomElements[elementIndex];
     }
 
