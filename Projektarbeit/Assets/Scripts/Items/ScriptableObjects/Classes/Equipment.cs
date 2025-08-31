@@ -53,9 +53,15 @@ public class Equipment : Item
             inv.addItem(player_equip[row, col]);
             // Remove Stats
             Stats playerStats = inv.gameObject.GetComponent<Stats>();
-            for (int i=0;i< stat_increases.Count;i++)
+            
+            var equippedInst = player_equip[row, col];
+            var equippedData = equippedInst.itemData as Equipment;
+            if (equippedData != null)
             {
-                playerStats.DecreaseMaxStat(i,stat_increases[i]);
+                for (var i = 0; i < equippedData.stat_increases.Count; i++)
+                {
+                    playerStats.AddToMaxPreserveRatio(i, -equippedData.stat_increases[i]);
+                }
             }
             
             // If the item in the slot is of this type, unequip it / if not add this item
@@ -74,8 +80,7 @@ public class Equipment : Item
                 // Add Stats
                 for (int i=0;i< stat_increases.Count;i++)
                 {
-                    playerStats.IncreaseMaxStat(i,stat_increases[i]);
-                    playerStats.IncreaseCurStat(i,stat_increases[i]);
+                    playerStats.AddToMaxPreserveRatio(i, stat_increases[i]);
                 }
             }
         }
@@ -89,8 +94,7 @@ public class Equipment : Item
             Stats playerStats = inv.gameObject.GetComponent<Stats>();
             for (int i=0;i< stat_increases.Count;i++)
             {
-                playerStats.IncreaseMaxStat(i,stat_increases[i]);
-                playerStats.IncreaseCurStat(i,stat_increases[i]);
+                playerStats.AddToMaxPreserveRatio(i, stat_increases[i]);
             }
         }
     }
