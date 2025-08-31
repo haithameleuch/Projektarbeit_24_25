@@ -11,22 +11,15 @@ namespace MiniGame
     /// </summary>
     public class CanvasDraw : MonoBehaviour
     {
-        // Variables related to Question 
-        public QuestionManager questionManager;
-
-        // The last Question is answered
-        private bool _answered = true;
-
-        // Counter for the right answer guesses
-        private int _rightAnswersCount;
-        
-        // Set the count of the questions
+        [Header("Question System")]
         [SerializeField] public int questionCount;
+        [SerializeField] public TextMeshPro questionText;
+        public QuestionManager questionManager;
+        private int _rightAnswersCount;
+        private bool _answered = true; // The last Question is answered
         
         [Header("Glyph System")]
-        // Flag to indicate if the glyph mode is enabled (e.g., for digit input mode)
         [SerializeField] private bool glyph = true;
-        // Backing field (hidden in Inspector)
         private static List<int> _refGlyph = new List<int> { 0 };
         // All the given labels
         private readonly Dictionary<int, string> _digitToString = new Dictionary<int, string>
@@ -42,76 +35,35 @@ namespace MiniGame
         };
         
         [Header("Key System")]
-        // Key prefab to spawn
-        [SerializeField] private GameObject keyPrefab;
-        // The key spawn position
-        [SerializeField] private Vector3 keySpawnOffset = new Vector3(0, 1, 0);
+        [SerializeField] private GameObject spawnPrefab;
+        [SerializeField] private Vector3 spawnPrefabOffset = new Vector3(0, 1, 0);
         
-        // Drawing-related variables
-        // Camera used to render the canvas (e.g., for capturing input or displaying the canvas)
-        private GameObject _canvasCamera;
-
-        // Brush color for drawing on the canvas
-        private readonly Color _brushColor = Color.black;
-
-        // Tracks whether the mouse/finger was pressed in the last frame (for detecting drag)
-        private bool _pressedLastFrame;
-
-        // Stores last recorded pixel position to interpolate lines while drawing
-        private int _lastX, _lastY;
-
-        // Current pixel position where the brush will draw
-        private int _xPixel, _yPixel;
-
-        // Color array representing the pixel data of the canvas texture
-        private Color[] _colorMap;
-
-        // The texture that gets updated while drawing (e.g., for digit recognition)
-        public Texture2D generatedTexture;
-
-        // Canvas dimensions in pixels
+        [Header("Draw System")]
         [SerializeField] public int totalXPixels = 200;
         [SerializeField] public int totalYPixels = 200;
-
-        // Brush radius/size in pixels
         [SerializeField] public int brushSize = 10;
-
-        // TextMeshPro element to display the predicted output (e.g., digit classifier result)
         [SerializeField] public TextMeshPro predictionText;
-
-        // TextMeshPro element to display a randomly generated number (e.g., for verification tasks)
         [SerializeField] public TextMeshPro randNumberText;
         
-        // TextMeshPro element to display the question
-        [SerializeField] public TextMeshPro questionText;
-
-        // Flag that controls whether drawing should occur (e.g., set from UI or logic)
+        public bool useInterpolation = true;
+        public Transform topLeftCorner;
+        public Transform bottomRightCorner;
+        public Transform point;
         public static bool ToDraw;
-
+        public Texture2D generatedTexture;
+        [FormerlySerializedAs("material")] public Material canvasMaterial;  // Draw Texture Material (Canvas Color, e.g., White)
+        
+        private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
+        private readonly Color _brushColor = Color.black; // Brush color for drawing on the canvas
+        private bool _pressedLastFrame;
+        private int _lastX, _lastY;
+        private int _xPixel, _yPixel;
+        private Color[] _colorMap;
+        
+        [Header("Classifier System")]
+        [SerializeField] private Classifier classifier;
         private int _predictedDigit;
         private string _text;
-
-    
-        // Shader property ID for the base texture of a material (used when updating canvas material)
-        private static readonly int BaseMap = Shader.PropertyToID("_BaseMap");
-
-        // Whether to use interpolation between brush points (to make strokes smoother)
-        public bool useInterpolation = true;
-
-        // Reference to the top-left corner of the drawing area in world space
-        public Transform topLeftCorner;
-
-        // Reference to the bottom-right corner of the drawing area in world space
-        public Transform bottomRightCorner;
-
-        // Transform that represents the input point (e.g., touch/mouse position in world space)
-        public Transform point;
-
-        [FormerlySerializedAs("classifierDigits")] [SerializeField] private Classifier classifier;
-
-        // Draw Texture Material (Canvas Color, e.g., White)
-        public Material material;
-
 
         /// <summary>
         /// Initializes the canvas, texture, and the drawing environment at the start.
@@ -131,13 +83,13 @@ namespace MiniGame
                 };
             ResetColor();
 
-            // creates material copy instance
-            material = new Material(material);
-            material.SetTexture(BaseMap, generatedTexture);
+            // creates canvasMaterial copy instance
+            canvasMaterial = new Material(canvasMaterial);
+            canvasMaterial.SetTexture(BaseMap, generatedTexture);
         
             var rend = GetComponent<Renderer>();
             if (rend != null)
-                rend.material = material;
+                rend.material = canvasMaterial;
         }
 
         /// <summary>
@@ -145,93 +97,79 @@ namespace MiniGame
         /// </summary>
         private void Update()
         {
-            /*
-
-        Remark:
-            - Input.GetMouseButtonDown(1): Executes only on the first frame of the mouse button press.
-            - Input.GetMouseButton(1): Executes for every frame the button is held down.
-
-        */
             // Only the active canvas is allowed to draw.
             if (!ToDraw || CameraManager.ActiveCanvasDraw != this)
                 return;
 
-            if (ToDraw)
+            if (!ToDraw) return;
+            if (!glyph)
             {
-                if (!glyph)
+                switch (_answered)
                 {
-                    switch (_answered)
-                    {
-                        case true when _rightAnswersCount >= questionCount:
-                            _answered = false;
-                            questionText.text = "No Question!";
-                            break;
+                    case true when _rightAnswersCount >= questionCount:
+                        _answered = false;
+                        questionText.text = "No Question!";
+                        randNumberText.text = $"<color=green>Done!</color>";
+                        break;
 
-                        case true:
-                            _answered = false;
-                            SetQuestion();
-                            break;
-                    }
+                    case true:
+                        _answered = false;
+                        SetQuestion();
+                        break;
+                }
+            }
+            else
+            {
+                if (_refGlyph.Count == 0)
+                {
+                    randNumberText.text = "No Glyphs!";
                 }
                 else
                 {
-                    if (_refGlyph.Count == 0)
-                    {
-                        randNumberText.text = "No Glyphs!";
-                    }
-                    else
-                    {
-                        // Show the name from the dictionary for readability
-                        int currentGlyph = _refGlyph[0];
-                        randNumberText.text = _digitToString[currentGlyph];
-                    }   
-                }
-                // Start drawing when the mouse button is pressed
-                if (Input.GetMouseButtonDown(0))
-                {
-                    _pressedLastFrame = false; // Disable interpolation when starting a new stroke
+                    // Show the name from the dictionary for readability
+                    int currentGlyph = _refGlyph[0];
+                    randNumberText.text = _digitToString[currentGlyph];
                 }   
-
-                // Draw when the mouse button is held down
-                if (Input.GetMouseButton(0))
-                {
-                    CalculatePixel(); // Calculate and apply brush strokes based on mouse position
-                }
-
-                // Clear the canvas when "C" key is pressed
-                if (Input.GetKeyDown(KeyCode.C))
-                {
-                    _xPixel = 0;
-                    _yPixel = 0;
-                    ResetColor(); // Reset the canvas to white
-                }
-
-                // Right-click to predict the digit on the image
-                if (Input.GetMouseButtonDown(1))
-                {
-                    // Preprocess the image to resize it for prediction
-                    Texture2D preprocessedTexture = Preprocessing(generatedTexture, 28, 28);
-                    if (glyph)
-                    {
-                        (_predictedDigit, _text) = classifier.PredictGlyph(preprocessedTexture); // Call the Predict method
-                        ValidGlyph(_predictedDigit);
-                    }
-                    else
-                    {
-                        (_predictedDigit, _text) = classifier.PredictDigit(preprocessedTexture); // Call the Predict method
-                        ValidDigit(_predictedDigit);
-                    }
-                    
-                    ToDraw = true;
-                    predictionText.text = _text;
-                }
             }
+            // Start drawing when the mouse button is pressed
+            if (Input.GetMouseButtonDown(0))
+            {
+                _pressedLastFrame = false; 
+            }   
+
+            // Draw when the mouse button is held down
+            if (Input.GetMouseButton(0))
+            {
+                CalculatePixel();
+            }
+            
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                _xPixel = 0;
+                _yPixel = 0;
+                ResetColor();
+            }
+
+            // Right-click to predict the digit on the image
+            if (!Input.GetMouseButtonDown(1)) return;
+            // Preprocess the image to resize it for prediction
+            var preprocessedTexture = Preprocessing(generatedTexture, 28, 28);
+            if (glyph)
+            {
+                (_predictedDigit, _text) = classifier.PredictGlyph(preprocessedTexture);
+                ValidGlyph(_predictedDigit);
+            }
+            else
+            {
+                (_predictedDigit, _text) = classifier.PredictDigit(preprocessedTexture);
+                ValidDigit(_predictedDigit);
+            }
+                    
+            ToDraw = true;
+            predictionText.text = _text;
         }
-
-        // =======================================
-        // Drawing Section - Handles canvas and brush functionality
-        // =======================================
-
+        
+        // ReSharper disable Unity.PerformanceAnalysis
         /// <summary>
         /// Calculates the pixel position on the texture based on the mouse position and applies the brush stroke.
         /// </summary>
@@ -241,26 +179,15 @@ namespace MiniGame
             _yPixel = 0;
 
             // Get the Cinemachine Virtual Camera (used for raycasting)
-            CinemachineCamera cinemachineCamera = GameObject
+            var cinemachineCamera = GameObject
                 .FindWithTag("CanvCamera")
                 ?.GetComponent<CinemachineCamera>();
-
-            // Error check: Ensure Cine machine Camera is found
-            if (cinemachineCamera == null)
-            {
-                Debug.LogError(
-                    "Cinemachine Virtual Camera with tag 'CanvCamera' not found!"
-                );
-                return;
-            }
+            
+            if (cinemachineCamera == null) return;
 
             // Get the main Unity Camera for raycasting
-            Camera mainCamera = Camera.main;
-            if (mainCamera == null)
-            {
-                Debug.LogError("Main Camera not found!");
-                return;
-            }
+            var mainCamera = Camera.main;
+            if (mainCamera is null) return;
 
             // Cast a ray from the mouse position in 3D space
             var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
@@ -271,14 +198,14 @@ namespace MiniGame
                 point.position = hit.point; // Move the pointer to the hit point
 
                 // Convert world point to local space of the canvas
-                Vector3 localPoint = transform.InverseTransformPoint(hit.point);
+                var localPoint = transform.InverseTransformPoint(hit.point);
 
                 // Calculate pixel position from local space
-                float width = transform.localScale.x;
-                float height = transform.localScale.y;
+                var width = transform.localScale.x;
+                var height = transform.localScale.y;
 
-                float normalizedX = (localPoint.x + width * 0.5f) / width;
-                float normalizedY = (localPoint.y + height * 0.5f) / height;
+                var normalizedX = (localPoint.x + width * 0.5f) / width;
+                var normalizedY = (localPoint.y + height * 0.5f) / height;
 
                 _xPixel = (int)(normalizedX * totalXPixels);
                 _yPixel = (int)(normalizedY * totalYPixels);
@@ -287,7 +214,6 @@ namespace MiniGame
             }
             else
             {
-                // If raycast doesn't hit the canvas, disable interpolation for next frame
                 _pressedLastFrame = false;
             }
         }
@@ -297,7 +223,6 @@ namespace MiniGame
         /// </summary>
         private void ChangePixelsAroundPoint()
         {
-            // Apply interpolation if enabled and the current pixel differs from the last
             if (useInterpolation && _pressedLastFrame && (_lastX != _xPixel || _lastY != _yPixel))
             {
                 // Calculate the distance between the current and previous pixel positions
@@ -316,33 +241,30 @@ namespace MiniGame
             }
             else
             {
-                // No interpolation, directly apply brush at the current pixel
                 DrawBrush(_xPixel, _yPixel);
             }
 
             // Update state for next frame
-            _pressedLastFrame = true; // Enable interpolation next time
-            _lastX = _xPixel; // Store the current X position
-            _lastY = _yPixel; // Store the current Y position
-
-            // Update the texture with the modified color map
+            _pressedLastFrame = true;
+            _lastX = _xPixel;
+            _lastY = _yPixel;
             SetTexture();
         }
 
         /// <summary>
         /// Draws a brush stroke at specified pixel coordinates.
         /// </summary>
-        void DrawBrush(int xPix, int yPix)
+        private void DrawBrush(int xPix, int yPix)
         {
-            int i = Mathf.Max(0, xPix - brushSize + 1);
-            int j = Mathf.Max(0, yPix - brushSize + 1);
-            int maxi = Mathf.Min(totalXPixels - 1, xPix + brushSize - 1);
-            int maxj = Mathf.Min(totalYPixels - 1, yPix + brushSize - 1);
+            var i = Mathf.Max(0, xPix - brushSize + 1);
+            var j = Mathf.Max(0, yPix - brushSize + 1);
+            var maxi = Mathf.Min(totalXPixels - 1, xPix + brushSize - 1);
+            var maxj = Mathf.Min(totalYPixels - 1, yPix + brushSize - 1);
 
             // Loop over the brush area and apply color to each pixel within the brush's radius
-            for (int x = i; x <= maxi; x++)
+            for (var x = i; x <= maxi; x++)
             {
-                for (int y = j; y <= maxj; y++)
+                for (var y = j; y <= maxj; y++)
                 {
                     if ((x - xPix) * (x - xPix) + (y - yPix) * (y - yPix) <= brushSize * brushSize)
                     {
@@ -355,16 +277,16 @@ namespace MiniGame
         /// <summary>
         /// Updates the texture based on the current color map and applies the changes to the canvas.
         /// </summary>
-        void SetTexture()
+        private void SetTexture()
         {
             // Create a rotated copy of the color map (for visual effect or canvas alignment)
-            Color[] rotatedColorMap = new Color[_colorMap.Length];
-            for (int y = 0; y < totalYPixels; y++)
+            var rotatedColorMap = new Color[_colorMap.Length];
+            for (var y = 0; y < totalYPixels; y++)
             {
-                for (int x = 0; x < totalXPixels; x++)
+                for (var x = 0; x < totalXPixels; x++)
                 {
-                    int originalIndex = y * totalXPixels + x;
-                    int rotatedIndex = (totalYPixels - 1 - y) * totalXPixels + (totalXPixels - 1 - x);
+                    var originalIndex = y * totalXPixels + x;
+                    var rotatedIndex = (totalYPixels - 1 - y) * totalXPixels + (totalXPixels - 1 - x);
                     rotatedColorMap[rotatedIndex] = _colorMap[originalIndex];
                 }
             }
@@ -377,15 +299,12 @@ namespace MiniGame
         /// <summary>
         /// Resets the entire canvas to white color.
         /// </summary>
-        void ResetColor()
+        private void ResetColor()
         {
-            // Fill the entire color map with white color (RGBA = 1, 1, 1, 1)
-            for (int i = 0; i < _colorMap.Length; i++)
+            for (var i = 0; i < _colorMap.Length; i++)
             {
                 _colorMap[i] = new Color(1f, 1f, 1f, 1f); // White color
             }
-
-            // Apply the updated color map to the canvas texture
             SetTexture();
         }
 
@@ -394,8 +313,7 @@ namespace MiniGame
         /// </summary>
         private Texture2D Preprocessing(Texture2D texture2D, int newWidth, int newHeight)
         {
-            // Create a render texture with the desired size
-            RenderTexture rt = new RenderTexture(newWidth, newHeight, 24)
+            var rt = new RenderTexture(newWidth, newHeight, 24)
             {
                 filterMode = FilterMode.Bilinear
             };
@@ -405,23 +323,23 @@ namespace MiniGame
             Graphics.Blit(texture2D, rt);
 
             // Read the render texture into a new texture
-            Texture2D result = new Texture2D(newWidth, newHeight, TextureFormat.RGB24, false);
+            var result = new Texture2D(newWidth, newHeight, TextureFormat.RGB24, false);
             result.ReadPixels(new Rect(0, 0, newWidth, newHeight), 0, 0);
 
             // Flip the pixels vertically and horizontally, then invert the colors
-            Color[] pixels = result.GetPixels();
-            Color[] flippedPixels = new Color[pixels.Length];
-            int rowLength = newWidth;
+            var pixels = result.GetPixels();
+            var flippedPixels = new Color[pixels.Length];
+            var rowLength = newWidth;
 
-            for (int y = 0; y < newHeight; y++)
+            for (var y = 0; y < newHeight; y++)
             {
-                for (int x = 0; x < newWidth; x++)
+                for (var x = 0; x < newWidth; x++)
                 {
                     // Calculate the flipped index
-                    int flippedIndex = (newWidth - 1 - x) + (newHeight - 1 - y) * rowLength;
+                    var flippedIndex = (newWidth - 1 - x) + (newHeight - 1 - y) * rowLength;
 
                     // Invert the color
-                    Color originalColor = pixels[x + y * rowLength];
+                    var originalColor = pixels[x + y * rowLength];
                     Color invertedColor;
                     if (glyph)
                     {
@@ -442,14 +360,10 @@ namespace MiniGame
                             originalColor.a
                         );
                     }
-                
-
-                    // Set the flipped and inverted pixel
+                    
                     flippedPixels[flippedIndex] = invertedColor;
                 }
             }
-
-            // Apply the modified pixel data to the result texture
             result.SetPixels(flippedPixels);
             result.Apply();
 
@@ -466,8 +380,7 @@ namespace MiniGame
         private void SetQuestion()
         {
             questionManager.AskRandomQuestion(); 
-            string question = questionManager.GetCurrentQuestionText();
-            questionText.text = question;
+            questionText.text = questionManager.GetCurrentQuestionText();
         }
         
                 /// <summary>
@@ -502,13 +415,13 @@ namespace MiniGame
             
             if (_rightAnswersCount < questionCount)
             {
-                string message = _rightAnswersCount+ "/" + questionCount;
+                var message = _rightAnswersCount+ "/" + questionCount;
                 unlockMessage = $"<color=yellow>{message}</color>"; // Mark the correct digit as green
                 randNumberText.text = unlockMessage;
             }
             else
             {
-                if (keyPrefab)
+                if (spawnPrefab)
                 {
                     const string message = "Ring Spawned";
                     ToDraw = false;
@@ -516,8 +429,8 @@ namespace MiniGame
                     randNumberText.text = unlockMessage;
                     
                     // Spawn near canvas position
-                    var spawnPos = transform.TransformPoint(keySpawnOffset);
-                    Instantiate(keyPrefab, spawnPos, Quaternion.identity);
+                    var spawnPos = transform.TransformPoint(spawnPrefabOffset);
+                    Instantiate(spawnPrefab, spawnPos, Quaternion.identity);
                     Debug.Log("You have the One Ring!");
                 }
                 else
@@ -529,6 +442,7 @@ namespace MiniGame
         
         // Returns the corresponding glyph name for a given digit.
         // If the digit is not found in the dictionary, returns "Unknown".
+        // ReSharper disable Unity.PerformanceAnalysis
         private void ValidGlyph(int glyphDigit)
         {
             // If digit is not in the list → invalid guess
@@ -551,11 +465,11 @@ namespace MiniGame
 
             // If all glyphs have been guessed → spawn boss key
             if (_refGlyph.Count != 0) return;
-            if (keyPrefab)
+            if (spawnPrefab)
             {
                 // Spawn near canvas position
-                var spawnPos = transform.TransformPoint(keySpawnOffset);
-                Instantiate(keyPrefab, spawnPos, Quaternion.identity);
+                var spawnPos = transform.TransformPoint(spawnPrefabOffset);
+                Instantiate(spawnPrefab, spawnPos, Quaternion.identity);
                 Debug.Log("You have the boss key!");
             }
             else
