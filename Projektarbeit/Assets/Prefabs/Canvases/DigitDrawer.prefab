@@ -470,24 +470,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9090fd122099ece6a82c9607ad22af04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  questionManager: {fileID: 0}
   questionCount: 10
+  questionText: {fileID: 375399105296124497}
+  questionManager: {fileID: 0}
   glyph: 0
-  keyPrefab: {fileID: 5858338320085958206, guid: 6efce455ba14d37499b4577bcfacfa4f, type: 3}
-  keySpawnOffset: {x: 0, y: 1.5, z: 0}
-  generatedTexture: {fileID: 0}
+  spawnPrefab: {fileID: 5858338320085958206, guid: 6efce455ba14d37499b4577bcfacfa4f, type: 3}
+  spawnPrefabOffset: {x: 0, y: 1, z: 0}
   totalXPixels: 200
   totalYPixels: 200
   brushSize: 10
   predictionText: {fileID: 6668396358676306520}
   randNumberText: {fileID: 8818378498882591030}
-  questionText: {fileID: 375399105296124497}
   useInterpolation: 1
   topLeftCorner: {fileID: 4057143498592851364}
   bottomRightCorner: {fileID: 6604535307600350289}
   point: {fileID: 1193384284662399472}
+  generatedTexture: {fileID: 0}
+  canvasMaterial: {fileID: 2100000, guid: d963498b3fdda51db83758f6763dcf74, type: 2}
   classifier: {fileID: 7280668662910417032}
-  material: {fileID: 2100000, guid: d963498b3fdda51db83758f6763dcf74, type: 2}
 --- !u!114 &7358265712868455665
 MonoBehaviour:
   m_ObjectHideFlags: 0
