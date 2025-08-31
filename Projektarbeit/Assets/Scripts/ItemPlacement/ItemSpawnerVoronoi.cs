@@ -54,9 +54,29 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
 
         var collectibleIndex = 0;
         
-        foreach (var room in _rooms)
+        // random initial counts per item room
+        var plannedCounts = new List<int>(_rooms.Count);
+        for (var r = 0; r < _rooms.Count; r++)
+            plannedCounts.Add(Random.Range(1, 5)); // 1–4 items per room
+
+        // make sure total slots >= number of must items (from Distributor)
+        var mustTotal  = _itemsDistributor.MustCount;
+        var totalSlots = 0;
+        for (var i = 0; i < plannedCounts.Count; i++) totalSlots += i;
+
+        // increase slots per room if necessary
+        var roomBumpIdx = 0;
+        while (totalSlots < mustTotal && _rooms.Count > 0)
         {
-            var itemCount = Random.Range(1, 5); // 1–4 items per room
+            plannedCounts[roomBumpIdx] += 1;
+            totalSlots++;
+            roomBumpIdx = (roomBumpIdx + 1) % _rooms.Count;
+        }
+        
+        for (var roomIdx = 0; roomIdx < _rooms.Count; roomIdx++)
+        {
+            var room = _rooms[roomIdx];
+            var itemCount = plannedCounts[roomIdx];
             var radius = room.getIncircleRadius();
 
             for (var i = 0; i < itemCount; i++)

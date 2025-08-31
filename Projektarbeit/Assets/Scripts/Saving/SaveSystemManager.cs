@@ -13,7 +13,7 @@ namespace Saving
 
         public static void Save()
         {
-            string json = JsonUtility.ToJson(SaveData, true);
+            var json = JsonUtility.ToJson(SaveData, true);
             File.WriteAllText(SavePath, json);
             Debug.Log("Save written to: " + SavePath);
         }
@@ -39,7 +39,8 @@ namespace Saving
                 Seed = newSeed,
                 Level = 1,
                 PlayerPosition = Vector3.zero,
-                BossCleared = false
+                BossCleared = false,
+                Items = new List<bool>() 
             };
             Save();
         }
@@ -58,6 +59,8 @@ namespace Saving
             SaveData.VisitedRooms  = new List<bool>();
             SaveData.DestroyableWallsActive = new List<bool>();
             SaveData.DestroyableWallsHealth = new List<int>();
+
+            SaveData.Items = new List<bool>();
             
             SaveData.PlayerPosition = Vector3.zero;
             SaveData.PlayerForward  = Vector3.zero;
