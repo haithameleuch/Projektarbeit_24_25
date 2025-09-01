@@ -7,14 +7,27 @@ using UnityEngine;
 public class DrawingTrigger : MonoBehaviour, IInteractable
 {
     [SerializeField] private Transform center;
+    private bool _instructionsShown = false;
 
     // Method invoked when the player interacts with the object
     public void Interact(GameObject interactor)
     {
-        UIManager.Instance.ShowPanel("Press [G] to Draw!");
-
         // Reference to the CanvasDraw of this object
         CanvasDraw canvas = GetComponent<CanvasDraw>();
+        
+        if (_instructionsShown)
+        {
+            if (CameraManager.ActiveCanvasDraw != canvas)
+            {
+                _instructionsShown = false;
+            }
+            else
+            {
+                return;
+            }
+        }
+        
+        UIManager.Instance.ShowPanel("Press [G] to Draw!");
 
         // If this is not already the active canvas, set the camera and mark it as active
         if (CameraManager.ActiveCanvasDraw != canvas)
@@ -32,12 +45,17 @@ public class DrawingTrigger : MonoBehaviour, IInteractable
             );
 
             EventManager.Instance.TriggerCanvasView();
+            
+            CanvasDraw.ToDraw = true;
+            _instructionsShown = true;
         }
     }
 
     public void OnExit(GameObject interactor)
     {
         UIManager.Instance.HidePanel();
+        _instructionsShown = false;
+        CanvasDraw.ToDraw = false;
     }
 
     public bool ShouldRepeat()
