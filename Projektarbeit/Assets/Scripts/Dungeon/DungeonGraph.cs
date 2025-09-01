@@ -142,6 +142,51 @@ public class DungeonGraph
 
         return null;
     }
+    
+    /// <summary>
+    /// TODO
+    /// </summary>
+    public List<Room> FindShortestPathWithoutBossRoom(Room start, Room goal)
+    {
+        if (start == null || goal == null) return null;
+
+        var cameFrom = new Dictionary<Room, Room>();
+        var frontier = new Queue<Room>();
+        var visited  = new HashSet<Room>();
+
+        frontier.Enqueue(start);
+        visited.Add(start);
+
+        while (frontier.Count > 0)
+        {
+            var current = frontier.Dequeue();
+
+            if (current == goal)
+            {
+                var path = new List<Room>();
+                while (current != start)
+                {
+                    path.Add(current);
+                    current = cameFrom[current];
+                }
+                path.Add(start);
+                path.Reverse();
+                return path;
+            }
+
+            foreach (var neighbor in current.neighbors)
+            {
+                if (neighbor.type == RoomType.Boss) continue;
+                if (visited.Contains(neighbor)) continue;
+
+                visited.Add(neighbor);
+                cameFrom[neighbor] = current;
+                frontier.Enqueue(neighbor);
+            }
+        }
+
+        return null;
+    }
 
     /// <summary>
     /// Retrieves a room by its center point.

@@ -132,6 +132,11 @@ namespace Manager
             var enemies = _dungeon.GetAllEnemyRooms();
             var bossRoom = _dungeon.GetBossRoom();
             
+            // Place the item room guaranteed by the generator (boss-free) at the very front
+            var forcedItemRoomId = (voronoiGenerator != null) ? voronoiGenerator.ForcedItemRoomId : -1;
+            if (forcedItemRoomId >= 0)
+                rooms = rooms.OrderBy(r => r.id == forcedItemRoomId ? 0 : 1).ToList();
+            
             // Set random glyphs keys and values and add them to MustItems
             var seed = SaveSystemManager.GetSeed();
             var glyphKeys = GenerateRandomGlyphs(seed);

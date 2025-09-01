@@ -41,14 +41,14 @@ public class VoronoiGenerator : MonoBehaviour
     [SerializeField] private float spawnMargin = 1f;
     [SerializeField] private float spawnY = 0f;
 
-
-    private Light _light = new Light();
-    
     public float DungeonSize => size;
+    public int ForcedItemRoomId { get; private set; } = -1;
+
     private DungeonGraph _dungeonGraph;
     private System.Random _rng;
     private readonly HashSet<string> _forcedDoorPairs = new();
     private const double DoorProbability = 0.5;
+    private Light _light = new();
     
     // ---- DESTROYABLE WALL ----
     private int _breakableWallCounter = 0;
@@ -609,21 +609,54 @@ public class VoronoiGenerator : MonoBehaviour
     }
     
     /// <summary>
-    /// Computes the door path that must be traversable (start → item room)
+    /// Computes the door path that must be traversable (start → some item room),
+    /// but avoids passing through the Boss room.
+    /// Also stores the target item room id in _forcedItemRoomId.
     /// </summary>
     private void ComputeForcedDoorPairs()
     {
         _forcedDoorPairs.Clear();
+        ForcedItemRoomId = -1;
 
-        var start = _dungeonGraph.GetStartRoom();
-        var firstItem = _dungeonGraph.GetAllItemRooms().FirstOrDefault();
-        if (start == null || firstItem == null) return;
+        var start     = _dungeonGraph.GetStartRoom();
+        var itemRooms = _dungeonGraph.GetAllItemRooms();
+        if (start == null || itemRooms == null || itemRooms.Count == 0) return;
+        
+        List<Room> bestPath = null;
+        Room bestTarget = null;
 
-        var path = _dungeonGraph.FindShortestPath(start, firstItem);
-        if (path == null) return;
+        foreach (var item in itemRooms)
+        {
+            var path = _dungeonGraph.FindShortestPathWithoutBossRoom(start, item);
+            if (path == null) continue;
 
-        for (int i = 0; i < path.Count - 1; i++)
-            _forcedDoorPairs.Add(GetPairKey(path[i].id, path[i + 1].id));
+            if (bestPath == null || path.Count < bestPath.Count)
+            {
+                bestPath = path;
+                bestTarget = item;
+            }
+        }
+
+        // Fallback
+        if (bestPath == null)
+        {
+            var firstItem = itemRooms.FirstOrDefault();
+            if (firstItem == null) return;
+
+            var fallback = _dungeonGraph.FindShortestPath(start, firstItem);
+            if (fallback == null) return;
+
+            for (int i = 0; i < fallback.Count - 1; i++)
+                _forcedDoorPairs.Add(GetPairKey(fallback[i].id, fallback[i + 1].id));
+
+            ForcedItemRoomId = firstItem.id;
+            return;
+        }
+
+        for (var i = 0; i < bestPath.Count - 1; i++)
+            _forcedDoorPairs.Add(GetPairKey(bestPath[i].id, bestPath[i + 1].id));
+        
+        ForcedItemRoomId = bestTarget?.id ?? bestPath.Last().id;
     }
     
     /// <summary>
@@ -639,10 +672,18 @@ public class VoronoiGenerator : MonoBehaviour
         _debugShortestItemPath = null;
 
         var start = _dungeonGraph.GetStartRoom();
-        var item  = _dungeonGraph.GetAllItemRooms().FirstOrDefault();
-        if (start == null || item == null) return;
+        if (start == null) return;
+        
+        Room item = null;
+        if (ForcedItemRoomId >= 0)
+            item = _dungeonGraph.GetRoomByID(ForcedItemRoomId);
+        else
+            item = _dungeonGraph.GetAllItemRooms().FirstOrDefault();
 
-        var pathRooms = _dungeonGraph.FindShortestPath(start, item);
+        if (item == null) return;
+
+        var pathRooms = _dungeonGraph.FindShortestPathWithoutBossRoom(start, item)
+                        ?? _dungeonGraph.FindShortestPath(start, item);
         if (pathRooms == null) return;
 
         _debugShortestItemPath = pathRooms.Select(r => r.center).ToList();
