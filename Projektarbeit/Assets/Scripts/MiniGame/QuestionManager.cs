@@ -50,6 +50,30 @@ namespace MiniGame
             questions.Add(new Question("Wie viele Elemente siehst du: Feuer, Wasser, Erde, Luft?", 4));
             questions.Add(new Question("Ein Kobold stellt drei Fragen. Du beantwortest zwei falsch. Wie viele richtig?", 1));
             questions.Add(new Question("'Ich bin eine Zahl, die durch 3 teilbar ist und kleiner als 1.' Welche ganze Zahl bin ich?", 0));
+            
+            // Haitham easy
+            questions.Add(new Question("Wie viele Kontinente gibt es weltweit?", 7));
+            questions.Add(new Question("Wie viele Farben hat die Flagge Deutschlands?", 3));
+            questions.Add(new Question("Wie viele Tage hat eine Woche?", 7));
+            questions.Add(new Question("Wie viele Ringe hat das olympische Symbol?", 5));
+            questions.Add(new Question("Wie viele Seiten hat ein gewöhnlicher Spielwürfel?", 6));
+            questions.Add(new Question("Wie viele Stunden vergehen bei einer halben Umdrehung des Uhrzeigers?", 6));
+            questions.Add(new Question("Wie viele Ozeane unterscheidet man üblicherweise?", 5));
+            questions.Add(new Question("Wie viele Länder grenzen an Deutschland?", 9));
+            questions.Add(new Question("Wie viele Ecken hat ein Rechteck?", 4));
+            questions.Add(new Question("Wie viele Sterne umfasst der Asterismus 'Großer Wagen'?", 7));
+            
+            // Haitham hard
+            questions.Add(new Question("Wie viele Planeten unseres Sonnensystems besitzen ein Ringsystem?", 4));
+            questions.Add(new Question("Durch wie viele Kontinente verläuft der Äquator?", 3));
+            questions.Add(new Question("Wie viele Gehörknöchelchen befinden sich in einem menschlichen Ohr?", 3));
+            questions.Add(new Question("Wie viele Minuten benötigt Sonnenlicht bis zur Erde (gerundet)?", 8));
+            questions.Add(new Question("Wie viele allgemein anerkannte Grundgeschmacksrichtungen gibt es?", 5));
+            questions.Add(new Question("Wie viele platonische Körper gibt es?", 5));
+            questions.Add(new Question("Wie viele unterschiedliche Figurtypen hat jeder Spieler im Schach?", 6));
+            questions.Add(new Question("Wie viele Monate im Jahr haben 31 Tage?", 7));
+            questions.Add(new Question("Wie viele Planeten des Sonnensystems haben keine natürlichen Monde?", 2));
+            questions.Add(new Question("Wie viele Planeten sind größer als die Erde?", 4));
         }
 
         // Ask a random question from the list
