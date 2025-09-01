@@ -88,6 +88,7 @@ public class CameraManager : MonoBehaviour
         SetPlayerVisible(true);
         _firstPersonPlayerController.enabled = true;
         CanvasDraw.ToDraw = false;
+        ActiveCanvasDraw = null;
     }
 
     /// <summary>
