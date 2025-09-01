@@ -160,17 +160,10 @@ namespace Manager
             // TODO: JUST DEBUGGING (REMOVE LATER)
             
             // -----------------------------------
-           
-            var filteredMust = new List<ItemInstance>(mustItems);
-            var invComp = _player != null ? _player.GetComponent<Inventory>() : null;
-            if (invComp != null && HasTool(invComp, ToolType.Pickaxe))
-            {
-                filteredMust.RemoveAll(IsPickaxeItem);
-            }
 
             _spawners = new List<ISpawnerVoronoi>()
             {
-                new ItemSpawnerVoronoi(items, rooms, transform, filteredMust),
+                new ItemSpawnerVoronoi(items, rooms, transform, mustItems),
                 new MiniGameSpawnerVoronoi(miniGameRooms, miniGamePrefabs, transform)
             };
             PopulateDungeon();
@@ -399,40 +392,6 @@ namespace Manager
         {
             yield return null;
             EventManager.Instance.TriggerOpenBossDoors();
-        }
-        
-        private static bool IsPickaxeItem(ItemInstance instance)
-        {
-            return instance is { itemData: Equipment { toolType: ToolType.Pickaxe } };
-        }
-
-        private static bool HasTool(Inventory inventory, ToolType type)
-        {
-            if (inventory == null) return false;
-
-            // search inventory
-            var grid = inventory.getInventory();
-            if (grid != null)
-            {
-                foreach (var slot in grid)
-                {
-                    if (slot is { itemData: Equipment e } && e.toolType == type)
-                        return true;
-                }
-            }
-
-            // search equipment
-            var equip = inventory.getEquipment();
-            if (equip != null)
-            {
-                foreach (var slot in equip)
-                {
-                    if (slot is { itemData: Equipment e } && e.toolType == type)
-                        return true;
-                }
-            }
-
-            return false;
         }
     }
 }

@@ -62,7 +62,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
         // make sure total slots >= number of must items (from Distributor)
         var mustTotal  = _itemsDistributor.MustCount;
         var totalSlots = 0;
-        for (var i = 0; i < plannedCounts.Count; i++) totalSlots += i;
+        for (var i = 0; i < plannedCounts.Count; i++) totalSlots += plannedCounts[i];
 
         // increase slots per room if necessary
         var roomBumpIdx = 0;
