@@ -40,7 +40,9 @@ namespace Saving
                 Level = 1,
                 PlayerPosition = Vector3.zero,
                 BossCleared = false,
-                Items = new List<bool>() 
+                Items = new List<bool>(),
+                DigitMiniGameCleared = false,
+                GlyphMiniGameCleared = false
             };
             Save();
         }
@@ -61,6 +63,9 @@ namespace Saving
             SaveData.DestroyableWallsHealth = new List<int>();
 
             SaveData.Items = new List<bool>();
+
+            SaveData.DigitMiniGameCleared = false;
+            SaveData.GlyphMiniGameCleared = false;
             
             SaveData.PlayerPosition = Vector3.zero;
             SaveData.PlayerForward  = Vector3.zero;
