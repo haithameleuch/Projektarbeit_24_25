@@ -3,6 +3,7 @@ using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Saving;
 
 namespace MiniGame
 {
@@ -102,6 +103,28 @@ namespace MiniGame
                 return;
 
             if (!ToDraw) return;
+            
+            if (SaveSystemManager.SaveData != null)
+            {
+                if (glyph)
+                {
+                    if (SaveSystemManager.SaveData.GlyphMiniGameCleared)
+                    {
+                        randNumberText.text = "<color=green>No Glyphs!</color>";
+                        return;
+                    }
+                }
+                else
+                {
+                    if (SaveSystemManager.SaveData.DigitMiniGameCleared)
+                    {
+                        questionText.text = "No Question!";
+                        randNumberText.text = "<color=green>Done!</color>";
+                        return;
+                    }
+                }
+            }
+            
             if (!glyph)
             {
                 switch (_answered)
@@ -423,6 +446,9 @@ namespace MiniGame
             {
                 if (spawnPrefab)
                 {
+                    if (SaveSystemManager.SaveData != null)
+                        SaveSystemManager.SaveData.DigitMiniGameCleared = true;
+                    
                     const string message = "Ring Spawned";
                     ToDraw = false;
                     unlockMessage = $"<color=green>{message}</color>"; // Mark the correct digit as green
@@ -467,6 +493,9 @@ namespace MiniGame
             if (_refGlyph.Count != 0) return;
             if (spawnPrefab)
             {
+                if (SaveSystemManager.SaveData != null)
+                    SaveSystemManager.SaveData.GlyphMiniGameCleared = true;
+                
                 // Spawn near canvas position
                 var spawnPos = transform.TransformPoint(spawnPrefabOffset);
                 Instantiate(spawnPrefab, spawnPos, Quaternion.identity);

@@ -16,6 +16,8 @@ namespace Saving
         public List<bool> VisitedRooms = new();
         public List<bool> DestroyableWallsActive = new();
         public List<int> DestroyableWallsHealth = new();
+        public bool DigitMiniGameCleared = false;
+        public bool GlyphMiniGameCleared = false;
         
         // Player
         public Vector3 PlayerPosition= new(0,0,0);
