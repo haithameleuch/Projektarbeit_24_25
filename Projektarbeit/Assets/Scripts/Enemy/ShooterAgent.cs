@@ -77,7 +77,14 @@ namespace Enemy
             if (_rb != null)
                 _rb.constraints = RigidbodyConstraints.FreezeAll;
 
+            if (!objectPoolManager) objectPoolManager = FindFirstObjectByType<ObjectPoolManager>();
+            
             StartCoroutine(InitializeAfterTargetFound());
+        }
+
+        protected override void OnDisable()
+        {
+            StopAllCoroutines();
         }
 
         public void Update()
@@ -105,21 +112,11 @@ namespace Enemy
             }
 
             // isInitialized = true; NOT USED!
+            if (!shootPoint || !target) yield break;
 
             // Now it's safe to use target
             var directionToTarget = (target.transform.position - shootPoint.position).normalized;
-            Debug.Log(directionToTarget);
             transform.forward = directionToTarget;
-        }
-
-
-        /// <summary>
-        /// Called at the beginning of each new episode.
-        /// Resets target's position and health.
-        /// </summary>
-        public override void OnEpisodeBegin()
-        {
-
         }
 
         /// <summary>
@@ -128,12 +125,25 @@ namespace Enemy
         /// <param name="sensor">Sensor used to collect observations.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
+            if (!target || !shootPoint)
+            {
+                sensor.AddObservation(0f);
+                sensor.AddObservation(Vector3.zero);
+                sensor.AddObservation(0f);
+                sensor.AddObservation(1f);
+                return;
+            }
+            
             Stats targetStats = target.GetComponent<Stats>();
             if (targetStats != null)
             {
                 float targetMaxHealth = targetStats.GetMaxStats(0);
                 float targetCurHealth = targetStats.GetCurStats(0);
                 _healthNormalized = targetCurHealth / targetMaxHealth;
+            }
+            else
+            {
+                _healthNormalized = 0f;
             }
             
             //Health targetHealth = target.GetComponent<Health>();
@@ -156,6 +166,8 @@ namespace Enemy
         /// <param name="actions">Action buffer containing continuous and discrete actions.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
+            if (!shootPoint || !target) { AddReward(-0.01f); return; }
+            
             var rotationY = actions.ContinuousActions[0];
             var rotationSpeed = 50f;
             shootPoint.Rotate(0, rotationY * rotationSpeed * Time.deltaTime, 0);
@@ -189,19 +201,23 @@ namespace Enemy
             // Test that the fire cool down is done
             if (Time.time < _nextFireTime)
                 return;
-    
-            // Set the next fire time
-            _nextFireTime = Time.time + FireRate;
-    
+            
+            if (!shootPoint) return;
+            if (!objectPoolManager || !objectPoolManager.IsReady) return;
+            
             // Get an inactive projectile from the object pool
             var projectile = objectPoolManager.GetPooledObject();
             if (projectile == null) return;
+            
             // Position and orient the projectile at the shooting point
             projectile.transform.position = shootPoint.position;
             projectile.transform.rotation = shootPoint.rotation;
 
             // Activate the projectile
             projectile.SetActive(true);
+            
+            // Set the next fire time
+            _nextFireTime = Time.time + FireRate;
         }
     }
 }

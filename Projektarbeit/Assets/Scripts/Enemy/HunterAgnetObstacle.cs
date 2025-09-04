@@ -66,6 +66,11 @@ namespace Enemy
                             RigidbodyConstraints.FreezePositionY;
             StartCoroutine(FindPlayerCoroutine());
         }
+
+        protected override void OnDisable()
+        {
+            StopAllCoroutines();
+        }
         
         // ReSharper disable Unity.PerformanceAnalysis
         /// <summary>
@@ -93,6 +98,7 @@ namespace Enemy
         {
             _lastPosition = transform.localPosition;
             _stuckTimer = 0f;
+            if (!target) return;
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
         }
         
@@ -103,6 +109,16 @@ namespace Enemy
         /// </summary>
         public override void CollectObservations(VectorSensor sensor)
         {
+            if (!target)
+            {
+                sensor.AddObservation(transform.localPosition);
+                sensor.AddObservation(transform.localPosition);
+                sensor.AddObservation(Vector3.zero);
+                sensor.AddObservation(_rb.linearVelocity.normalized);
+                sensor.AddObservation(transform.forward);
+                return;
+            }
+            
             sensor.AddObservation(transform.localPosition);
             sensor.AddObservation(target.transform.localPosition);
             sensor.AddObservation((target.transform.position - transform.position).normalized);
@@ -118,6 +134,8 @@ namespace Enemy
         /// </summary>
         public override void OnActionReceived(ActionBuffers actions)
         {
+            if (!target) return;
+            
             var moveInput = Mathf.Clamp(actions.ContinuousActions[0], 0f, 1f);
             var turnInput = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
 

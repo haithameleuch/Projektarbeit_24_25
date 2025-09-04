@@ -2,8 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using ItemPlacement;
 using Saving;
+using Enemy;
 using Spawning;
 using UnityEngine;
+using MiniGame;
+using System.Linq;
 
 namespace Manager
 {
@@ -33,12 +36,22 @@ namespace Manager
         /// Distance threshold used to determine when the player has left the current room.
         /// </summary>
         [SerializeField] private float roomSwitchThreshold = 5f;
-        
+
         [SerializeField] private List<ItemInstance> items;
+        
+        [SerializeField] private List<ItemInstance> mustItems;
+        
+        [SerializeField] private List<ItemInstance> glyphItems;
 
         [SerializeField] private List<GameObject> miniGamePrefabs;
         
         [SerializeField] private List<GameObject> enemyPrefabs;
+        
+        [SerializeField] private List<GameObject> bossEnemyPrefabs;
+        
+        [SerializeField] private List<GameObject> obstaclePrefabs;
+        
+        [SerializeField] private GameObject levelExitPrefab;
 
 
         private GameObject _player;
@@ -47,6 +60,8 @@ namespace Manager
         
         private List<ISpawnerVoronoi> _spawners;
         private EnemySpawnerVoronoi _enemySpawner;
+        private BossSpawnerVoronoi _bossSpawner;
+
         
         public DungeonGraph Graph => _dungeon;
         public Room CurrentRoom => _currentRoom;
@@ -74,6 +89,8 @@ namespace Manager
         /// </summary>
         private void Start()
         {
+            EnemyDeathReporter.SetSceneChanging(false);
+            
             GenerateDungeon();
             RestoreVisitedAndCurrentRoom();
             SpawnPlayer();
@@ -107,20 +124,96 @@ namespace Manager
             int savedID = SaveSystemManager.GetCurrentRoomID();
             _currentRoom = _dungeon.GetRoomByID(savedID);
         }
-        
+
         private void InitializeSpawners()
         {
-            var rooms     = _dungeon.GetAllItemRooms();
+            var rooms = _dungeon.GetAllItemRooms();
             var miniGameRooms = _dungeon.GetAllMiniGameRooms();
-            var enemies   = _dungeon.GetAllEnemyRooms();
+            var enemies = _dungeon.GetAllEnemyRooms();
+            var bossRoom = _dungeon.GetBossRoom();
+            
+            // Place the item room guaranteed by the generator (boss-free) at the very front
+            var forcedItemRoomId = (voronoiGenerator != null) ? voronoiGenerator.ForcedItemRoomId : -1;
+            if (forcedItemRoomId >= 0)
+                rooms = rooms.OrderBy(r => r.id == forcedItemRoomId ? 0 : 1).ToList();
+            
+            // Set random glyphs keys and values and add them to MustItems
+            var seed = SaveSystemManager.GetSeed();
+            var glyphKeys = GenerateRandomGlyphs(seed);
+            var glyphNames = GetGlyphItem(glyphKeys);
+            glyphItems.RemoveAll(item => !glyphNames.Contains(item.itemData._name));
+            mustItems.AddRange(glyphItems);
+
+            // -----------------------------------
+            // TODO: JUST DEBUGGING (REMOVE LATER)
+            foreach (var mustItem in mustItems)
+            {
+                Debug.Log("MUST ITEMS: " + mustItem.itemData._name);
+            }
+            
+            Debug.Log("----------------------");
+            
+            foreach (var glyph in glyphNames)
+            {
+                Debug.Log("GLYPH ITEMS: " + glyph);
+            }
+            // TODO: JUST DEBUGGING (REMOVE LATER)
+            
+            // -----------------------------------
 
             _spawners = new List<ISpawnerVoronoi>()
             {
-                new ItemSpawnerVoronoi(items, rooms, transform),
+                new ItemSpawnerVoronoi(items, rooms, transform, mustItems),
                 new MiniGameSpawnerVoronoi(miniGameRooms, miniGamePrefabs, transform)
             };
             PopulateDungeon();
             _enemySpawner = new EnemySpawnerVoronoi(enemies, enemyPrefabs, transform);
+            _bossSpawner = new BossSpawnerVoronoi(bossRoom, bossEnemyPrefabs, obstaclePrefabs, transform, levelExitPrefab);
+            
+            // Pass the list of glyphs to the canvas draw script
+            CanvasDraw.SetRefGlyph = glyphKeys;
+        }
+
+        private static List<string> GetGlyphItem(List<int> glyphKeys)
+        {
+            // Map of keys to glyph names
+            var keyMapGlyph = new Dictionary<int, string>
+            {
+                { 0, "Air" },
+                { 1, "Earth" },
+                { 2, "Energy" },
+                { 3, "Fire" },
+                { 4, "Power" },
+                { 5, "Power" },
+                { 6, "Time" },
+                { 7, "Water" },
+            };
+
+            // Get the glyph names for the given keys
+            var glyphNames = glyphKeys
+                .Where(key => keyMapGlyph.ContainsKey(key)) // ensures only valid keys
+                .Select(key => keyMapGlyph[key])
+                .ToList();
+            
+            return glyphNames;
+        }
+
+        private static List<int> GenerateRandomGlyphs(int seed = -1)
+        {
+            var setRefGlyphKeys = new List<int>();
+            // Create Random with optional seed
+            var rand = seed >= 0 ? new System.Random(seed) : new System.Random();
+            // Decide how many additional numbers to add (2 to 4)
+            var x = rand.Next(2, 5);
+            
+            // candidates: 0-7 excluding 5. since it repeated two times in glyphs
+            var candidates = Enumerable.Range(0, 8).Where(n => n != 5 && n != 4).ToList();
+            // Shuffle candidates
+            candidates = candidates.OrderBy(n => rand.Next()).ToList();
+            // Take x numbers and add
+            setRefGlyphKeys.AddRange(candidates.Take(x));
+            
+            return setRefGlyphKeys;
         }
         
         private void SpawnPlayer()
@@ -249,13 +342,14 @@ namespace Manager
                 case RoomType.Item:
                     break;
                 case RoomType.MiniGame:
-                    EventManager.Instance.TriggerCloseDoors();
+                    //EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Enemy:
                     _enemySpawner.ActivateEnemyInRoom(newRoom);
                     EventManager.Instance.TriggerCloseDoors();
                     break;
                 case RoomType.Boss:
+                    _bossSpawner?.ActivateBossInRoom(newRoom);
                     EventManager.Instance.TriggerCloseBossDoors();
                     break;
                 default:
@@ -299,6 +393,5 @@ namespace Manager
             yield return null;
             EventManager.Instance.TriggerOpenBossDoors();
         }
-
     }
 }

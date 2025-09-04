@@ -13,7 +13,7 @@ namespace Saving
 
         public static void Save()
         {
-            string json = JsonUtility.ToJson(SaveData, true);
+            var json = JsonUtility.ToJson(SaveData, true);
             File.WriteAllText(SavePath, json);
             Debug.Log("Save written to: " + SavePath);
         }
@@ -38,10 +38,40 @@ namespace Saving
             {
                 Seed = newSeed,
                 Level = 1,
-                PlayerPosition = Vector3.zero
+                PlayerPosition = Vector3.zero,
+                BossCleared = false,
+                Items = new List<bool>(),
+                DigitMiniGameCleared = false,
+                GlyphMiniGameCleared = false
             };
             Save();
         }
+        
+        public static void AdvanceLevel(int newSeed)
+        {
+            if (SaveData == null) SaveData = new SaveData();
+
+            // Level +1 and new seed
+            SaveData.Level = Mathf.Max(1, SaveData.Level) + 1;
+            SaveData.Seed  = newSeed;
+            
+            SaveData.CurrentRoomID = 0;
+            SaveData.BossRoomOpen  = false;
+            SaveData.BossCleared = false;
+            SaveData.VisitedRooms  = new List<bool>();
+            SaveData.DestroyableWallsActive = new List<bool>();
+            SaveData.DestroyableWallsHealth = new List<int>();
+
+            SaveData.Items = new List<bool>();
+
+            SaveData.DigitMiniGameCleared = false;
+            SaveData.GlyphMiniGameCleared = false;
+            
+            SaveData.PlayerPosition = Vector3.zero;
+            SaveData.PlayerForward  = Vector3.zero;
+            SaveData.CameraForward  = Vector3.zero;
+        }
+
         
         /// -------------------------------------------------------
         /// GETTER AND SETTER METHODS
@@ -58,6 +88,10 @@ namespace Saving
         // ------- BOSS ROOM DOOR OPEN --------
         public static bool GetBossRoomOpen() => SaveData.BossRoomOpen;
         public static void SetBossRoomOpen(bool open) => SaveData.BossRoomOpen = open;
+        
+        // ------- BOSS CLEARED --------
+        public static bool GetBossCleared() => SaveData.BossCleared;
+        public static void SetBossCleared(bool cleared) => SaveData.BossCleared = cleared;
         
         // ------- VISITED ROOMS --------
         public static List<bool> GetVisitedRooms() => SaveData.VisitedRooms;

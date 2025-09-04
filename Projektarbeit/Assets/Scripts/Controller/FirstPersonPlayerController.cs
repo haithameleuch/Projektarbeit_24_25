@@ -22,6 +22,9 @@ public class FirstPersonPlayerController : MonoBehaviour
     [Header("Movement Settings")]
     [SerializeField]
     private float moveSpeed = 7f;
+    
+    [SerializeField] 
+    private int speedStatIndex = 2;
 
     /// <summary>
     /// Sensitivity of the mouse input for player rotation.
@@ -39,6 +42,8 @@ public class FirstPersonPlayerController : MonoBehaviour
     [SerializeField] 
     private bool allowPitchRotation = true;
 
+    private Stats _stats;
+    
     /// <summary>
     /// Current X-axis rotation of the player.
     /// </summary>
@@ -71,6 +76,8 @@ public class FirstPersonPlayerController : MonoBehaviour
     {
         _currentRotation = transform.rotation;
         _currentCameraRotation = cameraTransform.localRotation;
+        
+        _stats = GetComponent<Stats>();
     }
 
     /// <summary>
@@ -78,7 +85,7 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        // Get normalized movement input and calculate movement direction.
+        // Get normalized movement input and calculate the movement direction.
         Vector2 inputVector = gameInput.GetMovementVectorNormalized();
         Vector3 moveDir = transform.right * inputVector.x + transform.forward * inputVector.y;
 
@@ -96,9 +103,17 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// <param name="moveDir">The direction vector for movement.</param>
     private void HandleMovement(Vector3 moveDir)
     {
-        float moveDistance = moveSpeed * Time.deltaTime; // Maximum distance the player can move this frame.
-        float playerRadius = 0.95f; // Radius of the player's capsule for collision detection.
-        float playerHeight = 2f; // Height of the player's capsule for collision detection.
+        float speed = moveSpeed;
+        if (_stats != null)
+        {
+            var curList = _stats.GetCurStatsList();
+            if (speedStatIndex >= 0 && speedStatIndex < curList.Count)
+                speed = _stats.GetCurStats(speedStatIndex);
+        }
+        
+        var moveDistance = speed * Time.deltaTime; // Maximum distance the player can move this frame.
+        const float playerRadius = 0.85f; // Radius of the player's capsule for collision detection.
+        const float playerHeight = 2f; // Height of the player's capsule for collision detection.
 
         // Check for collisions in the movement direction using CapsuleCast.
         if (
@@ -140,6 +155,10 @@ public class FirstPersonPlayerController : MonoBehaviour
             // If no collision is detected, move the player normally.
             transform.position += moveDir * moveDistance;
         }
+        
+        var pos = transform.position;
+        pos.y = 1f;
+        transform.position = pos;
     }
 
     /// <summary>
@@ -147,7 +166,7 @@ public class FirstPersonPlayerController : MonoBehaviour
     /// </summary>
     private void HandleRotation()
     {
-        // Get the mouse look input.
+        // Get mouse-look input.
         Vector2 lookDelta = gameInput.GetLookDelta();
         _rotationY += lookDelta.x * mouseSensitivity;
         if (lookDelta == Vector2.zero)
@@ -162,7 +181,7 @@ public class FirstPersonPlayerController : MonoBehaviour
 
         if (allowPitchRotation)
         {
-            // Get the mouse look input.
+            // Get the mouse-look input.
             _rotationX -= lookDelta.y * mouseSensitivity;
             _rotationX = Mathf.Clamp(_rotationX, -90f, 90f);
             
@@ -192,7 +211,7 @@ public class FirstPersonPlayerController : MonoBehaviour
         InteractionHelper.HandleInteractions(hits, newInteractables, _currentInteractables, gameObject);
         InteractionHelper.HandleExits(newInteractables, _currentInteractables, gameObject);
 
-        // Update the list of current interactables to reflect the new state
+        // Update the list of current Interactable to reflect the new state
         _currentInteractables.Clear();
         _currentInteractables.AddRange(newInteractables);
     }

@@ -16,6 +16,8 @@ namespace Items
         private int _hitPoints;
         private Color _currentColor;
         private bool _waitingForClick;
+        private float _nextHitTime;
+        private bool _destroyScheduled;
         
         // ---- DESTROYABLE WALL ----
         public int edgeID;
@@ -23,6 +25,7 @@ namespace Items
         public void InitializeFromSave()
         {
             _hitPoints = SaveSystemManager.GetDestroyableWallHealth(edgeID);
+            _hitPoints = Mathf.Max(0, _hitPoints);
 
             if (lifeTextFront != null && lifeTextBack != null)
             {
@@ -64,10 +67,15 @@ namespace Items
 
             if (Input.GetMouseButtonDown(1))
             {
+                if (_hitPoints <= 0) return;
+                if (Time.time < _nextHitTime) return;
+                
                 UIManager.Instance.HidePanel();
                 player.AnimateSwing();
 
-                _hitPoints--;
+                _nextHitTime = Time.time + player.SwingTotalDuration();
+
+                _hitPoints = Mathf.Max(0, _hitPoints - 1);
                 SaveSystemManager.SetDestroyableWallHealth(edgeID, _hitPoints);
                 
                 if (lifeTextFront != null && lifeTextBack != null)
@@ -89,8 +97,9 @@ namespace Items
                 }
 
                 // ---- DESTROYABLE WALL ----
-                if (_hitPoints <= 0)
+                if (_hitPoints == 0 && !_destroyScheduled)
                 {
+                    _destroyScheduled = true;
                     SaveSystemManager.SetDestroyableWallActive(edgeID, false);
                     StartCoroutine(DisableAfterDelay(player.SwingTotalDuration()));
                 }

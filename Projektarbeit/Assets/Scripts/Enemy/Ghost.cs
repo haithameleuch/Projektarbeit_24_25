@@ -72,6 +72,11 @@ namespace Enemy
             StartCoroutine(VisibilityToggleRoutine());
         }
 
+        protected override void OnDisable()
+        {
+            StopAllCoroutines();
+        }
+
         // ReSharper disable Unity.PerformanceAnalysis
         /// <summary>
         /// Coroutine that continuously attempts to find the player GameObject by its tag.
@@ -97,6 +102,7 @@ namespace Enemy
         public override void OnEpisodeBegin()
         {
             _stuckTimer = 0f; // Reset stuck timer
+            if (!target) return;
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition); // Compute the Distance
         }
 
@@ -106,6 +112,14 @@ namespace Enemy
         /// <param name="sensor">The sensor to add observations to.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
+            if (!target)
+            {
+                sensor.AddObservation(Vector3.zero);
+                sensor.AddObservation(transform.forward);
+                sensor.AddObservation(0f);
+                return;
+            }
+            
             // Direction to target and current forward direction
             var toTarget = target.transform.localPosition - transform.localPosition;
             var forward = transform.forward;
@@ -125,6 +139,8 @@ namespace Enemy
         /// <param name="actions">Actions from the agent's policy.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
+            if (!target) { AddReward(-0.001f); return; }
+            
             var moveInput = actions.ContinuousActions[0];  // Forward/backward movement input
             var turnInput = actions.ContinuousActions[1];  // Rotation input
 

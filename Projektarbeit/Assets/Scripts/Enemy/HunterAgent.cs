@@ -72,6 +72,11 @@ namespace Enemy
 
         }
 
+        protected override void OnDisable()
+        {
+            StopAllCoroutines();
+        }
+
         // ReSharper disable Unity.PerformanceAnalysis
         private IEnumerator FindPlayerCoroutine()
     	{
@@ -113,6 +118,7 @@ namespace Enemy
             // Reset tracking variables
             // _lastPosition = transform.localPosition;
             _stuckTimer = 0f;
+            if (!target) return;
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
         }
 
@@ -125,6 +131,16 @@ namespace Enemy
         /// <param name="sensor">The sensor collecting environment data.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
+            if (!target)
+            {
+                sensor.AddObservation(transform.localPosition);
+                sensor.AddObservation(transform.localPosition);
+                sensor.AddObservation(Vector3.zero);
+                sensor.AddObservation(_rb.linearVelocity.normalized);
+                sensor.AddObservation(transform.forward);
+                return;
+            }
+            
             Vector3 toTarget = target.transform.localPosition - transform.localPosition;
             Vector3 forward = transform.forward;
 
@@ -143,6 +159,8 @@ namespace Enemy
         /// <param name="actions">Agent action buffers.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
+            if (!target) return;
+            
             var moveInput = actions.ContinuousActions[0]; // Forward/backward
             var turnInput = actions.ContinuousActions[1]; // Left/right turn
 

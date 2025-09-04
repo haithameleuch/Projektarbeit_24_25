@@ -20,18 +20,21 @@ public class ObjectPoolManager : MonoBehaviour
     /// Internal list to store the pooled objects.
     /// </summary>
     private List<GameObject> _pool;
+    
+    public bool IsReady => _pool != null && (_pool.Count > 0 || projectilePrefab != null);
 
     /// <summary>
     /// Initializes the object pool by instantiating inactive objects at the start.
     /// </summary>
-    private void Start()
+    private void Awake()
     {
-        _pool = new List<GameObject>();
+        if (_pool == null) _pool = new List<GameObject>();
+
+        if (projectilePrefab == null) return;
 
         for (int i = 0; i < poolSize; i++)
         {
-            // Instantiate each object, set it inactive, and add it to the pool
-            GameObject obj = Instantiate(projectilePrefab, transform);
+            var obj = Instantiate(projectilePrefab, transform);
             obj.SetActive(false);
             _pool.Add(obj);
         }
@@ -45,13 +48,23 @@ public class ObjectPoolManager : MonoBehaviour
     /// </returns>
     public GameObject GetPooledObject()
     {
-        foreach (GameObject obj in _pool)
+        if (_pool == null) _pool = new List<GameObject>();
+        
+        for (int i = 0; i < _pool.Count; i++)
         {
-            if (!obj.activeInHierarchy)
-            {
+            var obj = _pool[i];
+            if (obj is not null && !obj.activeInHierarchy)
                 return obj;
-            }
         }
+        
+        if (projectilePrefab is not null)
+        {
+            var extra = Instantiate(projectilePrefab, transform);
+            extra.SetActive(false);
+            _pool.Add(extra);
+            return extra;
+        }
+
         return null; // Return null if all objects in the pool are active
     }
 }

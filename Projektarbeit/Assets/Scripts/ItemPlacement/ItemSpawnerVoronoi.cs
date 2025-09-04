@@ -36,6 +36,13 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
         _rooms = rooms;
         _parent = parent;
     }
+
+    public ItemSpawnerVoronoi(List<ItemInstance> items, List<Room> rooms, Transform parent, List<ItemInstance> mustItems)
+    {
+        _itemsDistributor = new Distributor<ItemInstance>(items, mustItems);
+        _rooms = rooms;
+        _parent = parent;
+    }
     
     /// <summary>
     /// Spawns 1–3 items in each room, arranged in a circle around the room center.
@@ -47,15 +54,35 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
 
         var collectibleIndex = 0;
         
-        foreach (var room in _rooms)
+        // random initial counts per item room
+        var plannedCounts = new List<int>(_rooms.Count);
+        for (var r = 0; r < _rooms.Count; r++)
+            plannedCounts.Add(Random.Range(1, 5)); // 1–4 items per room
+
+        // make sure total slots >= number of must items (from Distributor)
+        var mustTotal  = _itemsDistributor.MustCount;
+        var totalSlots = 0;
+        for (var i = 0; i < plannedCounts.Count; i++) totalSlots += plannedCounts[i];
+
+        // increase slots per room if necessary
+        var roomBumpIdx = 0;
+        while (totalSlots < mustTotal && _rooms.Count > 0)
         {
-            var itemCount = Random.Range(1, 4); // 1–3 items per room
+            plannedCounts[roomBumpIdx] += 1;
+            totalSlots++;
+            roomBumpIdx = (roomBumpIdx + 1) % _rooms.Count;
+        }
+        
+        for (var roomIdx = 0; roomIdx < _rooms.Count; roomIdx++)
+        {
+            var room = _rooms[roomIdx];
+            var itemCount = plannedCounts[roomIdx];
             var radius = room.getIncircleRadius();
 
             for (var i = 0; i < itemCount; i++)
             {
                 var idx = collectibleIndex++;
-                var itemInstance = _itemsDistributor.GetRandomElement();
+                var itemInstance = _itemsDistributor.GetRandomElementIncludingMust();
             
                 // Place items in a circular pattern
                 var angle = i * (360f / itemCount);
