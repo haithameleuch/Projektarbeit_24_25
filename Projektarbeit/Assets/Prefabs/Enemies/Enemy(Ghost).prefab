@@ -250,7 +250,7 @@ GameObject:
   m_Component:
   - component: {fileID: 9203938796069245883}
   - component: {fileID: 9203938796069245882}
-  - component: {fileID: 9203938796069245881}
+  - component: {fileID: 36943502058380816}
   - component: {fileID: 5753021350618485505}
   - component: {fileID: 1335580776481025654}
   - component: {fileID: 5374376805325335263}
@@ -307,8 +307,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &9203938796069245881
-MeshCollider:
+--- !u!136 &36943502058380816
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -325,10 +325,11 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4277936243970900915, guid: 9ad131497dd2d1545b6c35e7cc732b35, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.3671924
+  m_Height: 1.3919044
+  m_Direction: 1
+  m_Center: {x: -0.0054345727, y: 0.5262904, z: -0.033289373}
 --- !u!114 &5753021350618485505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,13 +425,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStats:
-  - 20
-  - 15
+  - 30
   - 5
+  - 6
   curStats:
-  - 20
-  - 15
+  - 30
   - 5
+  - 6
 --- !u!1 &9203938796228337872
 GameObject:
   m_ObjectHideFlags: 0
@@ -885,7 +886,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.0046240697, y: 0.7244009, z: -0.0194249}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1.5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9203938796806716367}

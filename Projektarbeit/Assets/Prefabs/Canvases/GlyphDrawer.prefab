@@ -63,8 +63,8 @@ Transform:
   m_GameObject: {fileID: 717196315832019952}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0.42601967, z: -0, w: 0.904714}
-  m_LocalPosition: {x: -0.28400135, y: 0.6550001, z: 0.17796695}
-  m_LocalScale: {x: 0.6000001, y: 0.2, z: 0.04}
+  m_LocalPosition: {x: -0.28400135, y: 0.719, z: 0.17796695}
+  m_LocalScale: {x: 1.0219201, y: 0.27902, z: 0.04}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6337251967189168774}
@@ -202,7 +202,7 @@ RectTransform:
   m_GameObject: {fileID: 3810536754132180230}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -1.049}
-  m_LocalScale: {x: 0.14, y: 0.4, z: 4.9}
+  m_LocalScale: {x: 0.1022, y: 0.271872, z: 4.9}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2870559072080822230}
@@ -342,7 +342,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 6.3697734, y: 0.9733381, z: 6.688959, w: 1.2392541}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   _SortingLayer: 0
@@ -857,8 +857,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 2.9441683, y: 2.562787, z: 19.938784}
-  m_Center: {x: 0.49567103, y: -0.7815246, z: -9.469115}
+  m_Size: {x: 1.9649432, y: 2.562787, z: 19.938787}
+  m_Center: {x: 0.40101933, y: -0.78153425, z: -9.469469}
 --- !u!114 &6347320736041103086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -871,23 +871,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9090fd122099ece6a82c9607ad22af04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  questionManager: {fileID: 0}
   questionCount: 0
-  refGlyph: air
-  generatedTexture: {fileID: 0}
+  questionText: {fileID: 0}
+  questionManager: {fileID: 0}
   glyph: 1
+  spawnPrefab: {fileID: 7750535106047154682, guid: 4cdc387a02a35754a9a0355fd3c65ad2, type: 3}
+  spawnPrefabOffset: {x: 0, y: 1, z: 0}
   totalXPixels: 200
   totalYPixels: 200
   brushSize: 10
   predictionText: {fileID: 1492789285776993353}
   randNumberText: {fileID: 3628978120255680295}
-  questionText: {fileID: 0}
   useInterpolation: 1
   topLeftCorner: {fileID: 8102057498422174645}
   bottomRightCorner: {fileID: 1411193508363811392}
   point: {fileID: 6391263684634736609}
+  generatedTexture: {fileID: 0}
+  canvasMaterial: {fileID: 2100000, guid: d963498b3fdda51db83758f6763dcf74, type: 2}
   classifier: {fileID: 3258272182429552281}
-  material: {fileID: 2100000, guid: d963498b3fdda51db83758f6763dcf74, type: 2}
 --- !u!114 &3323757080671814368
 MonoBehaviour:
   m_ObjectHideFlags: 0

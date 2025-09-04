@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 1570367694671834177}
   - component: {fileID: 437247074489789302}
   - component: {fileID: 7673829330218642013}
+  - component: {fileID: -1812616890988779595}
   m_Layer: 0
   m_Name: Hunter(Drone)
   m_TagString: Enemy
@@ -28,8 +29,8 @@ Transform:
   m_GameObject: {fileID: 1492595859040446326}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7162931597550301519}
@@ -85,13 +86,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxStats:
-  - 20
+  - 30
   - 15
   - 5
   curStats:
-  - 20
+  - 30
   - 15
   - 5
+--- !u!114 &-1812616890988779595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1492595859040446326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f2cc45c32a24dd1a1c0114a8e642b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2622381101086740025
 GameObject:
   m_ObjectHideFlags: 0
@@ -117,7 +130,7 @@ Transform:
   m_GameObject: {fileID: 2622381101086740025}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.1517249, z: 0.208}
+  m_LocalPosition: {x: 0, y: 1.651725, z: 0.208}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -357,7 +370,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9179538108329661424, guid: 97ae222b8994a436e882b2cce5c8d4a1, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.2
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: 9179538108329661424, guid: 97ae222b8994a436e882b2cce5c8d4a1, type: 3}
       propertyPath: m_LocalPosition.z

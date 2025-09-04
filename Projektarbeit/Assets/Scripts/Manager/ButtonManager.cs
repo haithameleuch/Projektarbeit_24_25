@@ -1,4 +1,5 @@
 using Saving;
+using Enemy;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,18 +8,24 @@ namespace Manager
     public class ButtonManager : MonoBehaviour
     {
     
-        public void startGame()
+        public void StartGame()
         {
             Debug.Log("StartButton [NEW GAME]");
+            
+            // Just for protection
+            EnemyDeathReporter.SetSceneChanging(true);
             
             var seed = Random.Range(100000, 999999);
             SaveSystemManager.StartNewRun(seed);
             SceneManager.LoadScene("Scenes/VoronoiTest");
         }
 
-        public void loadGame()
+        public void LoadGame()
         {
             Debug.Log("LoadButton [LOAD GAME]");
+            
+            // Just for protection
+            EnemyDeathReporter.SetSceneChanging(true);
             
             SaveSystemManager.Load();
             Time.timeScale = 1;
@@ -33,9 +40,12 @@ namespace Manager
             }
         }
 
-        public void exitGame()
+        public void ExitGame()
         {
             Debug.Log("ExitButton [EXIT GAME]");
+            
+            // Just for protection
+            EnemyDeathReporter.SetSceneChanging(true);
             
             #if UNITY_STANDALONE
                 Application.Quit();
@@ -45,7 +55,7 @@ namespace Manager
             #endif
         }
 
-        public void saveGame()
+        public void SaveGame()
         {
             Debug.Log("SaveButton [SAVE GAME]");
             

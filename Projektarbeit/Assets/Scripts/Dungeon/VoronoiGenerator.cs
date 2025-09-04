@@ -26,14 +26,29 @@ public class VoronoiGenerator : MonoBehaviour
     private int _seed;
     [SerializeField] private float minDoorEdgeLength = 4f;
     [SerializeField] private Material[] skyboxMaterials;
-
-    private Light _light = new Light();
     
+    [Header("Dungeon Settings for Grass, Trees and Rocks")]
+    [SerializeField] private List<GameObject> grassSmallPrefabs;
+    [SerializeField] private List<GameObject> grassBigPrefabs;
+    [SerializeField] private List<GameObject> treePrefabs;
+    [SerializeField] private List<GameObject> rockPrefabs;
+
+    [SerializeField] private int grassSmallCount = 600;
+    [SerializeField] private int grassBigCount = 80;
+    [SerializeField] private int treeCount  = 40;
+    [SerializeField] private int rockCount  = 80;
+
+    [SerializeField] private float spawnMargin = 1f;
+    [SerializeField] private float spawnY = 0f;
+
     public float DungeonSize => size;
+    public int ForcedItemRoomId { get; private set; } = -1;
+
     private DungeonGraph _dungeonGraph;
     private System.Random _rng;
     private readonly HashSet<string> _forcedDoorPairs = new();
     private const double DoorProbability = 0.5;
+    private Light _light = new();
     
     // ---- DESTROYABLE WALL ----
     private int _breakableWallCounter = 0;
@@ -69,6 +84,8 @@ public class VoronoiGenerator : MonoBehaviour
     {
         _seed = seed;
         _rng = new System.Random(_seed);
+        RandomizeSizeAndPoints();
+        
         // ---- DESTROYABLE WALL ----
         _breakableWallCounter = 0;
         // ---- DESTROYABLE WALL ----
@@ -103,6 +120,27 @@ public class VoronoiGenerator : MonoBehaviour
             .Select(t => t.getCircumcircle().center)
             .Where(c => c.x >= 0 && c.x <= size && c.y >= 0 && c.y <= size)
             .ToList();
+    }
+    
+    private void RandomizeSizeAndPoints()
+    {
+        var level = Mathf.Max(1, Saving.SaveSystemManager.GetLevel());
+        var rnd = new System.Random(_seed ^ 0xA2C2A);
+        
+        var t = Mathf.Clamp01((level - 1) / 9f);
+
+        // Size 40..80 + small Seed-Noise (±5)
+        var baseSize  = Mathf.Lerp(40f, 80f, t);
+        var sizeNoise = (float)(rnd.NextDouble() * 2 - 1) * 5f;   // ±5
+        size = Mathf.Clamp(Mathf.Round(baseSize + sizeNoise), 40f, 80f);
+
+        // numPoints proportional with size 10..20 + Jitter (±2)
+        var prop = (size - 40f) / 40f; // 0..1
+        var basePoints = Mathf.RoundToInt(Mathf.Lerp(10f, 20f, prop));
+        var jitter = rnd.Next(-2, 3);
+        numPoints = Mathf.Clamp(basePoints + jitter, 10, 20);
+
+        Debug.Log($"[Voronoi] Level{level} -> size={size}, numPoints={numPoints}");
     }
     #endregion
     
@@ -260,12 +298,40 @@ public class VoronoiGenerator : MonoBehaviour
             mat.SetFloat("_GridSize", gridSize);
         }
         
+        ScatterCategory(grassSmallPrefabs, grassSmallCount, 0x1111);
+        ScatterCategory(grassBigPrefabs, grassBigCount, 0x2222);
+        ScatterCategory(treePrefabs,  treeCount,  0x3333);
+        ScatterCategory(rockPrefabs,  rockCount,  0x4444);
+        
         // Create outside walls of the dungeon
         CreateWall(new Vector3(0, 0, 0), new Vector3(size, 0, 0), -1);
         CreateWall(new Vector3(size, 0, 0), new Vector3(size, 0, size), -2);
         CreateWall(new Vector3(size, 0, size), new Vector3(0, 0, size), -3);
         CreateWall(new Vector3(0, 0, size), new Vector3(0, 0, 0), -4);
     }
+    
+    private void ScatterCategory(List<GameObject> prefabs, int count, int seedSalt)
+    {
+        if (prefabs == null || prefabs.Count == 0 || count <= 0) return;
+        
+        var rng = new System.Random(_seed ^ seedSalt);
+
+        float minX = spawnMargin;
+        float maxX = size - spawnMargin;
+        float minZ = spawnMargin;
+        float maxZ = size - spawnMargin;
+
+        for (int i = 0; i < count; i++)
+        {
+            float x = Mathf.Lerp(minX, maxX, (float)rng.NextDouble());
+            float z = Mathf.Lerp(minZ, maxZ, (float)rng.NextDouble());
+
+            var prefab = prefabs[rng.Next(prefabs.Count)];
+            var rotY   = (float)(rng.NextDouble() * 360.0);
+            Instantiate(prefab, new Vector3(x, spawnY, z), Quaternion.Euler(0f, rotY, 0f), transform);
+        }
+    }
+
     
     /// <summary>
     /// Builds only the segmented Walls for the voronoi-edges
@@ -543,21 +609,54 @@ public class VoronoiGenerator : MonoBehaviour
     }
     
     /// <summary>
-    /// Computes the door path that must be traversable (start → item room)
+    /// Computes the door path that must be traversable (start → some item room),
+    /// but avoids passing through the Boss room.
+    /// Also stores the target item room id in _forcedItemRoomId.
     /// </summary>
     private void ComputeForcedDoorPairs()
     {
         _forcedDoorPairs.Clear();
+        ForcedItemRoomId = -1;
 
-        var start = _dungeonGraph.GetStartRoom();
-        var firstItem = _dungeonGraph.GetAllItemRooms().FirstOrDefault();
-        if (start == null || firstItem == null) return;
+        var start     = _dungeonGraph.GetStartRoom();
+        var itemRooms = _dungeonGraph.GetAllItemRooms();
+        if (start == null || itemRooms == null || itemRooms.Count == 0) return;
+        
+        List<Room> bestPath = null;
+        Room bestTarget = null;
 
-        var path = _dungeonGraph.FindShortestPath(start, firstItem);
-        if (path == null) return;
+        foreach (var item in itemRooms)
+        {
+            var path = _dungeonGraph.FindShortestPathWithoutBossRoom(start, item);
+            if (path == null) continue;
 
-        for (int i = 0; i < path.Count - 1; i++)
-            _forcedDoorPairs.Add(GetPairKey(path[i].id, path[i + 1].id));
+            if (bestPath == null || path.Count < bestPath.Count)
+            {
+                bestPath = path;
+                bestTarget = item;
+            }
+        }
+
+        // Fallback
+        if (bestPath == null)
+        {
+            var firstItem = itemRooms.FirstOrDefault();
+            if (firstItem == null) return;
+
+            var fallback = _dungeonGraph.FindShortestPath(start, firstItem);
+            if (fallback == null) return;
+
+            for (int i = 0; i < fallback.Count - 1; i++)
+                _forcedDoorPairs.Add(GetPairKey(fallback[i].id, fallback[i + 1].id));
+
+            ForcedItemRoomId = firstItem.id;
+            return;
+        }
+
+        for (var i = 0; i < bestPath.Count - 1; i++)
+            _forcedDoorPairs.Add(GetPairKey(bestPath[i].id, bestPath[i + 1].id));
+        
+        ForcedItemRoomId = bestTarget?.id ?? bestPath.Last().id;
     }
     
     /// <summary>
@@ -573,10 +672,18 @@ public class VoronoiGenerator : MonoBehaviour
         _debugShortestItemPath = null;
 
         var start = _dungeonGraph.GetStartRoom();
-        var item  = _dungeonGraph.GetAllItemRooms().FirstOrDefault();
-        if (start == null || item == null) return;
+        if (start == null) return;
+        
+        Room item = null;
+        if (ForcedItemRoomId >= 0)
+            item = _dungeonGraph.GetRoomByID(ForcedItemRoomId);
+        else
+            item = _dungeonGraph.GetAllItemRooms().FirstOrDefault();
 
-        var pathRooms = _dungeonGraph.FindShortestPath(start, item);
+        if (item == null) return;
+
+        var pathRooms = _dungeonGraph.FindShortestPathWithoutBossRoom(start, item)
+                        ?? _dungeonGraph.FindShortestPath(start, item);
         if (pathRooms == null) return;
 
         _debugShortestItemPath = pathRooms.Select(r => r.center).ToList();

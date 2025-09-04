@@ -526,12 +526,13 @@ GameObject:
   m_Component:
   - component: {fileID: 5071192279892166690}
   - component: {fileID: 1923595312427331964}
-  - component: {fileID: 9009341696283866896}
+  - component: {fileID: 7717742593701398622}
   - component: {fileID: 6057608711081671522}
   - component: {fileID: 757016021483082846}
   - component: {fileID: 6493072091100428320}
   - component: {fileID: 4772425001740388093}
   - component: {fileID: -5230255876404980581}
+  - component: {fileID: 8986487424920273126}
   m_Layer: 0
   m_Name: MiniHunter
   m_TagString: Enemy
@@ -583,8 +584,8 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!64 &9009341696283866896
-MeshCollider:
+--- !u!136 &7717742593701398622
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -601,10 +602,11 @@ MeshCollider:
   m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 4277936243970900915, guid: 9ad131497dd2d1545b6c35e7cc732b35, type: 3}
+  serializedVersion: 2
+  m_Radius: 0.3671924
+  m_Height: 1.3919044
+  m_Direction: 1
+  m_Center: {x: -0.0054345727, y: 0.8, z: -0.033289373}
 --- !u!114 &6057608711081671522
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -696,9 +698,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxStats:
   - 20
-  - 15
-  - 5
+  - 6
+  - 6
   curStats:
   - 20
-  - 15
-  - 5
+  - 6
+  - 6
+--- !u!114 &8986487424920273126
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8042708415579397192}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f2cc45c32a24dd1a1c0114a8e642b3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

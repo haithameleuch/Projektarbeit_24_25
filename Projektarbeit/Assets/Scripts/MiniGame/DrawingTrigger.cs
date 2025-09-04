@@ -12,7 +12,7 @@ public class DrawingTrigger : MonoBehaviour, IInteractable
     public void Interact(GameObject interactor)
     {
         UIManager.Instance.ShowPanel("Press [G] to Draw!");
-
+        
         // Reference to the CanvasDraw of this object
         CanvasDraw canvas = GetComponent<CanvasDraw>();
 
