@@ -6,41 +6,46 @@ using System.Collections;
 
 namespace Enemy
 {
-    /*
-     * Spawnling Agent Structure and Behavior:
-     *
-     * This class defines a summoner-type enemy agent (Spawnling) trained using Unity ML-Agents.
-     * The agent's behavior focuses on pursuing the player while periodically spawning new entities (e.g., allies, hazards).
-     *
-     * Agent Overview:
-     * - Type: Summoner-Pursuer Enemy
-     * - Goal: Chase the player and spawn additional prefabs to increase pressure over time.
-     * - Behavior:
-     *     • Moves using continuous actions (forward + rotation).
-     *     • Observes:
-     *         - Normalized vector to the player
-     *         - Its own forward direction
-     *         - Signed angle to the player
-     *     • Rewards:
-     *         - Positive for reducing distance to the player
-     *         - Positive for facing the player
-     *         - Negative for being stuck or hitting walls
-     *     • Spawning:
-     *         - Periodically spawns a designated prefab at its current position.
-     *         - Uses a spawn timer (default 10s) to control spawn rate.
-     *
-     * Key Features:
-     * - Rigidbody-based movement and rotation
-     * - Player detection using coroutine with tag-based search
-     * - Reward shaping for efficient chasing behavior
-     * - Prefab instantiation system for spawning mechanics
-     * - Modular and adaptable for swarm- or support-based AI types
-     *
-     * Suitable for:
-     * - Enemy types that grow in threat over time (e.g., spawners, breeders)
-     * - Cooperative enemy behaviors (e.g., spawnling creates distractions or reinforcements)
-     */
-
+    /// <summary>
+    /// Defines a summoner-type enemy agent (Spawnling) trained with Unity ML-Agents.
+    ///
+    /// <para>Core Behavior:</para>
+    /// <list type="bullet">
+    /// <item>Pursues the player using Rigidbody-based forward/backward movement and rotation.</item>
+    /// <item>Periodically spawns a designated prefab at its current position to increase threat or support allies.</item>
+    /// <item>Uses coroutine-based player detection and modular spawn system.</item>
+    /// </list>
+    ///
+    /// <para>Observations:</para>
+    /// <list type="bullet">
+    /// <item>Direction to the player, normalized (Vector3)</item>
+    /// <item>Agent's forward direction (Vector3)</item>
+    /// <item>Signed angle to the player, normalized [-1,1] (float)</item>
+    /// </list>
+    /// <para>Total = 7 observations per step.</para>
+    ///
+    /// <para>Rewards:</para>
+    /// <list type="bullet">
+    /// <item>Positive reward for reducing distance to the player.</item>
+    /// <item>Positive reward for facing the player.</item>
+    /// <item>Negative reward for being stuck or colliding with walls.</item>
+    /// </list>
+    ///
+    /// <para>Key Features:</para>
+    /// <list type="bullet">
+    /// <item>Rigidbody-based movement and rotation with frozen Y-axis position and X/Z rotation.</item>
+    /// <item>Spawn timer controlling instantiation of prefab objects.</item>
+    /// <item>Stuck detection using position delta over time.</item>
+    /// <item>Modular and adaptable for swarm or reinforcement-based enemy behaviors.</item>
+    /// </list>
+    ///
+    /// <para>Best suited for:</para>
+    /// <list type="bullet">
+    /// <item>Enemies that grow in threat over time (e.g., spawners or breeders).</item>
+    /// <item>Cooperative enemy behaviors where spawned prefabs act as reinforcements or distractions.</item>
+    /// <item>Training scenarios combining pursuit and spawning mechanics.</item>
+    /// </list>
+    /// </summary>
     public class Spawnling : Agent
     {
         /// <summary>
@@ -53,11 +58,19 @@ namespace Enemy
         /// </summary>
         [SerializeField] private float movementSpeed = 4f;
 
-        // Internal state tracking
+        /// <summary>Tracks the agent's last position to detect being stuck.</summary>
         private Vector3 _lastPosition;
+        
+        /// <summary>Timer for stuck detection.</summary>
         private float _stuckTimer;
+        
+        /// <summary>Reference to the Rigidbody for physics-based movement.</summary>
         private Rigidbody _rb;
+        
+        /// <summary>Reference to the Rigidbody for physics-based movement.</summary>
         private float _prevDistance;
+        
+        /// <summary>Flag to indicate if the agent has finished initialization and found the target.</summary>
         private bool _isInitialized;
 
         /// <summary>
@@ -76,15 +89,35 @@ namespace Enemy
         /// Timer to track spawn cooldown.
         /// </summary>
         private float _spawnTimer;
-
-
+        
+        /// <summary>
+        /// Unity Start method called before the first frame update.
+        /// Immediately spawns the assigned prefab when the agent is first created.
+        /// </summary> 
         private void Start()
         {
             SpawnPrefab();
         }
+        
+        /// <summary>
+        /// Called every frame to handle spawning logic and other updates.
+        /// </summary>
+        private void Update()
+        {
+            if (!_isInitialized || !prefabToSpawn) return;
+
+            // Countdown spawn timer
+            _spawnTimer -= Time.deltaTime;
+
+            // When the timer reaches zero, spawn a prefab instance
+            if (!(_spawnTimer <= 0f)) return;
+            SpawnPrefab();
+            _spawnTimer = spawnInterval; // Reset timer
+        }
 
         /// <summary>
-        /// Called once at agent initialization. Assigns the player target and configures rigidbody constraints.
+        /// Called once at agent initialization. Assigns the player target and sets Rigidbody constraints.
+        /// Also initializes the spawn timer.
         /// </summary>
         public override void Initialize()
         {
@@ -104,18 +137,25 @@ namespace Enemy
 
         }
         
+        /// <summary>
+        /// Called automatically by Unity when this agent or GameObject is disabled.
+        /// Stops all running coroutines to prevent unwanted behavior or errors.
+        /// </summary>
         protected override void OnDisable()
         {
             StopAllCoroutines();
         }
-
-        // ReSharper disable Unity.PerformanceAnalysis
+        
+        /// <summary>
+        /// Coroutine that repeatedly searches for the player GameObject by tag ("Player").
+        /// Once found, sets the target reference, updates movement speed, and marks the agent as initialized.
+        /// </summary>
         private IEnumerator FindPlayerCoroutine()
         {
             while (!target)
             {
                 target = GameObject.FindWithTag("Player");
-                if (target == null)
+                if (!target)
                 {
                     yield return new WaitForSeconds(0.5f);
                 }
@@ -123,8 +163,7 @@ namespace Enemy
             movementSpeed = gameObject.GetComponent<Stats>().GetCurStats(2);
             _isInitialized = true;
         }
-
-
+        
         /// <summary>
         /// Resets agent and player positions at the beginning of an episode.
         /// Resets spawn timer as well.
@@ -144,6 +183,7 @@ namespace Enemy
         /// - Direction to target
         /// - Agent's forward direction
         /// - Signed angle between forward direction and target
+        /// - Number of Observations: 3 + 3 + 1 = 7
         /// </summary>
         /// <param name="sensor">The sensor collecting environment data.</param>
         public override void CollectObservations(VectorSensor sensor)
@@ -156,45 +196,48 @@ namespace Enemy
                 return;
             }
             
-            Vector3 toTarget = target.transform.localPosition - transform.localPosition;
-            Vector3 forward = transform.forward;
+            var toTarget = target.transform.localPosition - transform.localPosition;
+            var forward = transform.forward;
 
             sensor.AddObservation(toTarget.normalized); // 3 observations
             sensor.AddObservation(forward); // 3 observations
 
-            float angleToTarget = Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f;
+            var angleToTarget = Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f;
             sensor.AddObservation(angleToTarget); // 1 observation
-
-            // Total: 7 observations
         }
 
         /// <summary>
-        /// Processes received actions to move and rotate the agent, apply rewards/penalties.
+        /// Receives actions from the ML model and moves/rotates the agent accordingly.
+        /// Rewards are applied based on:
+        /// - Reducing distance to the player
+        /// - Facing the player
+        /// - Penalty for being stuck
+        /// - Small time step penalty
         /// </summary>
-        /// <param name="actions">Agent action buffers.</param>
+        /// <param name="actions">Continuous action inputs from the agent.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
             if (!target) { AddReward(-0.001f); return; }
             
-            float moveInput = actions.ContinuousActions[0]; // Forward/backward
-            float turnInput = actions.ContinuousActions[1]; // Left/right turn
+            var moveInput = actions.ContinuousActions[0]; // Forward/backward
+            var turnInput = actions.ContinuousActions[1]; // Left/right turn
 
             // Move forward/backward
-            Vector3 forwardMovement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
+            var forwardMovement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
             _rb.MovePosition(_rb.position + forwardMovement);
 
             // Rotate
             transform.Rotate(Vector3.up, turnInput * 180f * Time.deltaTime);
 
             // Calculate distance-based progress reward
-            float currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
-            float distanceDelta = _prevDistance - currentDistance;
+            var currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
+            var distanceDelta = _prevDistance - currentDistance;
             AddReward(distanceDelta * 0.01f);
             _prevDistance = currentDistance;
 
             // Reward for facing the target
-            Vector3 toTarget = (target.transform.localPosition - transform.localPosition).normalized;
-            float facingDot = Vector3.Dot(transform.forward, toTarget); // 1 = facing directly at target
+            var toTarget = (target.transform.localPosition - transform.localPosition).normalized;
+            var facingDot = Vector3.Dot(transform.forward, toTarget); // 1 = facing directly at target
             AddReward(facingDot * 0.005f);
 
             // Step penalty to encourage faster completion
@@ -232,24 +275,6 @@ namespace Enemy
             else if (other.CompareTag("Wall"))
             {
                 AddReward(-2f);
-            }
-        }
-
-        /// <summary>
-        /// Called every frame to handle spawning logic and other updates.
-        /// </summary>
-        private void Update()
-        {
-            if (!_isInitialized || !prefabToSpawn) return;
-
-            // Countdown spawn timer
-            _spawnTimer -= Time.deltaTime;
-
-            // When the timer reaches zero, spawn a prefab instance
-            if (_spawnTimer <= 0f)
-            {
-                SpawnPrefab();
-                _spawnTimer = spawnInterval; // Reset timer
             }
         }
 

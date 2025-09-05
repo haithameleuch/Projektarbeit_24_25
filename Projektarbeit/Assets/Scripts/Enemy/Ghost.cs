@@ -6,40 +6,62 @@ using System.Collections;
 
 namespace Enemy
 {
-    /*
-     * GhostAgent Structure and Behavior:
-     *
-     * This class defines a stealthy and agile enemy agent (Ghost) using Unity ML-Agents.
-     * The Ghost's behavior combines smooth movement with disappearing and dashing to confuse and approach the player target.
-     *
-     * Agent Overview:
-     * - The Ghost uses continuous actions to move and rotate toward the player.
-     * - It observes the direction and angle to the player to inform its movement decisions.
-     * - Rewards are provided for reducing distance and facing the target, with penalties for idleness or poor performance.
-     *
-     * Enemy Type Summary:
-     * - Type: Agile-Stealth Enemy
-     * - Goal: Reach the player using evasive and unpredictable movement.
-     * - Behavior:
-     *     • Periodically becomes invisible.
-     *     • Perform smooth dash movement to the left or right (instead of teleportation).
-     *     • Reappears and continues pursuing the player.
-     *     • Penalized for hitting walls or getting stuck.
-     *
-     * Key Features:
-     * - Physics-based movement using Rigidbody.
-     * - Ghost-like dash using `Vector3.Lerp` over `dashDuration`.
-     * - Visibility controlled via alpha channel fading on the Renderer material.
-     * - Timed routine for random dash behavior that improves unpredictability.
-     */
-
+    /// <summary>
+    /// Defines a stealthy and agile enemy agent (GhostAgent) trained with Unity ML-Agents.
+    ///
+    /// <para>Core Behavior:</para>
+    /// <list type="bullet">
+    /// <item>Moves smoothly toward the player using continuous movement and rotation actions.</item>
+    /// <item>Performs dashes to the left or right using <see cref="Vector3.Lerp"/> for smooth interpolation.</item>
+    /// <item>Becomes temporarily invisible by adjusting the Renderer material alpha.</item>
+    /// <item>Receives rewards for approaching and facing the player accurately.</item>
+    /// <item>Penalized for hitting walls, getting stuck, or poor performance.</item>
+    /// </list>
+    ///
+    /// <para>Observations:</para>
+    /// <list type="bullet">
+    /// <item>Direction to the player (Vector3)</item>
+    /// <item>Normalized agent forward vector (Vector3)</item>
+    /// <item>Signed angle between forward direction and player (float, normalized)</item>
+    /// </list>
+    /// <para>Total = 7 observations per step.</para>
+    ///
+    /// <para>Rewards:</para>
+    /// <list type="bullet">
+    /// <item>Positive reward for reducing distance to the player.</item>
+    /// <item>Positive reward for facing the player (alignment).</item>
+    /// <item>Negative rewards for being idle, stuck, or colliding with walls.</item>
+    /// </list>
+    ///
+    /// <para>Key Features:</para>
+    /// <list type="bullet">
+    /// <item>Rigidbody-based physics movement for realistic motion.</item>
+    /// <item>Smooth dash movement via <see cref="Vector3.Lerp"/> over <c>dashDuration</c>.</item>
+    /// <item>Visibility control using material alpha fading for stealth effect.</item>
+    /// <item>Randomized dash routines to increase unpredictability.</item>
+    /// </list>
+    ///
+    /// <para>Best suited for:</para>
+    /// <list type="bullet">
+    /// <item>Stealth and agile enemy types.</item>
+    /// <item>Scenarios emphasizing unpredictable movement, evasion, and player pursuit.</item>
+    /// </list>
+    /// </summary>
     public class Ghost : Agent
     {
+        /// <summary>
+        /// Reference to the player target the ghost pursues.
+        /// </summary>
         public GameObject target;
 
+        /// <summary>
+        /// Movement speed of the ghost, loaded from <see cref="Stats"/> on initialization.
+        /// </summary>
         [SerializeField] private float movementSpeed = 4f;
-
-        // Dash & visibility settings
+        
+        /// <summary>
+        /// Dash & visibility settings
+        /// </summary>
         [Header("Dash & Visibility Settings")]
         [SerializeField] private float minTeleportTime = 3f;    // Min seconds before dash
         [SerializeField] private float maxTeleportTime = 5f;    // Max seconds before dash
@@ -47,9 +69,24 @@ namespace Enemy
         [SerializeField] private float dashDuration = 0.2f;     // Duration of dash in seconds
         [SerializeField] private Renderer ghostRenderer;        // Assign your ghost's Renderer here in Inspector
 
+        /// <summary>
+        /// Last recorded position of the ghost, used to detect if the agent is stuck.
+        /// </summary>
         private Vector3 _lastPosition;
+        
+        /// <summary>
+        /// Timer that tracks how long the ghost has been stuck in the same position.
+        /// </summary>
         private float _stuckTimer;
+        
+        /// <summary>
+        /// Cached Rigidbody component for physics-based movement.
+        /// </summary>
         private Rigidbody _rb;
+        
+        /// <summary>
+        /// Distance to the target from the previous frame, used to calculate reward progress.
+        /// </summary>
         private float _prevDistance;
 
         /// <summary>
@@ -72,6 +109,10 @@ namespace Enemy
             StartCoroutine(VisibilityToggleRoutine());
         }
 
+        /// <summary>
+        /// Called automatically by Unity when this agent or GameObject is disabled.
+        /// Stops all running coroutines to prevent unwanted behavior or errors.
+        /// </summary>
         protected override void OnDisable()
         {
             StopAllCoroutines();
@@ -108,6 +149,7 @@ namespace Enemy
 
         /// <summary>
         /// Collects observations for the agent including normalized direction and angle to the target.
+        /// Number of Observations = 3 + 3 + 1 = 7
         /// </summary>
         /// <param name="sensor">The sensor to add observations to.</param>
         public override void CollectObservations(VectorSensor sensor)
@@ -124,12 +166,12 @@ namespace Enemy
             var toTarget = target.transform.localPosition - transform.localPosition;
             var forward = transform.forward;
 
-            sensor.AddObservation(toTarget.normalized); // Direction to target
-            sensor.AddObservation(forward);              // Current forward direction
+            sensor.AddObservation(toTarget.normalized); // Direction to target - 3
+            sensor.AddObservation(forward);              // Current forward direction - 3
 
             // Signed angle between forward and toTarget, normalized to [-1,1]
-            float angleToTarget = Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f;
-            sensor.AddObservation(angleToTarget);
+            var angleToTarget = Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f;
+            sensor.AddObservation(angleToTarget);  // 1 Observation
         }
 
         /// <summary>
@@ -209,17 +251,17 @@ namespace Enemy
         {
             if (!ghostRenderer) yield break;
 
-            Material mat = ghostRenderer.material;
-            Color color = mat.color;
-            float startAlpha = color.a;
-            float duration = 0.5f;  // Fade duration in seconds
+            var mat = ghostRenderer.material;
+            var color = mat.color;
+            var startAlpha = color.a;
+            const float duration = 0.5f;  // Fade duration in seconds
 
-            float elapsed = 0f;
+            var elapsed = 0f;
 
             while (elapsed < duration)
             {
                 elapsed += Time.deltaTime;
-                float alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
+                var alpha = Mathf.Lerp(startAlpha, targetAlpha, elapsed / duration);
                 mat.color = new Color(color.r, color.g, color.b, alpha);
                 yield return null;
             }
