@@ -7,34 +7,46 @@ using System.Collections;
 
 namespace Enemy
 {
-    /*
-     * HunterAgent Structure and Behavior:
-     *
-     * This class implements a simple pursuit-type enemy agent using Unity ML-Agents.
-     * The HunterAgent actively chases the player by learning how to move and rotate
-     * based on spatial observations, aiming to close the distance efficiently.
-     *
-     * Agent Overview:
-     * - Uses continuous actions for forward movement and rotation.
-     * - Observes:
-     *     • Normalized vector to the player
-     *     • Its own forward direction
-     *     • Signed angle between its forward direction and the direction to the player
-     * - Rewards:
-     *     • Positive reward for reducing distance and facing the player
-     *     • Penalties for being stuck, hitting walls, or taking too long
-     *
-     * Enemy Type Summary:
-     * - Type: Pursuer Enemy
-     * - Goal: Reach the player as quickly and directly as possible.
-     * - Behavior: Tracks the player using simple directional inputs, no abilities or stealth mechanics.
-     *
-     * Key Features:
-     * - Physics-based movement via Rigidbody
-     * - Built-in stuck detection logic using positional deltas
-     * - Optional random spawn logic for training (commented out)
-     * - Modular and adaptable as a foundation for more advanced enemy types
-     */
+    /// <summary>
+    /// Defines a pursuit-type enemy agent (HunterAgent) trained with Unity ML-Agents.
+    ///
+    /// <para>Core Behavior:</para>
+    /// <list type="bullet">
+    /// <item>Moves toward the player using continuous forward movement and rotation actions.</item>
+    /// <item>Receives rewards for reducing distance to the player and properly facing the target.</item>
+    /// <item>Penalized for being stuck, hitting walls, or inefficient movement.</item>
+    /// </list>
+    ///
+    /// <para>Observations:</para>
+    /// <list type="bullet">
+    /// <item>Normalized vector to the player (Vector3)</item>
+    /// <item>Agent's forward vector (Vector3)</item>
+    /// <item>Signed angle between forward and target direction (float, normalized)</item>
+    /// </list>
+    /// <para>Total = 7 observations per step.</para>
+    ///
+    /// <para>Rewards:</para>
+    /// <list type="bullet">
+    /// <item>Positive reward for decreasing distance to the player.</item>
+    /// <item>Positive reward for facing the player directly (alignment).</item>
+    /// <item>Negative rewards for being stuck or colliding with walls.</item>
+    /// <item>Step penalty to encourage efficient navigation.</item>
+    /// </list>
+    ///
+    /// <para>Key Features:</para>
+    /// <list type="bullet">
+    /// <item>Rigidbody-based physics movement with smooth rotation.</item>
+    /// <item>Stuck detection using positional deltas and timers.</item>
+    /// <item>Coroutine-based player detection to handle dynamic spawns.</item>
+    /// <item>Modular design suitable as a base for advanced enemy AI types.</item>
+    /// </list>
+    ///
+    /// <para>Best suited for:</para>
+    /// <list type="bullet">
+    /// <item>Pursuer enemies that chase players directly.</item>
+    /// <item>Training scenarios focusing on obstacle-aware navigation and directional control.</item>
+    /// </list>
+    /// </summary>
     public class HunterAgent : Agent
     {
         /// <summary>
@@ -47,19 +59,32 @@ namespace Enemy
         /// </summary>
         [SerializeField] private float movementSpeed = 4f;
 
-        // Internal state tracking
-        private Vector3 _lastPosition;
-        private float _stuckTimer;
-        private Rigidbody _rb;
-        private float _prevDistance;
-
-
         /// <summary>
-        /// Called once at agent initialization. Assigns the player target and configures rigidbody constraints.
+        /// Last recorded position of the agent, used to detect if it is stuck.
+        /// </summary>
+        private Vector3 _lastPosition;
+        
+        /// <summary>
+        /// Timer tracking how long the agent has been stuck in the same position.
+        /// </summary>
+        private float _stuckTimer;
+        
+        /// <summary>
+        /// Cached Rigidbody component for physics-based movement.
+        /// </summary>
+        private Rigidbody _rb;
+        
+        /// <summary>
+        /// Distance to the target in the previous frame, used to compute progress-based rewards.
+        /// </summary>
+        private float _prevDistance;
+        
+        /// <summary>
+        /// Called once at agent initialization.
+        /// Assigns Rigidbody and configures constraints, then starts player detection coroutine.
         /// </summary>
         public override void Initialize()
         {
-
             _rb = GetComponent<Rigidbody>();
 
             // Freeze rotation and vertical movement
@@ -69,15 +94,20 @@ namespace Enemy
 
 			// Start the coroutine to find the player
         	StartCoroutine(FindPlayerCoroutine());
-
         }
 
+        /// <summary>
+        /// Called automatically by Unity when this agent or GameObject is disabled.
+        /// Stops all running coroutines to prevent unwanted behavior or errors.
+        /// </summary>
         protected override void OnDisable()
         {
             StopAllCoroutines();
         }
 
-        // ReSharper disable Unity.PerformanceAnalysis
+        /// <summary>
+        /// Coroutine to continuously find the player GameObject by tag.
+        /// </summary>
         private IEnumerator FindPlayerCoroutine()
     	{
         	while (!target)
@@ -91,15 +121,14 @@ namespace Enemy
             movementSpeed = gameObject.GetComponent<Stats>().GetCurStats(2);
         	// isInitialized = true; // NOT USED!
     	}
-
-
+        
         /// <summary>
         /// Resets agent and player positions at the beginning of an episode.
         /// </summary>
         public override void OnEpisodeBegin()
         {
             /* 
-            // Should be eliminated. It is there to show the configuration in training process
+            // It is there to show the configuration in training process
             // Randomize hunter position
             transform.localPosition = new Vector3(
                 Random.Range(-8, 8f),
@@ -113,10 +142,10 @@ namespace Enemy
                  1,
                  Random.Range(-4f, 4f)
              );
+             // Reset tracking variables
+            _lastPosition = transform.localPosition;
              */
-
-            // Reset tracking variables
-            // _lastPosition = transform.localPosition;
+            
             _stuckTimer = 0f;
             if (!target) return;
             _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
@@ -127,6 +156,7 @@ namespace Enemy
         /// - Direction to target
         /// - Agent's forward direction
         /// - Signed angle between forward direction and target
+        /// Number of Observations = 3 + 3 + 1 = 7
         /// </summary>
         /// <param name="sensor">The sensor collecting environment data.</param>
         public override void CollectObservations(VectorSensor sensor)
@@ -141,16 +171,14 @@ namespace Enemy
                 return;
             }
             
-            Vector3 toTarget = target.transform.localPosition - transform.localPosition;
-            Vector3 forward = transform.forward;
+            var toTarget = target.transform.localPosition - transform.localPosition;
+            var forward = transform.forward;
 
             sensor.AddObservation(toTarget.normalized); // 3 observations
             sensor.AddObservation(forward); // 3 observations
 
-            float angleToTarget = Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f;
+            var angleToTarget = Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f;
             sensor.AddObservation(angleToTarget); // 1 observation
-
-            // Total: 7 observations
         }
 
         /// <summary>
