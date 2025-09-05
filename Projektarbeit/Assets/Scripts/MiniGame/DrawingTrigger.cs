@@ -1,47 +1,69 @@
-using MiniGame;
 using UnityEngine;
 
-/// <summary>
-/// Script to handle interaction and triggering of drawing functionality.
-/// </summary>
-public class DrawingTrigger : MonoBehaviour, IInteractable
+namespace MiniGame
 {
-    [SerializeField] private Transform center;
-
-    // Method invoked when the player interacts with the object
-    public void Interact(GameObject interactor)
+    /// <summary>
+    /// Handles player interaction with a drawing canvas.
+    /// Displays instructions, activates the camera for drawing,
+    /// and triggers the canvas view when the player presses the draw key.
+    /// Implements the IInteractable interface.
+    /// </summary>
+    public class DrawingTrigger : MonoBehaviour, IInteractable
     {
-        UIManager.Instance.ShowPanel("Press [G] to Draw!");
-        
-        // Reference to the CanvasDraw of this object
-        CanvasDraw canvas = GetComponent<CanvasDraw>();
+        /// <summary>
+        /// The central point to focus the camera on when the canvas is active.
+        /// </summary>
+        [SerializeField] private Transform center;
 
-        // If this is not already the active canvas, set the camera and mark it as active
-        if (CameraManager.ActiveCanvasDraw != canvas)
+        // ReSharper disable Unity.PerformanceAnalysis
+        /// <summary>
+        /// Called when the player interacts with the object.
+        /// Displays instructions and activates the canvas for drawing.
+        /// </summary>
+        /// <param name="interactor">The GameObject player interacting with this object.</param>
+        public void Interact(GameObject interactor)
         {
-            CameraManager.Instance.SetCanvasTarget(center);
-            CameraManager.Instance.SetActiveCanvas(canvas);
-        }
-        
-        if (Input.GetKeyDown(KeyCode.G))
-        {
+            if (!CanvasDraw.ToDraw)
+            {
+                UIManager.Instance.ShowPanel("Press [G] to Draw!");
+            }
+
+            var canvas = GetComponent<CanvasDraw>();
+
+            if (CameraManager.ActiveCanvasDraw != canvas)
+            {
+                CameraManager.Instance.SetCanvasTarget(center);
+                CameraManager.Instance.SetActiveCanvas(canvas);
+            }
+
+            if (!Input.GetKeyDown(KeyCode.G)) return;
+            CanvasDraw.ToDraw = true; // Mark that drawing has started
             UIManager.Instance.ShowPanel(
-                "1. Press [C] To erase.\n"
-                + "2. Press [Right Click] to predict the digit.\n"
-                + "3. Press [Left Click] to draw!"
+                "1. Press [C] To erase.\n" +
+                "2. Press [Right Click] to predict the digit.\n" +
+                "3. Press [Left Click] to draw!"
             );
 
             EventManager.Instance.TriggerCanvasView();
         }
-    }
 
-    public void OnExit(GameObject interactor)
-    {
-        UIManager.Instance.HidePanel();
-    }
+        /// <summary>
+        /// Called when the player exits the interaction area.
+        /// Hides any instruction panel related to drawing.
+        /// </summary>
+        /// <param name="interactor">The GameObject player exiting the interaction.</param>
+        public void OnExit(GameObject interactor)
+        {
+            UIManager.Instance.HidePanel();
+        }
 
-    public bool ShouldRepeat()
-    {
-        return true;
+        /// <summary>
+        /// Determines whether the interaction can be repeated.
+        /// </summary>
+        /// <returns>Always returns true, allowing repeated interaction.</returns>
+        public bool ShouldRepeat()
+        {
+            return true;
+        }
     }
 }
