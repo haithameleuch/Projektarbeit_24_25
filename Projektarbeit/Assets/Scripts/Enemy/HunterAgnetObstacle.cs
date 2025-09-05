@@ -6,54 +6,91 @@ using System.Collections;
 
 namespace Enemy
 {
-    /*
-     * HunterAgentObstacle Structure and Behavior:
-     *
-     * This class defines a navigation-focused enemy agent (HunterAgentObstacle) trained using Unity ML-Agents.
-     * The agent specializes in efficiently reaching a player while navigating through an environment with static obstacles.
-     *
-     * Agent Overview:
-     * - Type: Pursuer-Obstacle Navigator Enemy
-     * - Goal: Reach the player by learning obstacle-aware pathfinding and target alignment.
-     * - Behavior:
-     *     • Moves toward the player using continuous actions (forward + rotation).
-     *     • Observes its position, velocity, forward direction, and vector to the player.
-     *     • Uses multiple reward components:
-     *         - Distance reduction toward the player (progress reward)
-     *         - Alignment of movement direction with target (velocity alignment reward)
-     *         - Facing the target directly (facing reward)
-     *     • Penalized for:
-     *         - Getting stuck
-     *         - Colliding with obstacles or walls
-     *
-     * Key Features:
-     * - Rigidbody-based physics movement
-     * - Smooth rotation and acceleration control
-     * - Coroutine-based player detection
-     * - Stuck detection using position delta and time threshold
-     * - Gizmo support for debugging forward direction and target tracking
-     *
-     * Training Utility:
-     * - This agent is well-suited for tasks involving obstacle avoidance, precision pursuit, and navigation-based reward shaping.
-     */
-
+    /// <summary>
+    /// Defines a navigation-focused enemy agent (HunterAgentObstacle) trained with Unity ML-Agents.
+    ///
+    /// <para>Core Behavior:</para>
+    /// <list type="bullet">
+    /// <item>Chases the player while avoiding obstacles using continuous forward and rotation actions.</item>
+    /// <item>Receives rewards for reducing distance, aligning movement direction, and facing the target.</item>
+    /// <item>Penalized for getting stuck or colliding with obstacles, walls, or doors.</item>
+    /// </list>
+    ///
+    /// <para>Observations:</para>
+    /// <list type="bullet">
+    /// <item>Agent's local position (Vector3)</item>
+    /// <item>Target's local position (Vector3)</item>
+    /// <item>Normalized vector from agent to target (Vector3)</item>
+    /// <item>Agent's normalized velocity (Vector3)</item>
+    /// <item>Agent's forward vector (Vector3)</item>
+    /// </list>
+    /// <para>Total = 15 observations per step.</para>
+    ///
+    /// <para>Rewards:</para>
+    /// <list type="bullet">
+    /// <item>Positive reward for reducing distance to the player (progress reward).</item>
+    /// <item>Positive reward for aligning movement direction with the target (velocity alignment).</item>
+    /// <item>Positive reward for facing the target directly (facing reward).</item>
+    /// <item>Negative reward for being stuck or colliding with obstacles.</item>
+    /// </list>
+    ///
+    /// <para>Key Features:</para>
+    /// <list type="bullet">
+    /// <item>Physics-based movement with Rigidbody and smooth rotation.</item>
+    /// <item>Stuck detection using position deltas and a timer threshold.</item>
+    /// <item>Coroutine-based player detection for dynamic spawns.</item>
+    /// <item>Gizmos for debugging forward direction and target tracking.</item>
+    /// </list>
+    ///
+    /// <para>Best suited for:</para>
+    /// <list type="bullet">
+    /// <item>Obstacle-aware navigation tasks.</item>
+    /// <item>Precision pursuit and pathfinding AI training.</item>
+    /// <item>Navigation reward shaping scenarios.</item>
+    /// </list>
+    /// </summary>
     public class HunterAgentObstacle : Agent
     {
-        // Movement speed of the bomber agent
+        /// <summary>
+        /// Movement speed of the agent, can be modified from inspector or runtime via Stats.
+        /// </summary>
         public float movementSpeed = 8f;
         
-        // Reference to the player target
+        /// <summary>
+        /// Reference to the player target GameObject.
+        /// </summary>
         public GameObject target;
 
-        // Internal state variables for training
+        /// <summary>
+        /// Cached Rigidbody for physics-based movement.
+        /// </summary>
         private Rigidbody _rb;
+        
+        /// <summary>
+        /// Distance to the target in the previous step, used to calculate progress reward.
+        /// </summary>
         private float _prevDistance;
+        
+        /// <summary>
+        /// Last recorded position to detect whether the agent is stuck.
+        /// </summary>
         private Vector3 _lastPosition;
+        
+        /// <summary>
+        /// Timer for how long the agent has been stuck in the same position.
+        /// </summary>
         private float _stuckTimer;
+        
+        /// <summary>
+        /// Threshold distance to consider the agent as stuck.
+        /// </summary>
         private const float StuckThreshold = 0.01f;
+        
+        /// <summary>
+        /// Maximum time allowed for being stuck before penalizing.
+        /// </summary>
         private const float StuckTimeLimit = 0.3f;
         
-
         /// <summary>
         /// Called once when the agent is first initialized.
         /// Sets up Rigidbody constraints and starts the coroutine to find the player.
@@ -67,6 +104,10 @@ namespace Enemy
             StartCoroutine(FindPlayerCoroutine());
         }
 
+        /// <summary>
+        /// Called automatically by Unity when this agent or GameObject is disabled.
+        /// Stops all running coroutines to prevent unwanted behavior or errors.
+        /// </summary>
         protected override void OnDisable()
         {
             StopAllCoroutines();
@@ -106,6 +147,7 @@ namespace Enemy
         /// Collects observations about the agent's environment.
         /// Provides the agent with its own position, target's position,
         /// direction to the target, current velocity, and facing a direction.
+        /// Number of Observations = 3 + 3 + 3 + 3 + 3 = 15
         /// </summary>
         public override void CollectObservations(VectorSensor sensor)
         {
@@ -119,43 +161,50 @@ namespace Enemy
                 return;
             }
             
-            sensor.AddObservation(transform.localPosition);
-            sensor.AddObservation(target.transform.localPosition);
-            sensor.AddObservation((target.transform.position - transform.position).normalized);
-            sensor.AddObservation(_rb.linearVelocity.normalized);
-            sensor.AddObservation(transform.forward);
+            sensor.AddObservation(transform.localPosition);               // 3 floats (x, y, z)
+            sensor.AddObservation(target.transform.localPosition);        // 3 floats (x, y, z)
+            sensor.AddObservation((target.transform.position - transform.position).normalized); // 3 floats (normalized vector)
+            sensor.AddObservation(_rb.linearVelocity.normalized);         // 3 floats (velocity direction)
+            sensor.AddObservation(transform.forward);                     // 3 floats (forward direction)
         }
 
         /// <summary>
-        /// Called when the agent receives an action from the policy.
-        /// Moves and rotates the agent according to the action inputs,
-        /// calculates rewards based on progress towards the target,
-        /// alignment with the target direction, and handles stuck detection.
+        /// Processes actions from the neural network to move and rotate the agent.
+        /// Calculates multiple reward components and detects stuck conditions.
         /// </summary>
+        /// <param name="actions">Continuous action buffer from ML policy.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
             if (!target) return;
             
-            var moveInput = Mathf.Clamp(actions.ContinuousActions[0], 0f, 1f);
-            var turnInput = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f);
+            var moveInput = Mathf.Clamp(actions.ContinuousActions[0], 0f, 1f); // Forward/backward input
+            var turnInput = Mathf.Clamp(actions.ContinuousActions[1], -1f, 1f); // Left/right rotation input
 
+            // Compute movement vector based on input and speed, then move the agent
             var movement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
             _rb.MovePosition(_rb.position + movement);
+            
+            // Rotate the agent smoothly around Y-axis
             transform.Rotate(Vector3.up, turnInput * 300f * Time.deltaTime);
 
+            // Compute distance to the target and progress since last step
             var currentDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
             var distanceDelta = _prevDistance - currentDistance;
 
+            // Scale progress reward based on current distance
             var distanceScale = Mathf.Max(1f, currentDistance / 2f);
             var progressReward = distanceDelta * distanceScale * 2f;
             
+            // Compute alignment of agent's velocity with direction to target
             var directionToTarget = (target.transform.position - transform.position).normalized;
             var movementAlignment = Vector3.Dot(_rb.linearVelocity.normalized, directionToTarget);
             var alignmentReward = movementAlignment * 0.2f;
 
+            // Compute reward for facing the target
             var facingDot = Vector3.Dot(transform.forward, directionToTarget);
             var facingReward = Mathf.Pow(facingDot, 2) * 0.4f;
 
+            // Add combined reward for this step
             var totalReward = progressReward + alignmentReward + facingReward;
             AddReward(totalReward);
 
@@ -175,16 +224,15 @@ namespace Enemy
             {
                 _stuckTimer = 0f;
             }
-
+            
             _lastPosition = transform.localPosition;
         }
 
         /// <summary>
-        /// Handles collision events with other objects.
-        /// Rewards the agent for colliding with the player (goal)
-        /// and penalizes collisions with walls, obstacles, or doors.
-        /// Ends the episode after collision.
+        /// Handles collision with player or environmental obstacles.
+        /// Rewards the agent for reaching the player and penalizes collisions.
         /// </summary>
+        /// <param name="other">Collider the agent interacts with.</param>
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
