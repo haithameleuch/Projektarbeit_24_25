@@ -3,12 +3,27 @@ using UnityEngine;
 
 namespace MiniGame
 {
+    /// <summary>
+    /// Represents a single question with its text and correct answer.
+    /// </summary>
     [System.Serializable]
     public class Question
     {
+        /// <summary>
+        /// The text of the question.
+        /// </summary>
         public string text;
+        
+        /// <summary>
+        /// The correct answer (as an integer) for the question.
+        /// </summary>
         public int answer;
 
+        /// <summary>
+        /// Constructor to initialize a question with its text and answer.
+        /// </summary>
+        /// <param name="text">The question text.</param>
+        /// <param name="answer">The correct answer.</param>
         public Question(string text, int answer)
         {
             this.text = text;
@@ -16,18 +31,35 @@ namespace MiniGame
         }
     }
 
+    /// <summary>
+    /// Manages a list of questions, selects a random question,
+    /// and checks player answers.
+    /// </summary>
     public class QuestionManager : MonoBehaviour
     {
+        /// <summary>
+        /// List of all available questions.
+        /// </summary>
         public List<Question> questions = new List<Question>();
+        
+        /// <summary>
+        /// The currently active question.
+        /// </summary>
         private Question _currentQuestion;
 
-        void Start()
+        /// <summary>
+        /// Initialize the question manager, load questions, and pick a random question at start.
+        /// </summary>
+        public void Start()
         {
             LoadQuestions();
             AskRandomQuestion();
         }
 
-        // Load your questions here
+        /// <summary>
+        /// Loads the questions into the list.
+        /// Can be extended to load from a file or database.
+        /// </summary>
         public void LoadQuestions()
         {
             questions.Add(new Question("Ein Raum hat vier Ecken. In jeder Ecke sitzt eine Katze. Vor jeder Katze sitzen drei Katzen. Wie viele Katzen sind im Raum?", 4));
@@ -76,7 +108,9 @@ namespace MiniGame
             questions.Add(new Question("Wie viele Planeten sind größer als die Erde?", 4));
         }
 
-        // Ask a random question from the list
+        /// <summary>
+        /// Selects a random question from the question list.
+        /// </summary>
         public void AskRandomQuestion()
         {
             if (questions.Count == 0) return;
@@ -84,15 +118,22 @@ namespace MiniGame
             Debug.Log("Question: " + _currentQuestion.text+ "----> Answer:" + _currentQuestion.answer);
         }
 
-        // Check if user's predicted digit (from classifier) is correct
+        /// <summary>
+        /// Checks if the predicted digit matches the current question's answer.
+        /// </summary>
+        /// <param name="predictedDigit">The player's predicted digit.</param>
+        /// <returns>True if correct, false otherwise.</returns>
         public bool CheckAnswer(int predictedDigit)
         {
-            bool correct = predictedDigit == _currentQuestion.answer;
+            var correct = predictedDigit == _currentQuestion.answer;
             Debug.Log(correct ? "Correct!" : $"Wrong! Expected {_currentQuestion.answer}");
             return correct;
         }
 
-        // Get current question (for UI display, etc.)
+        /// <summary>
+        /// Returns the text of the current question for UI display.
+        /// </summary>
+        /// <returns>The current question's text, or empty string if none.</returns>
         public string GetCurrentQuestionText()
         {
             return _currentQuestion != null ? _currentQuestion.text : "";
