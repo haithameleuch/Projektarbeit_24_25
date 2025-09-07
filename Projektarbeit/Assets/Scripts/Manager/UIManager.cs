@@ -1,6 +1,7 @@
 using TMPro;
 using UnityEngine;
 using Saving;
+using Controller;
 
 /// <summary>
 /// Manages the UI elements, including panels and text updates.
