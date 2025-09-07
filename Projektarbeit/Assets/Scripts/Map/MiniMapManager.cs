@@ -12,36 +12,113 @@ namespace Map
     /// </summary>
     public class MiniMapManager : MonoBehaviour
     {
+        /// <summary>
+        /// Reference to the main game manager (provides the current room).
+        /// </summary>
         [Header("Dependencies")]
         [SerializeField] private GameManagerVoronoi gameManager;
+        
+        /// <summary>
+        /// Reference to the Voronoi generator (provides the dungeon graph and size).
+        /// </summary>
         [SerializeField] private VoronoiGenerator voronoiGenerator;
         
+        /// <summary>
+        /// Root RectTransform of the minimap UI.
+        /// </summary>
         [Header("UI References")]
-        [SerializeField] private RectTransform minimapRect;           
-        [SerializeField] private RectTransform roomsContainer;        
-        [SerializeField] private RectTransform connectionsContainer;  
-        [SerializeField] private RectTransform playerIcon;            
-        [SerializeField] private RectTransform playerIconVisual;      
-        [SerializeField] private GameObject roomIconPrefab;           
-        [SerializeField] private GameObject linePrefab;               
+        [SerializeField] private RectTransform minimapRect;
+        
+        /// <summary>
+        /// Parent container for room icons.
+        /// </summary>
+        [SerializeField] private RectTransform roomsContainer;
+        
+        /// <summary>
+        /// Parent container for connection lines.
+        /// </summary>
+        [SerializeField] private RectTransform connectionsContainer;
+        
+        /// <summary>
+        /// RectTransform of the player icon root.
+        /// </summary>
+        [SerializeField] private RectTransform playerIcon;
+        
+        /// <summary>
+        /// Visual part of the player icon (rotated to show facing).
+        /// </summary>
+        [SerializeField] private RectTransform playerIconVisual;
+        
+        /// <summary>
+        /// Prefab used for each room icon.
+        /// </summary>
+        [SerializeField] private GameObject roomIconPrefab;
+        
+        /// <summary>
+        /// Prefab used for connection lines between rooms.
+        /// </summary>
+        [SerializeField] private GameObject linePrefab;
+        
+        /// <summary>
+        /// Line thickness for connections.
+        /// </summary>
         [SerializeField] private float lineThickness = 2f;            
 
+        /// <summary>
+        /// Small offset applied to the start position of each connection line.
+        /// </summary>
         [Header("Connection Offset")]
         [SerializeField] private Vector2 lineOffset = new(8f, 8f);
 
+        /// <summary>
+        /// Color for visited rooms.
+        /// </summary>
         [Header("Colors")]
         [SerializeField] private Color visitedColor   = Color.white;
+        
+        /// <summary>
+        /// Color for unvisited rooms.
+        /// </summary>
         [SerializeField] private Color unvisitedColor = new(0.5f, 0.5f, 0.5f);
 
+        /// <summary>
+        /// Generated dungeon graph (rooms and neighbors).
+        /// </summary>
         private DungeonGraph _dungeon;
+        
+        /// <summary>
+        /// World size used to map room positions onto the minimap.
+        /// </summary>
         private float _dungeonSize;
+        
+        /// <summary>
+        /// Cached the main camera for reading the player yaw.
+        /// </summary>
         private Camera _mainCamera;
 
+        /// <summary>
+        /// Lookup from room id to its icon RectTransform.
+        /// </summary>
         private readonly Dictionary<int, RectTransform> _roomIcons   = new();
+        
+        /// <summary>
+        /// Lookup from room id to its icon Image (for color updates).
+        /// </summary>
         private readonly Dictionary<int, Image>         _roomImages  = new();
+        
+        /// <summary>
+        /// Lookup from room id to its label (shown when visited).
+        /// </summary>
         private readonly Dictionary<int, TMP_Text>      _roomLabels  = new();
+        
+        /// <summary>
+        /// Pool of active connection line objects.
+        /// </summary>
         private readonly List<GameObject>               _connectionLines = new();
 
+        /// <summary>
+        /// Validates dependencies and caches the main camera.
+        /// </summary>
         private void Awake()
         {
             if (gameManager == null || voronoiGenerator == null)
@@ -51,21 +128,23 @@ namespace Map
                 return;
             }
             
-            // cache the main camera once
             _mainCamera = Camera.main;
         }
         
+        /// <summary>
+        /// Starts initialization once the dungeon is ready.
+        /// </summary>
         private void Start()
         {
             StartCoroutine(InitWhenReady());
         }
 
         /// <summary>
-        /// Waits for dungeon to generate, then initializes the minimap.
+        /// Waits for the dungeon to be generated, then builds icons and connections.
+        /// Also snap the player icon to the start room.
         /// </summary>
         private IEnumerator InitWhenReady()
         {
-            // wait for graph + start room
             while (voronoiGenerator.GetDungeonGraph() == null || gameManager.CurrentRoom == null)
                 yield return null;
 
@@ -120,7 +199,7 @@ namespace Map
         }
 
         /// <summary>
-        /// Draws lines between the centers of neighboring rooms.
+        /// Draws connection lines between neighboring rooms.
         /// </summary>
         private void GenerateConnections()
         {
@@ -151,6 +230,9 @@ namespace Map
             }
         }
 
+        /// <summary>
+        /// Refresh room visuals and player icon.
+        /// </summary>
         private void Update()
         {
             RefreshRoomStates();
