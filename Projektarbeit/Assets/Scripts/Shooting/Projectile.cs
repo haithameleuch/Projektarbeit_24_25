@@ -1,61 +1,63 @@
 using UnityEngine;
 
-/// <summary>
-/// Handles the behavior of a projectile, including movement, lifetime management, and collision detection.
-/// </summary>
-public class Projectile : MonoBehaviour
+namespace Shooting
 {
     /// <summary>
-    /// Speed at which the projectile travels.
+    /// Handles the behavior of a projectile, including movement, lifetime management, and collision detection.
     /// </summary>
-    [SerializeField] private float speed = 10f;
-
-    /// <summary>
-    /// Time in seconds before the projectile is automatically deactivated.
-    /// </summary>
-    [SerializeField] private float lifetime = 3f;
-
-    /// <summary>
-    /// Timer tracking the remaining active lifetime of the projectile.
-    /// </summary>
-    [SerializeField] private float lifeTimer;
-
-    /// <summary>
-    /// Resets the lifetime timer when the projectile is activated.
-    /// </summary>
-    private void OnEnable()
+    public class Projectile : MonoBehaviour
     {
-        lifeTimer = lifetime;
-    }
+        /// <summary>
+        /// Speed of the projectile.
+        /// </summary>
+        [SerializeField] private float speed = 10f;
 
-    /// <summary>
-    /// Updates the projectile's position and checks its lifetime each frame.
-    /// </summary>
-    private void Update()
-    {
-        // Move the projectile forward based on its speed
-        transform.Translate(Vector3.forward * (speed * Time.deltaTime));
+        /// <summary>
+        /// Time in seconds before the projectile is automatically deactivated.
+        /// </summary>
+        [SerializeField] private float lifetime = 3f;
 
-        // Decrease the lifetime timer
-        lifeTimer -= Time.deltaTime;
+        /// <summary>
+        /// Timer tracking the remaining active lifetime of the projectile.
+        /// </summary>
+        [SerializeField] private float lifeTimer;
 
-        // Deactivate the projectile if its lifetime expires
-        if (lifeTimer <= 0)
+        /// <summary>
+        /// Resets the lifetime timer when the projectile is activated.
+        /// </summary>
+        private void OnEnable()
         {
-            gameObject.SetActive(false);
+            lifeTimer = lifetime;
         }
-    }
 
-    /// <summary>
-    /// Deactivates the projectile upon collision with another object.
-    /// </summary>
-    /// <param name="collision">Information about the collision.</param>
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!collision.gameObject.CompareTag("Projectile") && !collision.gameObject.CompareTag("Enemy"))
+        /// <summary>
+        /// Updates the projectile's position and checks its lifetime each frame.
+        /// </summary>
+        private void Update()
         {
-            // Deactivate the projectile on collision
-            gameObject.SetActive(false);
+            // Move the projectile forward based on its speed
+            transform.Translate(Vector3.forward * (speed * Time.deltaTime));
+
+            // Decrease the lifetime timer
+            lifeTimer -= Time.deltaTime;
+
+            // Deactivate the projectile if its lifetime expires
+            if (lifeTimer <= 0)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+
+        /// <summary>
+        /// Deactivate on collision with non-projectile and non-enemy objects.
+        /// </summary>
+        /// <param name="collision">Collision data.</param>
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (!collision.gameObject.CompareTag("Projectile") && !collision.gameObject.CompareTag("Enemy"))
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }

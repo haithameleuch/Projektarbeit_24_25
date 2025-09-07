@@ -8,6 +8,7 @@ using UnityEngine;
 using MiniGame;
 using System.Linq;
 using Controller;
+using Shooting;
 
 namespace Manager
 {
