@@ -7,6 +7,7 @@ using Spawning;
 using UnityEngine;
 using MiniGame;
 using System.Linq;
+using Controller;
 
 namespace Manager
 {

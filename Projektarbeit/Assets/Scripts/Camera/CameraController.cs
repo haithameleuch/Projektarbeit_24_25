@@ -1,3 +1,5 @@
+// LEGACY CODE !!!
+
 using System.Collections;
 using UnityEngine;
 

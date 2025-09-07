@@ -1,6 +1,7 @@
 using MiniGame;
 using Unity.Cinemachine;
 using UnityEngine;
+using Controller;
 
 /// <summary>
 /// Manages camera switching between first-person and canvas views and enables the corresponding player movement controls.
