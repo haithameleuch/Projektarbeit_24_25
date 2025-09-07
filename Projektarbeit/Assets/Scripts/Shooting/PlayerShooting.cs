@@ -1,53 +1,54 @@
 using UnityEngine;
 
-/// <summary>
-/// Handles player shooting by retrieving projectiles from an object pool and activating them at the shooting point.
-/// </summary>
-public class PlayerShooting : MonoBehaviour
+namespace Shooting
 {
     /// <summary>
-    /// Reference to the object pool manager that manages the pool of projectiles.
+    /// Handles player shooting by getting projectiles from a pool and spawning them at the shoot point.
     /// </summary>
-    [SerializeField] private ObjectPoolManager objectPoolManager;
-
-    /// <summary>
-    /// The point from which projectiles are fired.
-    /// </summary>
-    [SerializeField] private Transform shootPoint;
-
-    /// <summary>
-    /// Monitors player input for firing projectiles.
-    /// </summary>
-    private void Update()
+    public class PlayerShooting : MonoBehaviour
     {
-        // Check if the "Jump" button (default: Spacebar) is pressed
-        if (Input.GetButtonDown("Jump"))
+        /// <summary>
+        /// Reference to the object pool manager that provides projectiles.
+        /// </summary>
+        [SerializeField] private ObjectPoolManager objectPoolManager;
+
+        /// <summary>
+        /// Point where projectiles are spawned.
+        /// </summary>
+        [SerializeField] private Transform shootPoint;
+
+        /// <summary>
+        /// Checks input each frame and fires when the fire button ("Spacebar") is pressed.
+        /// </summary>
+        private void Update()
         {
-            FireProjectile();
+            if (Input.GetButtonDown("Jump"))
+            {
+                FireProjectile();
+            }
         }
-    }
 
-    /// <summary>
-    /// Fires a projectile by retrieving one from the object pool and activating it at the shooting point.
-    /// </summary>
-    private void FireProjectile()
-    {
-        // Get an inactive projectile from the object pool
-        GameObject projectile = objectPoolManager.GetPooledObject();
-        if (projectile is not null)
+        /// <summary>
+        /// Fires a projectile by retrieving one from the object pool and activating it at the shooting point.
+        /// </summary>
+        private void FireProjectile()
         {
-            // Position and orient the projectile at the shooting point
+            var projectile = objectPoolManager.GetPooledObject();
+            if (projectile is null) return;
+            
             projectile.transform.position = shootPoint.position;
             projectile.transform.rotation = shootPoint.rotation;
-
-            // Activate the projectile
+            
             projectile.SetActive(true);
         }
-    }
     
-    public void Init(ObjectPoolManager poolManager)
-    {
-        this.objectPoolManager = poolManager;
+        /// <summary>
+        /// Sets the object pool manager at runtime.
+        /// </summary>
+        /// <param name="poolManager">Pool manager to use.</param>
+        public void Init(ObjectPoolManager poolManager)
+        {
+            objectPoolManager = poolManager;
+        }
     }
-
 }
