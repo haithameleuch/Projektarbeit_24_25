@@ -1,32 +1,39 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-/// <summary>
-/// Data-Class representing the consumable type as a sub-class of item 
-/// </summary>
-[CreateAssetMenu(fileName = "Consumable", menuName = "Scriptable Objects/Consumable")]
-public class Consumable : Item
+namespace Items
 {
     /// <summary>
-    /// Which stat this consumable should give (a.t.m. 0 = Health, 1 = Damage, 2 = Speed)
+    /// Consumable-Class is used to handle all items that increase a players current stats.
+    /// Example: Health-Potion
     /// </summary>
-    [SerializeField]
-    public int stat_to_restore = 0;
-
-    /// <summary>
-    /// The amount by which the specific stat should be increased/decreased
-    /// </summary>
-    [SerializeField]
-    public float amount_to_restore = 0;
-
-    /// <summary>
-    /// //Todo implement
-    /// This method will apply the stat increase to the player
-    /// </summary>
-    /// <param name="inv">The inventory calling this method to handle interactions locally</param>
-    public override void use(Inventory inv)
+    [CreateAssetMenu(fileName = "Consumable", menuName = "Scriptable Objects/Consumable")]
+    public class Consumable : Item
     {
-        inv.gameObject.GetComponent<Stats>().IncreaseCurStat(stat_to_restore,amount_to_restore);
-        inv.removeItem(this);
-        Debug.Log(this._name + " was used.");
+        /// <summary>
+        /// Which stat this consumable should give (a.t.m. 0 = Health, 1 = Damage, 2 = Speed)
+        /// </summary>
+        [FormerlySerializedAs("stat_to_restore")] [SerializeField]
+        public int statToRestore = 0;
+
+        /// <summary>
+        /// The amount by which the specific current stat should be increased
+        /// </summary>
+        [FormerlySerializedAs("amount_to_restore")] [SerializeField]
+        public float amountToRestore = 0;
+
+        /// <summary>
+        /// This method increases the specified stat by the set amount for the object that is calling this method.
+        /// Only objects with an inventory can call this method and the increase will be given to the object that the inventory is attached to.
+        /// </summary>
+        /// <param name="inv">The inventory calling this method to ease the removal of the consumable.</param>
+        public override void use(Inventory inv)
+        {
+            // Increase the current stat by the amount
+            inv.gameObject.GetComponent<Stats>().IncreaseCurStat(statToRestore,amountToRestore);
+            
+            // Remove the item after usage
+            inv.removeItem(this);
+        }
     }
 }
