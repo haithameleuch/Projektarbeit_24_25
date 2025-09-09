@@ -8,7 +8,7 @@ using UnityEngine;
 public abstract class Item : ScriptableObject
 {
     /// <summary>
-    /// The name that will be displayed in the inventory (and is maybe used as an ID in some cases)
+    /// The name that will be displayed in the inventory (and is used as an ID in some cases)
     /// </summary>
     [SerializeField]
     public string _name = "";
@@ -30,37 +30,37 @@ public abstract class Item : ScriptableObject
     public Sprite item_icon = null;
 
     /// <summary>
-    /// The method decides which color the rarity of the item corresponds to
+    /// The method decides which color the rarity of the item corresponds to.
     /// </summary>
-    /// <returns>A RGBA-Color with respect to the items rarity</returns>
+    /// <returns>RGBA-Color with respect to the items rarity</returns>
     public Color32 getRarityColor()
     {
         if (this.rarity < 25)
         {
-            // Color Yellow
+            // Color yellow, very rare
             return new Color32(255, 255, 0, 100);
         }
         else if (this.rarity < 50)
         {
-            // Color Violett
+            // Color violet, rare
             return new Color32(255, 0, 255, 100);
         }
         else if (this.rarity < 75)
         {
-            // Color Blue
+            // Color blue, uncommon
             return new Color32(0, 0, 255, 100);
         }
         else
         {
-            // Color Green
+            // Color green, common
             return new Color32(0, 255, 0, 100);
         }
     }
 
     /// <summary>
-    /// Abstract method to be implemented by every sub-class
+    /// Abstract method to be implemented by every subclass
     /// </summary>
-    /// <param name="inv">The inventory which calles the method so the interaction can be handled locally</param>
+    /// <param name="inv">The inventory which calls the method so the interaction can be handled locally</param>
     public abstract void use(Inventory inv);
 
 }
