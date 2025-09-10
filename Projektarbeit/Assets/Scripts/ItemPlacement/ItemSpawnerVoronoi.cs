@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Dungeon;
 using Saving;
 using Spawning;
 using UnityEngine;
@@ -77,7 +78,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
         {
             var room = _rooms[roomIdx];
             var itemCount = plannedCounts[roomIdx];
-            var radius = room.getIncircleRadius();
+            var radius = room.GetIncircleRadius();
 
             for (var i = 0; i < itemCount; i++)
             {
@@ -91,7 +92,7 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                 var xOffset = Mathf.Cos(angle * Mathf.Deg2Rad) * distanceFromCenter;
                 var zOffset = Mathf.Sin(angle * Mathf.Deg2Rad) * distanceFromCenter;
             
-                var spawnPos = new Vector3(room.center.x + xOffset, 0.5f, room.center.y + zOffset);
+                var spawnPos = new Vector3(room.Center.X + xOffset, 0.5f, room.Center.Y + zOffset);
                 Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
             
                 var spawnedItem = Object.Instantiate(itemInstance.itemData._model, spawnPos, rotation, _parent);

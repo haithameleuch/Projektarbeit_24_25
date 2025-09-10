@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Dungeon;
 using Manager;
 using TMPro;
 using UnityEngine;
@@ -155,7 +156,7 @@ namespace Map
             GenerateConnections();
 
             // snap player icon to start room
-            if (_roomIcons.TryGetValue(_dungeon.GetStartRoom().id, out var startIcon))
+            if (_roomIcons.TryGetValue(_dungeon.GetStartRoom().ID, out var startIcon))
                 playerIcon.anchoredPosition = startIcon.anchoredPosition;
         }
 
@@ -172,7 +173,7 @@ namespace Map
             _roomImages.Clear();
             _roomLabels.Clear();
 
-            foreach (var room in _dungeon.rooms)
+            foreach (var room in _dungeon.Rooms)
             {
                 var go    = Instantiate(roomIconPrefab, roomsContainer);
                 var rt    = go.GetComponent<RectTransform>();
@@ -180,21 +181,21 @@ namespace Map
                 var label = go.GetComponentInChildren<TMP_Text>();
 
                 // map world coords (0–dungeonSize) to UI coords (0–minimap width/height)
-                var x = (room.center.x / _dungeonSize) * minimapRect.rect.width;
-                var y = (room.center.y / _dungeonSize) * minimapRect.rect.height;
+                var x = (room.Center.X / _dungeonSize) * minimapRect.rect.width;
+                var y = (room.Center.Y / _dungeonSize) * minimapRect.rect.height;
                 rt.anchoredPosition = new Vector2(x, y);
 
-                var visited = room.visited;
+                var visited = room.Visited;
                 img.color = visited ? visitedColor : unvisitedColor;
                 if (label is not null)
                 {
                     label.enabled = visited;
-                    label.text    = visited ? room.type.ToString() : string.Empty;
+                    label.text    = visited ? room.Type.ToString() : string.Empty;
                 }
 
-                _roomIcons[room.id]  = rt;
-                _roomImages[room.id] = img;
-                if (label is not null) _roomLabels[room.id] = label;
+                _roomIcons[room.ID]  = rt;
+                _roomImages[room.ID] = img;
+                if (label is not null) _roomLabels[room.ID] = label;
             }
         }
 
@@ -206,14 +207,14 @@ namespace Map
             _connectionLines.ForEach(Destroy);
             _connectionLines.Clear();
 
-            foreach (var room in _dungeon.rooms)
+            foreach (var room in _dungeon.Rooms)
             {
-                foreach (var neighbor in room.neighbors)
+                foreach (var neighbor in room.Neighbors)
                 {
-                    if (room.id >= neighbor.id) continue;
+                    if (room.ID >= neighbor.ID) continue;
 
-                    var a    = _roomIcons[room.id].anchoredPosition;
-                    var b    = _roomIcons[neighbor.id].anchoredPosition;
+                    var a    = _roomIcons[room.ID].anchoredPosition;
+                    var b    = _roomIcons[neighbor.ID].anchoredPosition;
                     var diff = b - a;
 
                     var distance = diff.magnitude;
@@ -244,15 +245,15 @@ namespace Map
         /// </summary>
         private void RefreshRoomStates()
         {
-            foreach (var room in _dungeon.rooms)
+            foreach (var room in _dungeon.Rooms)
             {
-                if (!_roomImages.TryGetValue(room.id, out var img)) continue;
-                var visited = room.visited;
+                if (!_roomImages.TryGetValue(room.ID, out var img)) continue;
+                var visited = room.Visited;
                 img.color     = visited ? visitedColor : unvisitedColor;
 
-                if (!_roomLabels.TryGetValue(room.id, out var label)) continue;
+                if (!_roomLabels.TryGetValue(room.ID, out var label)) continue;
                 label.enabled = visited;
-                if (visited) label.text = room.type.ToString();
+                if (visited) label.text = room.Type.ToString();
             }
         }
 
@@ -262,7 +263,7 @@ namespace Map
         private void UpdatePlayerIcon()
         {
             var current = gameManager.CurrentRoom;
-            if (current == null || !_roomIcons.TryGetValue(current.id, out var rt)) return;
+            if (current == null || !_roomIcons.TryGetValue(current.ID, out var rt)) return;
 
             playerIcon.anchoredPosition = rt.anchoredPosition;
 

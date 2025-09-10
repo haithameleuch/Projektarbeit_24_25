@@ -1,3 +1,4 @@
+using Dungeon;
 using Manager;
 using ItemPlacement;
 using UnityEngine;
@@ -15,15 +16,15 @@ namespace Enemy
             var reporter = GetComponent<EnemyDeathReporter>();
             if (reporter == null) reporter = gameObject.AddComponent<EnemyDeathReporter>();
             
-            switch (room.type)
+            switch (room.Type)
             {
                 case RoomType.Boss:
-                    reporter.Init(room.id, BossSpawnerVoronoi.RegisterBossMinionDeath);
-                    BossSpawnerVoronoi.RegisterBossMinionSpawn(room.id);
+                    reporter.Init(room.ID, BossSpawnerVoronoi.RegisterBossMinionDeath);
+                    BossSpawnerVoronoi.RegisterBossMinionSpawn(room.ID);
                     break;
                 case RoomType.Enemy:
-                    reporter.Init(room.id, EnemySpawnerVoronoi.RegisterEnemyMinionDeath);
-                    EnemySpawnerVoronoi.RegisterEnemyMinionSpawn(room.id);
+                    reporter.Init(room.ID, EnemySpawnerVoronoi.RegisterEnemyMinionDeath);
+                    EnemySpawnerVoronoi.RegisterEnemyMinionSpawn(room.ID);
                     break;
             }
         }

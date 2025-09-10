@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Dungeon;
 using UnityEngine;
 using Enemy;
 
@@ -35,7 +36,7 @@ namespace ItemPlacement
                 List<GameObject> enemiesInRoom = new();
 
                 // estimate room size based on incircle radius
-                var radius = room.getIncircleRadius();
+                var radius = room.GetIncircleRadius();
 
                 // determine the number of enemies (1 to 5 depending on radius)
                 var enemyCount = Mathf.Clamp(Mathf.RoundToInt(radius * 0.8f), 1, 5);
@@ -50,7 +51,7 @@ namespace ItemPlacement
                     var xOffset = Mathf.Cos(angle * Mathf.Deg2Rad) * distanceFromCenter;
                     var zOffset = Mathf.Sin(angle * Mathf.Deg2Rad) * distanceFromCenter;
 
-                    var spawnPosition = new Vector3(room.center.x + xOffset, 0f, room.center.y + zOffset);
+                    var spawnPosition = new Vector3(room.Center.X + xOffset, 0f, room.Center.Y + zOffset);
                     var rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
 
                     var enemy = Object.Instantiate(chosenPrefab, spawnPosition, rotation, parent);
@@ -62,13 +63,13 @@ namespace ItemPlacement
                     
                     // Report death
                     var reporter = enemy.AddComponent<EnemyDeathReporter>();
-                    reporter.Init(room.id, OnEnemyDied);
+                    reporter.Init(room.ID, OnEnemyDied);
 
                     enemiesInRoom.Add(enemy);
                 }
 
-                _enemyInstancesPerRoom[room.id] = enemiesInRoom;
-                _alivePerRoom[room.id] = enemiesInRoom.Count;
+                _enemyInstancesPerRoom[room.ID] = enemiesInRoom;
+                _alivePerRoom[room.ID] = enemiesInRoom.Count;
             }
         }
     
@@ -78,7 +79,7 @@ namespace ItemPlacement
         /// <param name="room">Room whose enemies should be activated</param>
         public void ActivateEnemyInRoom(Room room)
         {
-            if (!_enemyInstancesPerRoom.TryGetValue(room.id, out var enemies)) return;
+            if (!_enemyInstancesPerRoom.TryGetValue(room.ID, out var enemies)) return;
             foreach (var enemy in enemies)
             {
                 enemy.SetActive(true);

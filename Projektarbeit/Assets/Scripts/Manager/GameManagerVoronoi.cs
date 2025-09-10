@@ -8,6 +8,7 @@ using UnityEngine;
 using MiniGame;
 using System.Linq;
 using Controller;
+using Dungeon;
 using Shooting;
 
 namespace Manager
@@ -111,17 +112,17 @@ namespace Manager
         {
             var savedVisited = SaveSystemManager.GetVisitedRooms();
             
-            if (savedVisited == null || savedVisited.Count != _dungeon.rooms.Count)
+            if (savedVisited == null || savedVisited.Count != _dungeon.Rooms.Count)
             {
-                SaveSystemManager.InitializeVisitedRooms(_dungeon.rooms.Count);
-                var startID = _dungeon.GetStartRoom().id;
+                SaveSystemManager.InitializeVisitedRooms(_dungeon.Rooms.Count);
+                var startID = _dungeon.GetStartRoom().ID;
                 SaveSystemManager.SetRoomVisited(startID, true);
                 SaveSystemManager.SetCurrentRoomID(startID);
             }
             
             savedVisited = SaveSystemManager.GetVisitedRooms();
-            for (int i = 0; i < _dungeon.rooms.Count; i++)
-                _dungeon.rooms[i].visited = savedVisited[i];
+            for (int i = 0; i < _dungeon.Rooms.Count; i++)
+                _dungeon.Rooms[i].Visited = savedVisited[i];
             
             int savedID = SaveSystemManager.GetCurrentRoomID();
             _currentRoom = _dungeon.GetRoomByID(savedID);
@@ -137,7 +138,7 @@ namespace Manager
             // Place the item room guaranteed by the generator (boss-free) at the very front
             var forcedItemRoomId = (voronoiGenerator != null) ? voronoiGenerator.ForcedItemRoomId : -1;
             if (forcedItemRoomId >= 0)
-                rooms = rooms.OrderBy(r => r.id == forcedItemRoomId ? 0 : 1).ToList();
+                rooms = rooms.OrderBy(r => r.ID == forcedItemRoomId ? 0 : 1).ToList();
             
             // Set random glyphs keys and values and add them to MustItems
             var seed = SaveSystemManager.GetSeed();
@@ -227,7 +228,7 @@ namespace Manager
             if (SaveSystemManager.GetPlayerPosition() == Vector3.zero)
             {
                 var startRoom = _dungeon.GetStartRoom();
-                spawnPos      = new Vector3(startRoom.center.x, 1f, startRoom.center.y);
+                spawnPos      = new Vector3(startRoom.Center.X, 1f, startRoom.Center.Y);
                 _currentRoom  = startRoom;
                 OnRoomEntered(_currentRoom);
             }
@@ -296,16 +297,16 @@ namespace Manager
         private void TrackCurrentRoom()
         {
             var playerPos = new Vector2(_player.transform.position.x, _player.transform.position.z);
-            var minDist = Vector2.Distance(playerPos, new Vector2(_currentRoom.center.x, _currentRoom.center.y));
+            var minDist = Vector2.Distance(playerPos, new Vector2(_currentRoom.Center.X, _currentRoom.Center.Y));
 
             if (minDist <= roomSwitchThreshold)
                 return;
 
             var closest = _currentRoom;
 
-            foreach (Room neighbor in _currentRoom.neighbors)
+            foreach (Room neighbor in _currentRoom.Neighbors)
             {
-                var dist = Vector2.Distance(playerPos, new Vector2(neighbor.center.x, neighbor.center.y));
+                var dist = Vector2.Distance(playerPos, new Vector2(neighbor.Center.X, neighbor.Center.Y));
                 if (dist < minDist)
                 {
                     minDist = dist;
@@ -327,15 +328,15 @@ namespace Manager
         /// <param name="newRoom">The room that the player just entered.</param>
         private void OnRoomEntered(Room newRoom)
         {
-            Debug.Log($"[GameManager] Player entered room {newRoom.id} (Type: {newRoom.type})");
+            Debug.Log($"[GameManager] Player entered room {newRoom.ID} (Type: {newRoom.Type})");
             
-            if (newRoom.visited) return;
-            newRoom.visited = true;
+            if (newRoom.Visited) return;
+            newRoom.Visited = true;
             
-            SaveSystemManager.SetRoomVisited(newRoom.id, true);
-            SaveSystemManager.SetCurrentRoomID(newRoom.id);
+            SaveSystemManager.SetRoomVisited(newRoom.ID, true);
+            SaveSystemManager.SetCurrentRoomID(newRoom.ID);
 
-            switch (newRoom.type)
+            switch (newRoom.Type)
             {
                 case RoomType.Start:
                     break;
@@ -377,7 +378,7 @@ namespace Manager
         {
             var bossRoom = _dungeon.GetBossRoom();
     
-            if (_currentRoom != null && bossRoom != null && _currentRoom.neighbors.Contains(bossRoom))
+            if (_currentRoom != null && bossRoom != null && _currentRoom.Neighbors.Contains(bossRoom))
             {
                 Debug.Log("[GameManager] Boss doors are opened!");
                 EventManager.Instance.TriggerOpenBossDoors();
