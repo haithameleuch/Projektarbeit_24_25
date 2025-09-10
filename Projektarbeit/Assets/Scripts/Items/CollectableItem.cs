@@ -50,7 +50,7 @@ namespace Items
             if (inv is not null)
             {
                 // If the item could be added to the inventory
-                if (inv.addItem(new ItemInstance(item,amount)))
+                if (inv.AddItem(new ItemInstance(item,amount)))
                 {
                     // Remove this item from the list of items that can be collected
                     SaveSystemManager.SetCollectibleActive(saveIndex, false);

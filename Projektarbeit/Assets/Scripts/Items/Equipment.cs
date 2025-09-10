@@ -64,7 +64,7 @@ namespace Items
             if (playerEquip[row,col] != null)
             {
                 // Place item back in the inventory
-                inv.addItem(playerEquip[row, col]);
+                inv.AddItem(playerEquip[row, col]);
                 // Remove Stats
                 Stats playerStats = inv.gameObject.GetComponent<Stats>();
             
