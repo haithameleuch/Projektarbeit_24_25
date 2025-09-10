@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Dungeon;
 using UnityEngine;
 using Spawning;
 
@@ -56,7 +57,7 @@ public class MiniGameSpawnerVoronoi : ISpawnerVoronoi
             int prefabIndex = _rng.Next(_minigamePrefabs.Count);
             GameObject chosenPrefab = _minigamePrefabs[prefabIndex];
 
-            Vector3 spawnPosition = new Vector3(room.center.x, 1.5f, room.center.y);
+            Vector3 spawnPosition = new Vector3(room.Center.X, 1.5f, room.Center.Y);
             float randomYRotation = (float)_rng.NextDouble() * 360f;
             Quaternion rotation = Quaternion.Euler(0f, randomYRotation, 0f);
 
