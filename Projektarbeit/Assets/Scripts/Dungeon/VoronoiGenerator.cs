@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using Interaction;
 using Items;
+using Manager;
 using Saving;
 using UnityEditor;
 using UnityEngine;
@@ -306,7 +308,7 @@ namespace Dungeon
         /// </summary>
         private void RandomizeSizeAndPoints()
         {
-            var level = Mathf.Max(1, Saving.SaveSystemManager.GetLevel());
+            var level = Mathf.Max(1, SaveSystemManager.GetLevel());
             var rnd = new System.Random(_seed ^ 0xA2C2A);
         
             var t = Mathf.Clamp01((level - 1) / 9f);
