@@ -22,7 +22,7 @@ namespace Enemy
         private void Update()
         {
             // Cache reference to Stats component for current/max health
-            var playerStats = gameObject.GetComponent<Stats>();
+            var playerStats = gameObject.GetComponent<Stats.Stats>();
 
             // Cache reference to the health bar UI (first object tagged "Health")
             _healthBar = GameObject.FindGameObjectsWithTag("Health")[0].GetComponent<Image>();
@@ -44,7 +44,7 @@ namespace Enemy
             // Check if the colliding object is a projectile
             if (!collision.gameObject.name.Equals("ProjectileDrone(Clone)")) return;
             
-            var stats = GetComponent<Stats>();
+            var stats = GetComponent<Stats.Stats>();
             stats.DecreaseCurStat(0,2f);
 
         }

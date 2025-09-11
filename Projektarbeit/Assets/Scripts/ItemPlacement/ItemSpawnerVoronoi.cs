@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Dungeon;
+using Inventory;
+using Items;
 using Saving;
 using Spawning;
 using UnityEngine;
@@ -103,8 +105,8 @@ public class ItemSpawnerVoronoi : ISpawnerVoronoi
                     var renderer = auraTransform.GetComponent<MeshRenderer>();
                     
                     var material = renderer.material;
-                    material.SetColor("_ColorA", itemInstance.itemData.getRarityColor());
-                    material.SetColor("_ColorB", itemInstance.itemData.getRarityColor());
+                    material.SetColor("_ColorA", itemInstance.itemData.GetRarityColor());
+                    material.SetColor("_ColorB", itemInstance.itemData.GetRarityColor());
                 }
                 
                 var collectible = spawnedItem.GetComponent<CollectibleItem>();

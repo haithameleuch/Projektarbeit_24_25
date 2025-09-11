@@ -12,7 +12,7 @@ public class VignetteController : MonoBehaviour
     public Color lowHealthColor = new Color(1, 0, 0, 0.75f); // rot, halbtransparent
 
     private Volume volume;
-    private Stats playerStats;
+    private Stats.Stats playerStats;
     private Vignette vignette;
 
     void Start()
@@ -45,7 +45,7 @@ public class VignetteController : MonoBehaviour
             {
                 return;
             }
-            playerStats= player.GetComponent<Stats>();
+            playerStats= player.GetComponent<Stats.Stats>();
         }
         
         float normalizedHealth = Mathf.Clamp01(playerStats.GetCurStats(0) / playerStats.GetMaxStats(0));

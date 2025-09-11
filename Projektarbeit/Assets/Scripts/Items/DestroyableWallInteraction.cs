@@ -46,11 +46,11 @@ namespace Items
         
         public void Interact(GameObject interactor)
         {
-            var inv    = interactor.GetComponent<Inventory>();
+            var inv    = interactor.GetComponent<Inventory.Inventory>();
             var player = interactor.GetComponent<PlayerPickaxeController>();
             if (inv is null || player is null) return;
 
-            var inst      = inv.getEquipment()[2, 1];
+            var inst      = inv.GetEquipment()[2, 1];
             bool hasPickaxe = inst?.itemData is Equipment { toolType: ToolType.Pickaxe };
 
             if (!hasPickaxe)
@@ -97,15 +97,13 @@ namespace Items
                     StopAllCoroutines();
                     StartCoroutine(HideLifeText());
                 }
-
-                // ---- DESTROYABLE WALL ----
+                
                 if (_hitPoints == 0 && !_destroyScheduled)
                 {
                     _destroyScheduled = true;
                     SaveSystemManager.SetDestroyableWallActive(edgeID, false);
                     StartCoroutine(DisableAfterDelay(player.SwingTotalDuration()));
                 }
-                // ---- DESTROYABLE WALL ----
             }
         }
 
@@ -124,12 +122,10 @@ namespace Items
             lifeTextBack.gameObject.SetActive(false);
         }
         
-        // ---- DESTROYABLE WALL ----
         private System.Collections.IEnumerator DisableAfterDelay(float delay)
         {
             yield return new WaitForSeconds(delay);
             gameObject.SetActive(false);
         }
-        // ---- DESTROYABLE WALL ----
     }
 }
