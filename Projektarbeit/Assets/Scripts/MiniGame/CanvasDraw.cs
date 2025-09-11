@@ -521,14 +521,14 @@ namespace MiniGame
             
             // remove the glyph from inventory
             var player = GameObject.FindWithTag("Player");
-            var inventory   = player.GetComponent<Inventory>();
+            var inventory   = player.GetComponent<Inventory.Inventory>();
             
             var itemName = _digitToString[glyphDigit];
 
             if (!string.IsNullOrEmpty(itemName))
             {
-                var removeItemIndex = inventory.getItemByName(CapitalizeFirstLetter(itemName));
-                inventory.removeItem(removeItemIndex.Item1, removeItemIndex.Item2);
+                var removeItemIndex = inventory.GetItemByName(CapitalizeFirstLetter(itemName));
+                inventory.RemoveItem(removeItemIndex.Item1, removeItemIndex.Item2);
             }
 
             // If all glyphs have been guessed → spawn boss key

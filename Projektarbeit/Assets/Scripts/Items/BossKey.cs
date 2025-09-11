@@ -14,7 +14,7 @@ namespace Items
         /// Makes it possible that the boss room doors open through the use of the key.
         /// </summary>
         /// <param name="inv">The inventory that called the use action.</param>
-        public override void use(Inventory inv)
+        public override void Use(Inventory.Inventory inv)
         {
             // Only when the player is standing in front of the boss room can the key work
             bool valid = GameManagerVoronoi.Instance.OnBossKeyUsed();
@@ -22,7 +22,7 @@ namespace Items
             // If the player used the key in front of the boss room it will be removed
             if (valid)
             {
-                inv.removeItem(this);
+                inv.RemoveItem(this);
             }
         }
     }

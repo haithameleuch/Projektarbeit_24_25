@@ -1,7 +1,7 @@
 using Helper;
+using Inventory;
 using UnityEngine;
 using Saving;
-using UnityEngine;
 
 namespace Items
 {
@@ -44,7 +44,7 @@ namespace Items
         public void Interact(GameObject interactor)
         {
             // Get the inventory component of the interactor (becomes null if none is present)
-            Inventory inv = interactor.GetComponent<Inventory>();
+            Inventory.Inventory inv = interactor.GetComponent<Inventory.Inventory>();
         
             // If an inventory is found
             if (inv is not null)

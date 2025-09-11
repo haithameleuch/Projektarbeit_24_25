@@ -38,8 +38,8 @@ namespace Enemy
         public void Interact(GameObject interactor)
         {
             if (!interactor || !interactor.name.Equals("Player(Clone)")) return;
-            var playerStats = interactor.GetComponent<Stats>();
-            var enemyStats = GetComponent<Stats>();
+            var playerStats = interactor.GetComponent<Stats.Stats>();
+            var enemyStats = GetComponent<Stats.Stats>();
 
             if (playerStats is null || enemyStats is null) return;
             
@@ -73,7 +73,7 @@ namespace Enemy
         {
             if (!collision.gameObject.name.Equals("Projectile(Clone)")) return;
             
-            var enemyStats = GetComponent<Stats>();
+            var enemyStats = GetComponent<Stats.Stats>();
             var currentHealth = enemyStats.GetCurStats(0);
             var maxHealth = enemyStats.GetMaxStats(0);
             var healthPercent = Mathf.Clamp01(currentHealth / maxHealth);
@@ -88,10 +88,10 @@ namespace Enemy
             // Update text to show current health
             lifeText.text = $"{currentHealth:0}";
                 
-            gameObject.GetComponent<Stats>().DecreaseCurStat(0, GameObject.Find("Player(Clone)").GetComponent<Stats>().GetCurStats(1) * 0.5f);
+            gameObject.GetComponent<Stats.Stats>().DecreaseCurStat(0, GameObject.Find("Player(Clone)").GetComponent<Stats.Stats>().GetCurStats(1) * 0.5f);
             
             // Handle enemy death
-            if (gameObject.GetComponent<Stats>().GetCurStats(0) <= 0f)
+            if (gameObject.GetComponent<Stats.Stats>().GetCurStats(0) <= 0f)
             {
                 var reporter = GetComponent<EnemyDeathReporter>();
                 if (reporter != null) reporter.ReportDeath();

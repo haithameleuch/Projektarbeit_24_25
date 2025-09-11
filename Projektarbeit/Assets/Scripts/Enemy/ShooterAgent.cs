@@ -169,7 +169,7 @@ namespace Enemy
             }
             
             // Calculate normalized health of the target
-            var targetStats = target.GetComponent<Stats>();
+            var targetStats = target.GetComponent<Stats.Stats>();
             if (targetStats != null)
             {
                 var targetMaxHealth = targetStats.GetMaxStats(0);

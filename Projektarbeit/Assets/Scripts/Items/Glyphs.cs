@@ -12,7 +12,7 @@ namespace Items
         /// Unused in this class but inherited from the superclass.
         /// </summary>
         /// <param name="inv">The inventory calling this method.</param>
-        public override void use(Inventory inv)
+        public override void Use(Inventory.Inventory inv)
         {
         }
     }

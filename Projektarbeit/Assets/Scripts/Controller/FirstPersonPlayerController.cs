@@ -62,7 +62,7 @@ namespace Controller
         /// <summary>
         /// Stats component used to get the current speed value.
         /// </summary>
-        private Stats _stats;
+        private Stats.Stats _stats;
     
         /// <summary>
         /// Current X-axis rotation of the player.
@@ -97,7 +97,7 @@ namespace Controller
             _currentRotation = transform.rotation;
             _currentCameraRotation = cameraTransform.localRotation;
         
-            _stats = GetComponent<Stats>();
+            _stats = GetComponent<Stats.Stats>();
         }
 
         /// <summary>

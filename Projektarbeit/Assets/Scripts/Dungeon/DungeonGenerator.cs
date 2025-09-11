@@ -3,6 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Dungeon;
+using Inventory;
 using UnityEngine;
 
 /// <summary>

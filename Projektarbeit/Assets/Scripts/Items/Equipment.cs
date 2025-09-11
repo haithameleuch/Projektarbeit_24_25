@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Inventory;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -49,10 +50,10 @@ namespace Items
         /// It also handles the switches the equipment if there is another item present in the slot.
         /// </summary>
         /// <param name="inv">The inventory calling the use of the equipment item.</param>
-        public override void use(Inventory inv)
+        public override void Use(Inventory.Inventory inv)
         {
             // Reference to the equipment slots
-            ItemInstance[,] playerEquip = inv.getEquipment();
+            ItemInstance[,] playerEquip = inv.GetEquipment();
 
             // The column of the equipment slot
             int col = equipSlot % 2;
@@ -66,7 +67,7 @@ namespace Items
                 // Place item back in the inventory
                 inv.AddItem(playerEquip[row, col]);
                 // Remove Stats
-                Stats playerStats = inv.gameObject.GetComponent<Stats>();
+                Stats.Stats playerStats = inv.gameObject.GetComponent<Stats.Stats>();
             
                 // If the player is not on max stats the percentage of the stat is preserved when equipping or unequipping
                 var equippedInst = playerEquip[row, col];
@@ -88,7 +89,7 @@ namespace Items
                 else
                 {   
                     // Remove this item from the inventory
-                    inv.removeItem(this);
+                    inv.RemoveItem(this);
                     // Place this item in its equipment slot
                     playerEquip[row, col] = new ItemInstance(this, 1);
                 
@@ -104,9 +105,9 @@ namespace Items
                 // Place this item in the empty slot
                 playerEquip[row, col] = new ItemInstance(this,1);
                 // Remove this item from the inventory
-                inv.removeItem(this);
+                inv.RemoveItem(this);
                 // Add stats while preserving the percentages
-                Stats playerStats = inv.gameObject.GetComponent<Stats>();
+                Stats.Stats playerStats = inv.gameObject.GetComponent<Stats.Stats>();
                 for (int i=0;i< statIncreases.Count;i++)
                 {
                     playerStats.AddToMaxPreserveRatio(i, statIncreases[i]);

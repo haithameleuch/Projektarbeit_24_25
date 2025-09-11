@@ -24,12 +24,12 @@ namespace Enemy
             if (!interactor || !interactor.name.Equals("Player(Clone)")) return;
             
             // Get player's inventory and stats
-            var inventory   = interactor.GetComponent<Inventory>();
-            var playerStats = interactor.GetComponent<Stats>();
+            var inventory   = interactor.GetComponent<Inventory.Inventory>();
+            var playerStats = interactor.GetComponent<Stats.Stats>();
 
             // Extract current player data
-            var inv   = inventory ? inventory.getInventory(): null;
-            var equip = inventory ? inventory.getEquipment(): null;
+            var inv   = inventory ? inventory.GetInventory(): null;
+            var equip = inventory ? inventory.GetEquipment(): null;
             var cur   = playerStats ? playerStats.GetCurStatsList(): null;
             var max   = playerStats ? playerStats.GetMaxStatsList(): null;
 

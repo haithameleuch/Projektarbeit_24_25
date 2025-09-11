@@ -1,3 +1,4 @@
+using Inventory;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -29,7 +30,7 @@ namespace Manager
         /// <summary>
         /// Cached reference to the player's inventory component.
         /// </summary>
-        private Inventory _inventory;
+        private Inventory.Inventory _inventory;
 
         /// <summary>
         /// Reference to the item UI panel.
@@ -108,7 +109,7 @@ namespace Manager
         public void SetPlayer(GameObject newPlayer)
         {
             _player = newPlayer;
-            _inventory = _player.GetComponent<Inventory>();
+            _inventory = _player.GetComponent<Inventory.Inventory>();
         }
     
         /// <summary>
@@ -118,8 +119,8 @@ namespace Manager
         {
             if (_isSetup || _player == null) return;
       
-            _playerInventory = _inventory.getInventory();
-            _playerEquipment = _inventory.getEquipment();
+            _playerInventory = _inventory.GetInventory();
+            _playerEquipment = _inventory.GetEquipment();
             _dummies[0, 0] = helmet;
             _dummies[0, 1] = body;
             _dummies[1, 0] = legs;
@@ -150,7 +151,7 @@ namespace Manager
                     {
                         if (_playerInventory[_selectedSlot.Item1, _selectedSlot.Item2] != null)
                         {
-                            _inventory.useItem(_selectedSlot.Item1, _selectedSlot.Item2);
+                            _inventory.UseItem(_selectedSlot.Item1, _selectedSlot.Item2);
                         }
 
                     }
@@ -158,7 +159,7 @@ namespace Manager
                     {
                         if (_playerEquipment[_selectedSlot.Item1 - 4, _selectedSlot.Item2] != null)
                         {
-                            _inventory.useItem(_selectedSlot.Item1, _selectedSlot.Item2);
+                            _inventory.UseItem(_selectedSlot.Item1, _selectedSlot.Item2);
                         }
                     }
                 }
@@ -166,11 +167,11 @@ namespace Manager
                 {
                     if (_selectedSlot.Item1 < 4)
                     {
-                        _inventory.removeItem(_selectedSlot.Item1, _selectedSlot.Item2);
+                        _inventory.RemoveItem(_selectedSlot.Item1, _selectedSlot.Item2);
                     }
                     else
                     {
-                        _inventory.removeEquip(_selectedSlot.Item1 - 4, _selectedSlot.Item2);
+                        _inventory.RemoveEquip(_selectedSlot.Item1 - 4, _selectedSlot.Item2);
                     }
                 }
             }
@@ -216,7 +217,7 @@ namespace Manager
             }
 
             // Set stat Text
-            var playerStats = _player.GetComponent<Stats>();
+            var playerStats = _player.GetComponent<Stats.Stats>();
             statText.SetText("Health: "+playerStats.GetMaxStats(0)+
                              "\nDamage:"+playerStats.GetMaxStats(1)+
                              "\nSpeed:"+playerStats.GetMaxStats(2));
@@ -237,7 +238,7 @@ namespace Manager
                     if (_playerInventory[i, j] != null)
                     {
                         // Set Background
-                        slot.GetComponent<Image>().color = _playerInventory[i, j].itemData.getRarityColor();
+                        slot.GetComponent<Image>().color = _playerInventory[i, j].itemData.GetRarityColor();
                         // Set Icon
                         slot.GetChild(0).GetComponent<Image>().sprite = _playerInventory[i, j].itemData.item_icon;
                         slot.GetChild(0).GetComponent<Image>().enabled = true;
@@ -272,7 +273,7 @@ namespace Manager
                         slot.GetChild(0).GetComponent<Image>().sprite = _playerEquipment[i, j].itemData.item_icon;
                         slot.GetChild(0).GetComponent<Image>().enabled = true;
 
-                        slot.GetComponent<Image>().color = _playerEquipment[i, j].itemData.getRarityColor();
+                        slot.GetComponent<Image>().color = _playerEquipment[i, j].itemData.GetRarityColor();
 
                         // Set Name and Quantity
                         slot.GetChild(1).GetChild(0).GetComponent<TMP_Text>()
@@ -307,7 +308,7 @@ namespace Manager
             }
             // Set new Stat text
             // Set stat Text
-            var playerStats = _player.GetComponent<Stats>();
+            var playerStats = _player.GetComponent<Stats.Stats>();
             statText.SetText("Health: "+playerStats.GetMaxStats(0)+
                              "\nDamage:"+playerStats.GetMaxStats(1)+
                              "\nSpeed:"+playerStats.GetMaxStats(2));

@@ -27,13 +27,13 @@ namespace Items
         /// Only objects with an inventory can call this method and the increase will be given to the object that the inventory is attached to.
         /// </summary>
         /// <param name="inv">The inventory calling this method to ease the removal of the consumable.</param>
-        public override void use(Inventory inv)
+        public override void Use(Inventory.Inventory inv)
         {
             // Increase the current stat by the amount
-            inv.gameObject.GetComponent<Stats>().IncreaseCurStat(statToRestore,amountToRestore);
+            inv.gameObject.GetComponent<Stats.Stats>().IncreaseCurStat(statToRestore,amountToRestore);
             
             // Remove the item after usage
-            inv.removeItem(this);
+            inv.RemoveItem(this);
         }
     }
 }
