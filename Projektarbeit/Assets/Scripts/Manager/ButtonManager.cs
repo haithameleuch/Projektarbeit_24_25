@@ -23,7 +23,7 @@ namespace Manager
             
             var seed = Random.Range(100000, 999999);
             SaveSystemManager.StartNewRun(seed);
-            SceneManager.LoadScene("Scenes/VoronoiTest");
+            SceneManager.LoadScene("Scenes/DungeonScene");
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace Manager
             
             if (SaveSystemManager.SaveData != null)
             {
-                SceneManager.LoadScene("Scenes/VoronoiTest");
+                SceneManager.LoadScene("Scenes/DungeonScene");
             }
             else
             {
