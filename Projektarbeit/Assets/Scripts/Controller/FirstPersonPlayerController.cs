@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Helper;
+using Manager;
 using UnityEngine;
 
 namespace Controller

@@ -1,5 +1,8 @@
+// LEGACY CODE !!!
+
 using System.Collections.Generic;
 using Dungeon;
+using Manager;
 using UnityEngine;
 
 /// <summary>

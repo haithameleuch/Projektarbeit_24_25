@@ -5,9 +5,15 @@ using UnityEngine.SceneManagement;
 
 namespace Manager
 {
+    /// <summary>
+    /// Handles menu button actions: start, load, save, and exit.
+    /// Sets a scene-changing flag to avoid enemy death reports during scene switches.
+    /// </summary>
     public class ButtonManager : MonoBehaviour
     {
-    
+        /// <summary>
+        /// Starts a new game: creates a new save with a random seed and loads the main scene.
+        /// </summary>
         public void StartGame()
         {
             Debug.Log("StartButton [NEW GAME]");
@@ -20,6 +26,9 @@ namespace Manager
             SceneManager.LoadScene("Scenes/VoronoiTest");
         }
 
+        /// <summary>
+        /// Loads an existing save and opens the main scene if a save file exists.
+        /// </summary>
         public void LoadGame()
         {
             Debug.Log("LoadButton [LOAD GAME]");
@@ -40,6 +49,9 @@ namespace Manager
             }
         }
 
+        /// <summary>
+        /// Exits the game (or stops Play Mode in the editor).
+        /// </summary>
         public void ExitGame()
         {
             Debug.Log("ExitButton [EXIT GAME]");
@@ -55,6 +67,10 @@ namespace Manager
             #endif
         }
 
+        /// <summary>
+        /// Saves the current player state: position, view direction, camera direction,
+        /// inventory, equipment, and stats.
+        /// </summary>
         public void SaveGame()
         {
             Debug.Log("SaveButton [SAVE GAME]");
