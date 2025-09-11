@@ -59,7 +59,7 @@ namespace ItemPlacement
                     enemy.SetActive(false);
                     
                     // per-level scaling
-                    var s = enemy.GetComponent<Stats>();
+                    var s = enemy.GetComponent<Stats.Stats>();
                     EnemyLevelScaler.Apply(s, isBoss: false);
                     
                     // Report death

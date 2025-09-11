@@ -77,14 +77,14 @@ namespace Manager
             
             var player = GameObject.Find("Player(Clone)");
             var playerCam = player.transform.Find("FirstPersonCam");
-            var inventory = player.GetComponent<Inventory>();
-            var playerStats = player.GetComponent<Stats>();
+            var inventory = player.GetComponent<Inventory.Inventory>();
+            var playerStats = player.GetComponent<Stats.Stats>();
             
             SaveSystemManager.SetPlayerRotation(player.transform.forward);
             SaveSystemManager.SetPlayerPosition(player.transform.position);
             SaveSystemManager.SetCamRotation(playerCam.transform.forward);
-            SaveSystemManager.SetInventory(inventory.getInventory());
-            SaveSystemManager.SetEquipment(inventory.getEquipment());
+            SaveSystemManager.SetInventory(inventory.GetInventory());
+            SaveSystemManager.SetEquipment(inventory.GetEquipment());
             SaveSystemManager.SetStats(playerStats.GetCurStatsList(), playerStats.GetMaxStatsList());
             SaveSystemManager.Save();
         }

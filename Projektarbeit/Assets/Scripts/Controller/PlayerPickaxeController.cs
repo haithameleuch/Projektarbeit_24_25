@@ -1,5 +1,6 @@
 using System.Collections;
 using Shooting;
+using Items;
 using UnityEngine;
 
 namespace Controller
@@ -8,7 +9,7 @@ namespace Controller
     /// Controls the instantiation and simple swing animation of the pickaxe in first-person view.
     /// Disables player movement and shooting during the swing.
     /// </summary>
-    [RequireComponent(typeof(Inventory))]
+    [RequireComponent(typeof(Inventory.Inventory))]
     public class PlayerPickaxeController : MonoBehaviour
     {
         /// <summary>
@@ -36,7 +37,7 @@ namespace Controller
         /// <summary>
         /// Reference to the player's Inventory component.
         /// </summary>
-        private Inventory _inv;
+        private Inventory.Inventory _inv;
         
         /// <summary>
         /// The instantiated pickaxe GameObject.
@@ -68,7 +69,7 @@ namespace Controller
         /// </summary>
         private void Awake()
         {
-            _inv = GetComponent<Inventory>();
+            _inv = GetComponent<Inventory.Inventory>();
             _holderStartEuler = leftHandHolder.localEulerAngles;
             _firstPersonController     = GetComponent<FirstPersonPlayerController>();
             _playerShooting   = GetComponent<PlayerShooting>();
@@ -90,7 +91,7 @@ namespace Controller
         /// <returns>True if the left-hand slot contains Equipment with ToolType.Pickaxe otherwise false.</returns>
         private bool CheckPickaxeEquipped()
         {
-            var equipmentSlots = _inv.getEquipment();
+            var equipmentSlots = _inv.GetEquipment();
             var leftHandSlot  = equipmentSlots[2, 1];
             return leftHandSlot?.itemData is Equipment { toolType: ToolType.Pickaxe };
         }
