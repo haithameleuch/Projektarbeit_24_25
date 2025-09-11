@@ -7,12 +7,16 @@ using Spawning;
 using UnityEngine;
 using MiniGame;
 using System.Linq;
+using Controller;
+using Dungeon;
+using Shooting;
 
 namespace Manager
 {
     /// <summary>
-    /// Manages the core game logic for a Voronoi-based dungeon, including player spawning,
-    /// tracking the current room, and reacting to room transitions (e.g., boss triggers).
+    /// Runs the core game loop for the Voronoi dungeon: generates the level,
+    /// spawns the player, tracks the current room, and reacts to room changes
+    /// (enemies, boss, minigames, doors, items).
     /// </summary>
     public class GameManagerVoronoi : MonoBehaviour
     {
@@ -37,34 +41,85 @@ namespace Manager
         /// </summary>
         [SerializeField] private float roomSwitchThreshold = 5f;
 
+        /// <summary>
+        /// Regular items that can appear in item rooms.
+        /// </summary>
         [SerializeField] private List<ItemInstance> items;
         
+        /// <summary>
+        /// Items that must be available.
+        /// </summary>
         [SerializeField] private List<ItemInstance> mustItems;
         
+        /// <summary>
+        /// Prefabs for Glyph Items.
+        /// </summary>
         [SerializeField] private List<ItemInstance> glyphItems;
 
+        /// <summary>
+        /// Prefabs for possible minigames.
+        /// </summary>
         [SerializeField] private List<GameObject> miniGamePrefabs;
         
+        /// <summary>
+        /// Prefabs for regular enemies.
+        /// </summary>
         [SerializeField] private List<GameObject> enemyPrefabs;
         
+        /// <summary>
+        /// Prefabs for boss enemies.
+        /// </summary>
         [SerializeField] private List<GameObject> bossEnemyPrefabs;
         
+        /// <summary>
+        /// Prefabs for room obstacles used in boss arenas.
+        /// </summary>
         [SerializeField] private List<GameObject> obstaclePrefabs;
         
+        /// <summary>
+        /// Prefab for the level exit after defeating the boss.
+        /// </summary>
         [SerializeField] private GameObject levelExitPrefab;
-
-
+        
+        /// <summary>
+        /// Exposes the generated dungeon graph.
+        /// </summary>
+        public DungeonGraph Graph => _dungeon;
+        
+        /// <summary>
+        /// Exposes the room the player is currently in.
+        /// </summary>
+        public Room CurrentRoom => _currentRoom;
+        
+        /// <summary>
+        /// The instantiated player.
+        /// </summary>
         private GameObject _player;
+        
+        /// <summary>
+        /// Active dungeon graph for this run.
+        /// </summary>
         private DungeonGraph _dungeon;
+        
+        /// <summary>
+        /// The Room the player is currently in.
+        /// </summary>
         private Room _currentRoom;
         
+        /// <summary>
+        /// Active content spawners (items, minigames, etc.).
+        /// </summary>
         private List<ISpawnerVoronoi> _spawners;
-        private EnemySpawnerVoronoi _enemySpawner;
-        private BossSpawnerVoronoi _bossSpawner;
-
         
-        public DungeonGraph Graph => _dungeon;
-        public Room CurrentRoom => _currentRoom;
+        /// <summary>
+        /// Spawner that manages regular enemies.
+        /// </summary>
+        private EnemySpawnerVoronoi _enemySpawner;
+        
+        /// <summary>
+        /// Spawner that manages the boss room.
+        /// </summary>
+        private BossSpawnerVoronoi _bossSpawner;
         
         /// <summary>
         /// Ensures there is only one instance of the GameManagerVoronoi in the scene.
@@ -80,12 +135,11 @@ namespace Manager
             }
 
             Instance = this;
-        
-            //DontDestroyOnLoad(gameObject);
         }
         
         /// <summary>
-        /// Initializes the game by starting the dungeon wait coroutine.
+        /// Sets up the run: generate the dungeon, restore visited state,
+        /// spawn the player, create spawners, and restore boss door state.
         /// </summary>
         private void Start()
         {
@@ -98,6 +152,9 @@ namespace Manager
             RestoreBossDoorState();
         }
         
+        /// <summary>
+        /// Builds the dungeon based on the saved seed.
+        /// </summary>
         private void GenerateDungeon()
         {
             var seed = SaveSystemManager.GetSeed();
@@ -105,26 +162,34 @@ namespace Manager
             _dungeon = voronoiGenerator.GetDungeonGraph();
         }
         
+        /// <summary>
+        /// Restores visited flags and current room from the save.
+        /// Initializes visited data if it does not match the new dungeon size.
+        /// </summary>
         private void RestoreVisitedAndCurrentRoom()
         {
             var savedVisited = SaveSystemManager.GetVisitedRooms();
             
-            if (savedVisited == null || savedVisited.Count != _dungeon.rooms.Count)
+            if (savedVisited == null || savedVisited.Count != _dungeon.Rooms.Count)
             {
-                SaveSystemManager.InitializeVisitedRooms(_dungeon.rooms.Count);
-                var startID = _dungeon.GetStartRoom().id;
+                SaveSystemManager.InitializeVisitedRooms(_dungeon.Rooms.Count);
+                var startID = _dungeon.GetStartRoom().ID;
                 SaveSystemManager.SetRoomVisited(startID, true);
                 SaveSystemManager.SetCurrentRoomID(startID);
             }
             
             savedVisited = SaveSystemManager.GetVisitedRooms();
-            for (int i = 0; i < _dungeon.rooms.Count; i++)
-                _dungeon.rooms[i].visited = savedVisited[i];
+            for (var i = 0; i < _dungeon.Rooms.Count; i++)
+                _dungeon.Rooms[i].Visited = savedVisited[i];
             
-            int savedID = SaveSystemManager.GetCurrentRoomID();
+            var savedID = SaveSystemManager.GetCurrentRoomID();
             _currentRoom = _dungeon.GetRoomByID(savedID);
         }
 
+        /// <summary>
+        /// Creates and runs spawners for items, minigames, enemies, and boss content.
+        /// Also sets up glyph logic for this run.
+        /// </summary>
         private void InitializeSpawners()
         {
             var rooms = _dungeon.GetAllItemRooms();
@@ -135,7 +200,7 @@ namespace Manager
             // Place the item room guaranteed by the generator (boss-free) at the very front
             var forcedItemRoomId = (voronoiGenerator != null) ? voronoiGenerator.ForcedItemRoomId : -1;
             if (forcedItemRoomId >= 0)
-                rooms = rooms.OrderBy(r => r.id == forcedItemRoomId ? 0 : 1).ToList();
+                rooms = rooms.OrderBy(r => r.ID == forcedItemRoomId ? 0 : 1).ToList();
             
             // Set random glyphs keys and values and add them to MustItems
             var seed = SaveSystemManager.GetSeed();
@@ -143,9 +208,8 @@ namespace Manager
             var glyphNames = GetGlyphItem(glyphKeys);
             glyphItems.RemoveAll(item => !glyphNames.Contains(item.itemData._name));
             mustItems.AddRange(glyphItems);
-
-            // -----------------------------------
-            // TODO: JUST DEBUGGING (REMOVE LATER)
+            
+            /*  JUST DEBUGGING (REMOVE LATER)
             foreach (var mustItem in mustItems)
             {
                 Debug.Log("MUST ITEMS: " + mustItem.itemData._name);
@@ -157,9 +221,7 @@ namespace Manager
             {
                 Debug.Log("GLYPH ITEMS: " + glyph);
             }
-            // TODO: JUST DEBUGGING (REMOVE LATER)
-            
-            // -----------------------------------
+                JUST DEBUGGING (REMOVE LATER)*/
 
             _spawners = new List<ISpawnerVoronoi>()
             {
@@ -174,6 +236,11 @@ namespace Manager
             CanvasDraw.SetRefGlyph = glyphKeys;
         }
 
+        /// <summary>
+        /// Maps glyph key IDs to their item names and returns the list for this run.
+        /// </summary>
+        /// <param name="glyphKeys">Glyph IDs selected for the run.</param>
+        /// <returns>List of glyph item names.</returns>
         private static List<string> GetGlyphItem(List<int> glyphKeys)
         {
             // Map of keys to glyph names
@@ -198,6 +265,11 @@ namespace Manager
             return glyphNames;
         }
 
+        /// <summary>
+        /// Generates a random set of glyph IDs for the run.
+        /// </summary>
+        /// <param name="seed">Seed from the save; if negative, a random seed is used.</param>
+        /// <returns>List of unique glyph IDs.</returns>
         private static List<int> GenerateRandomGlyphs(int seed = -1)
         {
             var setRefGlyphKeys = new List<int>();
@@ -216,6 +288,10 @@ namespace Manager
             return setRefGlyphKeys;
         }
         
+        /// <summary>
+        /// Spawns the player at the start room or at the saved position,
+        /// restores facing and camera, and wires up input and shooting.
+        /// </summary>
         private void SpawnPlayer()
         {
             var spawnPos    = Vector3.zero;
@@ -225,7 +301,7 @@ namespace Manager
             if (SaveSystemManager.GetPlayerPosition() == Vector3.zero)
             {
                 var startRoom = _dungeon.GetStartRoom();
-                spawnPos      = new Vector3(startRoom.center.x, 1f, startRoom.center.y);
+                spawnPos      = new Vector3(startRoom.Center.X, 1f, startRoom.Center.Y);
                 _currentRoom  = startRoom;
                 OnRoomEntered(_currentRoom);
             }
@@ -271,6 +347,9 @@ namespace Manager
             }
         }
         
+        /// <summary>
+        /// Opens boss doors on load if the save says they are already open.
+        /// </summary>
         private void RestoreBossDoorState()
         {
             if (SaveSystemManager.GetBossRoomOpen())
@@ -288,22 +367,22 @@ namespace Manager
         }
         
         /// <summary>
-        /// Checks if the player has moved into a different room.
-        /// If so, updates the current room and triggers room entry logic.
+        /// Checks player distance to current and neighbor rooms to detect a room switch.
+        /// Calls <see cref="OnRoomEntered"/> when a new room is entered.
         /// </summary>
         private void TrackCurrentRoom()
         {
             var playerPos = new Vector2(_player.transform.position.x, _player.transform.position.z);
-            var minDist = Vector2.Distance(playerPos, new Vector2(_currentRoom.center.x, _currentRoom.center.y));
+            var minDist = Vector2.Distance(playerPos, new Vector2(_currentRoom.Center.X, _currentRoom.Center.Y));
 
             if (minDist <= roomSwitchThreshold)
                 return;
 
             var closest = _currentRoom;
 
-            foreach (Room neighbor in _currentRoom.neighbors)
+            foreach (var neighbor in _currentRoom.Neighbors)
             {
-                var dist = Vector2.Distance(playerPos, new Vector2(neighbor.center.x, neighbor.center.y));
+                var dist = Vector2.Distance(playerPos, new Vector2(neighbor.Center.X, neighbor.Center.Y));
                 if (dist < minDist)
                 {
                     minDist = dist;
@@ -325,15 +404,15 @@ namespace Manager
         /// <param name="newRoom">The room that the player just entered.</param>
         private void OnRoomEntered(Room newRoom)
         {
-            Debug.Log($"[GameManager] Player entered room {newRoom.id} (Type: {newRoom.type})");
+            Debug.Log($"[GameManager] Player entered room {newRoom.ID} (Type: {newRoom.Type})");
             
-            if (newRoom.visited) return;
-            newRoom.visited = true;
+            if (newRoom.Visited) return;
+            newRoom.Visited = true;
             
-            SaveSystemManager.SetRoomVisited(newRoom.id, true);
-            SaveSystemManager.SetCurrentRoomID(newRoom.id);
+            SaveSystemManager.SetRoomVisited(newRoom.ID, true);
+            SaveSystemManager.SetCurrentRoomID(newRoom.ID);
 
-            switch (newRoom.type)
+            switch (newRoom.Type)
             {
                 case RoomType.Start:
                     break;
@@ -358,6 +437,9 @@ namespace Manager
             }
         }
 
+        /// <summary>
+        /// Runs all registered spawners to populate the dungeon.
+        /// </summary>
         private void PopulateDungeon()
         {
             foreach (var spawner in _spawners)
@@ -367,15 +449,15 @@ namespace Manager
         }
         
         /// <summary>
-        /// Called by the BossKey item when the player uses the key.
-        /// Opens boss room doors when the player is standing in front of the boss room.
-        /// Returns whether the key was used "validly".
+        /// Called by the BossKey when used.
+        /// Opens boss doors if the player is next to the boss room.
         /// </summary>
+        /// <returns>True if the key was used in a valid spot, otherwise false.</returns>
         public bool OnBossKeyUsed()
         {
             var bossRoom = _dungeon.GetBossRoom();
     
-            if (_currentRoom != null && bossRoom != null && _currentRoom.neighbors.Contains(bossRoom))
+            if (_currentRoom != null && bossRoom != null && _currentRoom.Neighbors.Contains(bossRoom))
             {
                 Debug.Log("[GameManager] Boss doors are opened!");
                 EventManager.Instance.TriggerOpenBossDoors();
@@ -388,6 +470,10 @@ namespace Manager
             return false;
         }
         
+        /// <summary>
+        /// Opens boss doors on the next frame (used during a load).
+        /// </summary>
+        /// <returns>Coroutine handle.</returns>
         private IEnumerator OpenBossDoorsNextFrame()
         {
             yield return null;

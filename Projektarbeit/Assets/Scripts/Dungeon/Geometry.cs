@@ -1,39 +1,54 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
-namespace Geometry
+namespace Dungeon
 {
-    // Helper-Classes
+    /// <summary>
+    /// Simple triangle helper built from three points.
+    /// Stores its edges/points and provides circle/intersection checks.
+    /// </summary>
     public class Triangle
     {
-        public List<Edge> edges;
-        public List<Point> points;
-
-        public Triangle(Point A, Point B, Point C)
+        /// <summary>
+        /// The three edges that form this triangle.
+        /// </summary>
+        public List<Edge> Edges;
+        
+        /// <summary>
+        /// The three corner points of this triangle, in order A, B, C.
+        /// </summary>
+        public List<Point> Points;
+        
+        /// <summary>
+        /// Creates a triangle from three points (A, B, C) and builds its three edges.
+        /// </summary>
+        /// <param name="a">Corner A.</param>
+        /// <param name="b">Corner B.</param>
+        /// <param name="c">Corner C.</param>
+        public Triangle(Point a, Point b, Point c)
         {
-            this.edges = new List<Edge>();
-            this.points = new List<Point>();
+            Edges = new List<Edge>();
+            Points = new List<Point>();
 
-            this.points.Add(A);
-            this.points.Add(B);
-            this.points.Add(C);
+            Points.Add(a);
+            Points.Add(b);
+            Points.Add(c);
 
-            this.edges.Add(new Edge(A,B));
-            this.edges.Add(new Edge(B,C));
-            this.edges.Add(new Edge(C,A));
+            Edges.Add(new Edge(a,b));
+            Edges.Add(new Edge(b,c));
+            Edges.Add(new Edge(c,a));
         }
 
         /// <summary>
-        /// This Method checks wether a given point is within the circumcircle of the triangle calling this method
+        /// Checks whether a given point lies inside this triangle's circumcircle.
         /// </summary>
-        /// <param name="p">The point, which should be inside the circle</param>
-        /// <returns>True if the point is inside, False else</returns>
-        public bool isInCircumcircle(Point p) 
+        /// <param name="p">Point to test.</param>
+        /// <returns>True if inside, otherwise false.</returns>
+        public bool IsInCircumcircle(Point p) 
         {
-            Circle circumcircle = getCircumcircle();
-            if((p.x - circumcircle.center.x) * (p.x - circumcircle.center.x) + (p.y - circumcircle.center.y) * (p.y - circumcircle.center.y) < (circumcircle.radius * circumcircle.radius))
+            var circumcircle = GetCircumcircle();
+            if((p.X - circumcircle.Center.X) * (p.X - circumcircle.Center.X) + (p.Y - circumcircle.Center.Y) * (p.Y - circumcircle.Center.Y) < (circumcircle.Radius * circumcircle.Radius))
             {
                 return true;
             }
@@ -44,49 +59,49 @@ namespace Geometry
         }
 
         /// <summary>
-        /// Checks wether any Point of a given set is a corner of the triangle calling this method
+        /// Checks whether any point in the given list is one of this triangle's corners.
         /// </summary>
         /// <param name="points">The List of points to check</param>
         /// <returns>True if at least one point is a corner of the triangle</returns>
-        public bool containsPoints(List<Point> points)
+        public bool ContainsPoints(List<Point> points)
         {
             // Iterate through all points and return true if any is part of this triangle
             foreach (var point in points)
             {
-                if (Point.equals(point, this.points[0]))
+                if (Point.Equals(point, Points[0]))
                 {
                     return true;
                 }
-                else if (Point.equals(point, this.points[1]))
+                else if (Point.Equals(point, Points[1]))
                 {
                     return true;
                 }
-                else if (Point.equals(point, this.points[2]))
+                else if (Point.Equals(point, Points[2]))
                 {
                     return true;
                 }
             }
 
-            // If no point is found return false
+            // If no point is found, return false
             return false; 
         }
 
         /// <summary>
-        /// Checks wether an edge is an edge of the calling triangle
+        /// Checks whether the given edge is one of this triangle's edges.
         /// </summary>
-        /// <param name="edge">the edge which should be checked</param>
-        /// <returns>True if the edge is one of the triangle ones</returns>
-        public bool containsEdge(Edge edge)
+        /// <param name="edge">Edge to test.</param>
+        /// <returns>True if it matches any of the three edges.</returns>
+        public bool ContainsEdge(Edge edge)
         {
-            if (Edge.equals(edge, this.edges[0]))
+            if (Edge.Equals(edge, Edges[0]))
             {
                 return true;
             }
-            else if (Edge.equals(edge, this.edges[1]))
+            else if (Edge.Equals(edge, Edges[1]))
             {
                 return true;
             }
-            else if (Edge.equals(edge, this.edges[2]))
+            else if (Edge.Equals(edge, Edges[2]))
             {
                 return true;
             }
@@ -97,169 +112,222 @@ namespace Geometry
         }
 
         /// <summary>
-        /// Calculates the circumcircle of a triangle as represented as center and radius
+        /// Calculates this triangle's circumcircle (center and radius).
         /// </summary>
-        /// <returns>The circumcircle</returns>
-        public Circle getCircumcircle()
+        /// <returns>The circumcircle.</returns>
+        public Circle GetCircumcircle()
         {
             // Circum center
-            float d = 2 * (points[0].x * (points[1].y - points[2].y) + points[1].x * (points[2].y - points[0].y) + points[2].x * (points[0].y - points[1].y));
-            float ux = (
-                (points[0].x * points[0].x + points[0].y * points[0].y) * (points[1].y - points[2].y)
-              + (points[1].x * points[1].x + points[1].y * points[1].y) * (points[2].y - points[0].y)
-              + (points[2].x * points[2].x + points[2].y * points[2].y) * (points[0].y - points[1].y)
+            var d = 2 * (Points[0].X * (Points[1].Y - Points[2].Y) + Points[1].X * (Points[2].Y - Points[0].Y) + Points[2].X * (Points[0].Y - Points[1].Y));
+            var ux = (
+                (Points[0].X * Points[0].X + Points[0].Y * Points[0].Y) * (Points[1].Y - Points[2].Y)
+              + (Points[1].X * Points[1].X + Points[1].Y * Points[1].Y) * (Points[2].Y - Points[0].Y)
+              + (Points[2].X * Points[2].X + Points[2].Y * Points[2].Y) * (Points[0].Y - Points[1].Y)
             ) / d;
-            float uy = (
-                (points[0].x * points[0].x + points[0].y * points[0].y) * (points[2].x - points[1].x)
-              + (points[1].x * points[1].x + points[1].y * points[1].y) * (points[0].x - points[2].x)
-              + (points[2].x * points[2].x + points[2].y * points[2].y) * (points[1].x - points[0].x)
+            var uy = (
+                (Points[0].X * Points[0].X + Points[0].Y * Points[0].Y) * (Points[2].X - Points[1].X)
+              + (Points[1].X * Points[1].X + Points[1].Y * Points[1].Y) * (Points[0].X - Points[2].X)
+              + (Points[2].X * Points[2].X + Points[2].Y * Points[2].Y) * (Points[1].X - Points[0].X)
             ) / d;
-            Point center = new Point(ux, uy);
-            float radius = Mathf.Sqrt((points[0].x-center.x)* (points[0].x - center.x) + (points[0].y-center.y)* (points[0].y - center.y));
+            var center = new Point(ux, uy);
+            var radius = Mathf.Sqrt((Points[0].X-center.X)* (Points[0].X - center.X) + (Points[0].Y-center.Y)* (Points[0].Y - center.Y));
             return new Circle(center,radius);
         }
 
         /// <summary>
         /// Calculates the intersection point of two lines (if it exists), the method is mainly used to get the center of the circumcircle (and there should always be an intersection of two bisectors of the triangle edges)
         /// </summary>
-        /// <param name="e_1">First edge</param>
-        /// <param name="e_2">Second edge</param>
-        /// <returns>The intersection point of e_1 and e_2</returns>
-        public static Point getIntersection(Edge e_1, Edge e_2)
+        /// <param name="e1">First edge</param>
+        /// <param name="e2">Second edge</param>
+        /// <returns>The intersection point, or null if both are vertical.</returns>
+        public static Point GetIntersection(Edge e1, Edge e2)
         {
-            bool isVert_1 = false;
-            bool isVert_2 = false;
+            var isVert1 = false;
+            var isVert2 = false;
 
-            float m_1 = 0f;
-            float b_1 = 0f;
-            float m_2 = 0f;
-            float b_2 = 0f;
+            var m1 = 0f;
+            var b1 = 0f;
+            var m2 = 0f;
+            var b2 = 0f;
 
             // Try to get function parameters of e_1
             try
             {
-                m_1 = (e_1.B.y - e_1.A.y) / (e_1.B.x - e_1.A.x);
-                b_1 = (e_1.A.y - m_1 * e_1.A.x);
+                m1 = (e1.B.Y - e1.A.Y) / (e1.B.X - e1.A.X);
+                b1 = (e1.A.Y - m1 * e1.A.X);
             }
             catch (DivideByZeroException)
             {
-                // Catch if edge is vertikal (division by 0 for m)
-                isVert_1 = true;
+                // Catch if edge is vertical (division by 0 for m)
+                isVert1 = true;
             }
 
             // Try to get function parameters of e_2
             try
             {
-                m_2 = (e_2.B.y - e_2.A.y) / (e_2.B.x - e_2.A.x);
-                b_2 = (e_2.A.y - m_2 * e_2.A.x);
+                m2 = (e2.B.Y - e2.A.Y) / (e2.B.X - e2.A.X);
+                b2 = (e2.A.Y - m2 * e2.A.X);
             }
             catch (DivideByZeroException)
             {
-                // Catch if edge is vertikal (division by 0 for m)
-                isVert_2 = true;
+                // Catch if edge is vertical (division by 0 for m)
+                isVert2 = true;
             }
 
             // This should be impossible
-            if (isVert_1 && isVert_2)
+            if (isVert1 && isVert2)
             {
                 return null;
             }
 
-            if (isVert_1)
+            if (isVert1)
             {
-                // Return point with x of the vertikal line and y with the x plugged in the equation of the none vertikal line
-                return new Point(e_1.A.x, m_2 * e_1.A.x + b_2);
+                // Return point with x of the vertical line and y with the x plugged in the equation of the none vertical line
+                return new Point(e1.A.X, m2 * e1.A.X + b2);
             }
-            else if (isVert_2)
+            else if (isVert2)
             {
-                // Return point with x of the vertikal line and y with the x plugged in the equation of the none vertikal line
-                return new Point(e_2.A.x, m_1 * e_2.A.x + b_1);
+                // Return point with x of the vertical line and y with the x plugged in the equation of the none vertical line
+                return new Point(e2.A.X, m1 * e2.A.X + b1);
             }
             else
             {
                 // Set both equations equal and rearranged to calculate x and use x to calculate y
-                float x = (b_2 - b_1) / (m_1 - m_2);
-                float y = m_1 * x + b_1;
+                var x = (b2 - b1) / (m1 - m2);
+                var y = m1 * x + b1;
                 
                 return new Point(x, y);
             }
         }
 
-        public void printTriangle()
+        /// <summary>
+        /// Logs a readable string with the triangle's three corner coordinates.
+        /// </summary>
+        public void PrintTriangle()
         {
 
-            String triString = "Triangle: (A:(" + this.points[0].x + "," + this.points[0].y +
-                                       "),B:(" + this.points[1].x + "," + this.points[1].y +
-                                       "),C:(" + this.points[2].x + "," + this.points[2].y + "))\n";
+            var triString = "Triangle: (A:(" + Points[0].X + "," + Points[0].Y +
+                            "),B:(" + Points[1].X + "," + Points[1].Y +
+                            "),C:(" + Points[2].X + "," + Points[2].Y + "))\n";
             Debug.Log(triString);
         }
     }
 
+    /// <summary>
+    /// 2D point with X and Y values plus small helpers.
+    /// </summary>
     public class Point
     {
-        public float x, y;
+        /// <summary>
+        /// X coordinate.
+        /// Y coordinate.
+        /// </summary>
+        public float X, Y;
 
+        /// <summary>
+        /// Creates a point with given X and Y.
+        /// </summary>
         public Point(float x, float y)
         {
-            this.x = x;
-            this.y = y;
+            X = x;
+            Y = y;
         }
 
-        public static bool equals(Point p_1, Point p_2)
+        /// <summary>
+        /// Checks if two points have the same coordinates.
+        /// </summary>
+        public static bool Equals(Point p1, Point p2)
         {
-            if (p_1.x == p_2.x && p_1.y == p_2.y)
-            {
-                return true;
-            }
-            else
-            {
-                return false; 
-            }
+            return p1.X == p2.X && p1.Y == p2.Y;
         }
 
-        public static float getDistance(Point p_1, Point p_2)
+        /// <summary>
+        /// Returns the distance between two points.
+        /// </summary>
+        public static float GetDistance(Point p1, Point p2)
         {
-            return Mathf.Sqrt(((p_1.x-p_2.x) * (p_1.x - p_2.x)) + ((p_1.y - p_2.y) * (p_1.y - p_2.y)));
+            return Mathf.Sqrt(((p1.X-p2.X) * (p1.X - p2.X)) + ((p1.Y - p2.Y) * (p1.Y - p2.Y)));
         }
         
+        /// <summary>
+        /// Converts this point to a Vector3, using a given Y height (default 0).
+        /// </summary>
         public Vector3 ToVector3(float y = 0f)
         {
-            return new Vector3(this.x, y, this.y);
+            return new Vector3(X, y, Y);
         }
         
-        public void printPoint()
+        /// <summary>
+        /// Logs this point as "(X;Y)".
+        /// </summary>
+        public void PrintPoint()
         {
-            Debug.Log("("+this.x+";"+this.y+")");
+            Debug.Log("("+X+";"+Y+")");
         }
     }
 
+    /// <summary>
+    /// Line segment between two points, with helpers for ids and intersections.
+    /// </summary>
     public class Edge
     {
-        public Point A, B;
-        private static int _nextId = 0;
+        /// <summary>
+        /// Start point.
+        /// </summary>
+        public Point A;
+
+        /// <summary>
+        /// End point.
+        /// </summary>
+        public Point B;
+        
+        /// <summary>
+        /// Static counter used to assign unique ids.
+        /// </summary>
+        private static int _nextId;
+        
+        /// <summary>
+        /// Unique id for this edge (assigned via <see cref="GiveID"/>).
+        /// </summary>
         public int Id;
 
+        /// <summary>
+        /// Optional reference to a room center on one side of the edge.
+        /// </summary>
         public Point Room1;
+        
+        /// <summary>
+        /// Optional reference to a room center on the other side of the edge.
+        /// </summary>
         public Point Room2;
 
-        public Edge(Point A, Point B)
+        /// <summary>
+        /// Creates an edge from point A to point B.
+        /// </summary>
+        public Edge(Point a, Point b)
         {
-            this.A = A;
-            this.B = B;
+            A = a;
+            B = b;
         }
 
-        public void giveID()
+        /// <summary>
+        /// Assigns a unique id to this edge.
+        /// </summary>
+        public void GiveID()
         {
             Id = _nextId++;
         }
 
-        public static bool equals(Edge e_1, Edge e_2)
+        /// <summary>
+        /// Checks if two edges are equal (same two points, any order).
+        /// </summary>
+        public static bool Equals(Edge e1, Edge e2)
         {
-            if (Point.equals(e_1.A,e_2.A) && Point.equals(e_1.B,e_2.B))
+            if (Point.Equals(e1.A,e2.A) && Point.Equals(e1.B,e2.B))
             {
                 return true;
             }
-            else if (Point.equals(e_1.A, e_2.B) && Point.equals(e_1.B, e_2.A))
+            else if (Point.Equals(e1.A, e2.B) && Point.Equals(e1.B, e2.A))
             {
                 return true;
             }
@@ -268,28 +336,35 @@ namespace Geometry
                 return false;
             }
         }
+        
+        /// <summary>
+        /// Checks if this edge intersects another edge.
+        /// </summary>
         public bool Intersect(Edge e2)
         {
-            return DoLinesIntersect(this.A, this.B, e2.A, e2.B);
+            return DoLinesIntersect(A, B, e2.A, e2.B);
         }
         
+        /// <summary>
+        /// Line intersection test for two segments p1–p2 and q1–q2.
+        /// </summary>
         private static bool DoLinesIntersect(Point p1, Point p2, Point q1, Point q2)
         {
-            float orientation(Point a, Point b, Point c)
+            float Orientation(Point a, Point b, Point c)
             {
-                return (b.y - a.y) * (c.x - b.x) - (b.x - a.x) * (c.y - b.y);
+                return (b.Y - a.Y) * (c.X - b.X) - (b.X - a.X) * (c.Y - b.Y);
             }
 
             bool OnSegment(Point p, Point q, Point r)
             {
-                return q.x <= Math.Max(p.x, r.x) && q.x >= Math.Min(p.x, r.x) &&
-                       q.y <= Math.Max(p.y, r.y) && q.y >= Math.Min(p.y, r.y);
+                return q.X <= Math.Max(p.X, r.X) && q.X >= Math.Min(p.X, r.X) &&
+                       q.Y <= Math.Max(p.Y, r.Y) && q.Y >= Math.Min(p.Y, r.Y);
             }
 
-            float o1 = orientation(p1, p2, q1);
-            float o2 = orientation(p1, p2, q2);
-            float o3 = orientation(q1, q2, p1);
-            float o4 = orientation(q1, q2, p2);
+            var o1 = Orientation(p1, p2, q1);
+            var o2 = Orientation(p1, p2, q2);
+            var o3 = Orientation(q1, q2, p1);
+            var o4 = Orientation(q1, q2, p2);
 
             // General case
             if (o1 * o2 < 0 && o3 * o4 < 0)
@@ -303,18 +378,30 @@ namespace Geometry
 
             return false;
         }
-
     }
 
+    /// <summary>
+    /// Circle with a center point and radius.
+    /// </summary>
     public class Circle
     {
-        public Point center;
-        public float radius;
+        /// <summary>
+        /// Center of the circle.
+        /// </summary>
+        public Point Center;
+        
+        /// <summary>
+        /// Radius of the circle.
+        /// </summary>
+        public float Radius;
 
+        /// <summary>
+        /// Creates a circle with the given center and radius.
+        /// </summary>
         public Circle(Point center, float radius)
         {
-            this.center = center;
-            this.radius = radius;
+            Center = center;
+            Radius = radius;
         }
     }
 }
