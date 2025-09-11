@@ -17,8 +17,14 @@ namespace ItemPlacement
         /// </summary>
         private readonly Dictionary<int, List<GameObject>> _enemyInstancesPerRoom = new();
         
+        /// <summary>
+        /// stores all enemies that are alive per room, keyed by room ID.
+        /// </summary>
         private readonly Dictionary<int, int> _alivePerRoom = new();
         
+        /// <summary>
+        /// static instance of the spawner
+        /// </summary>
         private static EnemySpawnerVoronoi _instance;
 
         /// <summary>
@@ -87,6 +93,10 @@ namespace ItemPlacement
             }
         }
         
+        /// <summary>
+        /// function that tracks if all enemies in the corresponding room have been defeated, also decreases living amount
+        /// </summary>
+        /// <param name="roomId">room id of the room where an enemies have been defeated</param>
         private void OnEnemyDied(int roomId)
         {
             if (!_alivePerRoom.ContainsKey(roomId)) return;
@@ -100,16 +110,28 @@ namespace ItemPlacement
             }
         }
         
+        /// <summary>
+        /// increases amount of living enemies in the corresponding room because there are enemies that can spawn smaller enemies to their help
+        /// </summary>
+        /// <param name="roomId">id of room where living amount should be increased</param>
         public static void RegisterEnemyMinionSpawn(int roomId)
         {
             _instance?.IncrementAlive(roomId);
         }
 
+        /// <summary>
+        /// decreases amount of living enemies in the corresponding room because there are enemies that can spawn smaller enemies to their help
+        /// </summary>
+        /// <param name="roomId">id of room where living amount should be decreased</param>
         public static void RegisterEnemyMinionDeath(int roomId)
         {
             _instance?.OnEnemyDied(roomId);
         }
 
+        /// <summary>
+        /// function that increases the tracker of the living enemies per room
+        /// </summary>
+        /// <param name="roomId">id of room where living amount should be increased</param>
         private void IncrementAlive(int roomId)
         {
             if (!_alivePerRoom.ContainsKey(roomId))
