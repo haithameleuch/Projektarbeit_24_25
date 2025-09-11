@@ -9,6 +9,7 @@ using MiniGame;
 using System.Linq;
 using Controller;
 using Dungeon;
+using Inventory;
 using Shooting;
 
 namespace Manager
@@ -343,7 +344,7 @@ namespace Manager
 
             if (stats.Item1.Count > 0)
             {
-                _player.GetComponent<Stats>().SetStats(stats.Item1, stats.Item2);
+                _player.GetComponent<Stats.Stats>().SetStats(stats.Item1, stats.Item2);
             }
         }
         

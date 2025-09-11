@@ -1,4 +1,5 @@
 using Saving;
+using Stats;
 using UnityEngine;
 
 namespace Enemy
@@ -35,7 +36,7 @@ namespace Enemy
         /// </summary>
         /// <param name="s">The <see cref="Stats"/> object to expand if needed.</param>
         /// <param name="minCount">Minimum number of stat slots required.</param>
-        private static void EnsureMinSlots(Stats s, int minCount)
+        private static void EnsureMinSlots(Stats.Stats s, int minCount)
         {
             var max = s.GetMaxStatsList();
             var cur = s.GetCurStatsList();
@@ -48,7 +49,7 @@ namespace Enemy
         /// </summary>
         /// <param name="s">The <see cref="Stats"/> object of the enemy or boss.</param>
         /// <param name="isBoss">If <c>true</c>, applies boss-level increments; otherwise, enemy increments.</param>
-        public static void Apply(Stats s, bool isBoss = false)
+        public static void Apply(Stats.Stats s, bool isBoss = false)
         {
             if (s == null) return;
 

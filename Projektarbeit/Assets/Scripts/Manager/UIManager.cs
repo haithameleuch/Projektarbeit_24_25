@@ -180,7 +180,7 @@ namespace Manager
         
             // Game over logic
             // Check if the player is dead
-            if (_player.GetComponent<Stats>().GetCurStats(0) < 1)
+            if (_player.GetComponent<Stats.Stats>().GetCurStats(0) < 1)
             {
                 // Pause the game
                 DisableGameplay();
