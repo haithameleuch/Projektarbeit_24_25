@@ -1,0 +1,3 @@
+<map id="Interfaces.ISpawnerVoronoi" name="Interfaces.ISpawnerVoronoi">
+<area shape="rect" id="Node000001" title="Interface for object spawners in a room in the Voronoi Dungeon. Allows flexibility for spawning diffe..." alt="" coords="5,5,177,72"/>
+</map>

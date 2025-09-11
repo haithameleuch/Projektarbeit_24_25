@@ -1,0 +1,6 @@
+<map id="Spawning.EnemySpawnerVoronoi" name="Spawning.EnemySpawnerVoronoi">
+<area shape="rect" id="Node000001" title="Spawns and manages enemies in Voronoi&#45;based dungeon rooms. Enemies are spawned based on the room&#39;s si..." alt="" coords="5,265,213,453"/>
+<area shape="rect" id="Node000002" href="$class_spawning_1_1_enemy_spawner_voronoi.html" title="Spawns and manages enemies in Voronoi&#45;based dungeon rooms. Enemies are spawned based on the room&#39;s si..." alt="" coords="5,5,213,194"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="112,193,112,248,106,248,106,193"/>
+<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="214,75,232,84,240,99,237,109,231,116,227,113,232,107,234,100,229,88,212,80"/>
+</map>

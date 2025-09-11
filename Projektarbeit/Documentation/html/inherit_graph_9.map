@@ -1,0 +1,73 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$interface_interfaces_1_1_i_interactable.html" title="Interface for objects that can be interacted with (e.g., when the player is nearby)." alt="" coords="5,104,161,130"/>
+<area shape="rect" id="Node000001" href="$class_interaction_1_1_destroyable_wall_interaction.html" title="Interaction for a breakable wall that can only be damaged with a pickaxe. Shows short feedback,..." alt="" coords="220,203,401,244"/>
+<area shape="poly" id="edge7_Node000000_Node000001" title=" " alt="" coords="117,136,160,163,210,189,237,200,235,205,208,194,158,168,114,141"/>
+<area shape="rect" id="Node000011" href="$class_interaction_1_1_enemy_interaction.html" title="Handles interactions between the player and an enemy, including applying damage over time when in con..." alt="" coords="216,5,404,31"/>
+<area shape="poly" id="edge8_Node000000_Node000011" title=" " alt="" coords="113,93,157,65,208,40,240,29,241,34,210,45,159,70,116,97"/>
+<area shape="rect" id="Node000012" href="$class_interaction_1_1_level_exit_interaction.html" title="Handles player interaction with the level exit. When the player interacts, the level is advanced,..." alt="" coords="210,55,411,80"/>
+<area shape="poly" id="edge9_Node000000_Node000012" title=" " alt="" coords="160,97,247,78,248,84,161,103"/>
+<area shape="rect" id="Node000016" href="$class_items_1_1_collectible_item.html" title="This class implements the IInteractable interface and is used for the ability to collect items of the..." alt="" coords="238,104,383,130"/>
+<area shape="poly" id="edge10_Node000000_Node000016" title=" " alt="" coords="176,114,237,114,237,120,176,120"/>
+<area shape="rect" id="Node000030" href="$class_mini_game_1_1_drawing_trigger.html" title="Handles player interaction with a drawing canvas. Displays instructions, activates the camera for dra..." alt="" coords="224,153,396,179"/>
+<area shape="poly" id="edge11_Node000000_Node000030" title=" " alt="" coords="161,131,248,150,247,155,160,136"/>
+<area shape="rect" id="Node000023" title=" " alt="" coords="12,268,154,294"/>
+<area shape="rect" id="Node000022" href="$class_manager_1_1_inventory_manager.html" title="Manages the inventory UI and logic, including displaying and updating item slots, handling user inter..." alt="" coords="221,268,400,294"/>
+<area shape="poly" id="edge12_Node000023_Node000022" title=" " alt="" coords="169,278,221,278,221,284,169,284"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="27,761,139,787"/>
+<area shape="poly" id="edge21_Node000002_Node000001" title=" " alt="" coords="85,745,99,638,124,491,141,416,160,348,182,292,207,254,220,242,224,246,211,257,187,295,165,350,146,418,129,492,104,638,90,746"/>
+<area shape="poly" id="edge22_Node000002_Node000011" title=" " alt="" coords="86,746,152,346,206,41,220,29,224,34,211,44,157,347,92,746"/>
+<area shape="poly" id="edge23_Node000002_Node000012" title=" " alt="" coords="86,745,150,375,185,180,206,90,220,79,224,83,211,93,191,181,155,376,92,746"/>
+<area shape="poly" id="edge27_Node000002_Node000016" title=" " alt="" coords="86,746,146,406,181,227,196,168,207,139,220,128,236,121,238,126,223,133,211,142,201,169,186,229,151,407,92,747"/>
+<area shape="poly" id="edge40_Node000002_Node000030" title=" " alt="" coords="86,745,138,442,173,279,190,222,207,190,223,177,226,182,211,193,195,224,178,281,143,443,91,746"/>
+<area shape="poly" id="edge33_Node000002_Node000022" title=" " alt="" coords="85,745,100,647,126,514,143,447,162,387,183,337,207,303,222,292,225,296,211,307,188,339,167,388,148,449,131,515,106,647,91,746"/>
+<area shape="rect" id="Node000003" href="$class_controller_1_1_first_person_player_controller.html" title="First&#45;person player controller for movement, looking, and basic interaction checks...." alt="" coords="218,1206,402,1246"/>
+<area shape="poly" id="edge13_Node000002_Node000003" title=" " alt="" coords="87,803,91,879,108,984,124,1040,145,1095,174,1147,211,1192,225,1203,221,1208,207,1196,170,1150,141,1097,119,1042,103,985,86,880,81,803"/>
+<area shape="rect" id="Node000004" href="$class_controller_1_1_player_pickaxe_controller.html" title="Controls the instantiation and simple swing animation of the pickaxe in first&#45;person view...." alt="" coords="228,1271,392,1312"/>
+<area shape="poly" id="edge14_Node000002_Node000004" title=" " alt="" coords="91,802,106,902,132,1039,148,1108,167,1170,188,1222,211,1256,229,1271,226,1275,207,1260,183,1224,162,1172,143,1109,127,1040,101,903,85,802"/>
+<area shape="rect" id="Node000005" href="$class_controller_1_1_vignette_controller.html" title="Controller for managing the health vignette behaviour depending on health state." alt="" coords="218,1336,402,1362"/>
+<area shape="poly" id="edge15_Node000002_Node000005" title=" " alt="" coords="90,802,102,916,126,1072,143,1151,162,1223,185,1282,211,1322,226,1333,223,1338,207,1325,180,1285,157,1225,137,1153,121,1073,97,917,84,803"/>
+<area shape="rect" id="Node000006" href="$class_dungeon_1_1_open_door.html" title="Listens for open and close events from the EventManager and toggles the door&#39;s state accordingly." alt="" coords="242,1385,378,1411"/>
+<area shape="poly" id="edge16_Node000002_Node000006" title=" " alt="" coords="89,802,100,925,123,1097,139,1184,159,1264,183,1329,196,1354,211,1372,225,1383,243,1391,241,1396,223,1388,207,1376,192,1357,178,1331,154,1265,134,1185,117,1098,95,926,84,803"/>
+<area shape="rect" id="Node000007" href="$class_dungeon_1_1_voronoi_generator.html" title="Generates a procedural dungeon using Voronoi/Delaunay and builds the scene (floors,..." alt="" coords="221,1435,400,1460"/>
+<area shape="poly" id="edge17_Node000002_Node000007" title=" " alt="" coords="88,802,98,934,119,1120,136,1216,156,1303,181,1374,195,1401,211,1422,224,1432,220,1436,207,1425,191,1404,176,1376,151,1304,130,1217,114,1121,93,934,83,802"/>
+<area shape="rect" id="Node000008" href="$class_enemy_1_1_bomb_behavior.html" title="Controls the behavior of a bomb object in the scene. The bomb explodes when it collides with the grou..." alt="" coords="236,1484,385,1510"/>
+<area shape="poly" id="edge18_Node000002_Node000008" title=" " alt="" coords="88,803,96,943,116,1145,132,1248,153,1342,179,1419,194,1449,210,1471,237,1487,234,1492,207,1475,190,1452,174,1421,148,1344,127,1249,111,1145,91,944,83,803"/>
+<area shape="rect" id="Node000009" href="$class_enemy_1_1_enemy_death_reporter.html" title="Reports the death of an enemy to a callback when destroyed. Prevents duplicate reports and avoids rep..." alt="" coords="215,1533,406,1559"/>
+<area shape="poly" id="edge19_Node000002_Node000009" title=" " alt="" coords="88,802,94,952,113,1168,129,1279,150,1381,177,1464,193,1496,211,1520,224,1531,220,1535,207,1524,189,1499,172,1466,145,1382,124,1280,108,1169,89,952,82,803"/>
+<area shape="rect" id="Node000010" href="$class_enemy_1_1_spawnling_auto_register.html" title=" " alt="" coords="210,317,410,343"/>
+<area shape="poly" id="edge20_Node000002_Node000010" title=" " alt="" coords="81,746,84,668,90,617,101,562,116,505,139,449,168,397,207,352,222,341,225,346,210,356,173,401,143,452,121,507,106,563,96,617,90,668,86,746"/>
+<area shape="rect" id="Node000013" href="$class_interaction_1_1_player_interaction.html" title="Handles interaction logic for the player, including reactions to collisions with projectiles and impl..." alt="" coords="218,367,402,392"/>
+<area shape="poly" id="edge24_Node000002_Node000013" title=" " alt="" coords="82,746,89,676,107,583,123,534,144,485,172,441,207,402,223,391,226,395,210,405,176,444,149,488,128,535,112,584,94,677,88,746"/>
+<area shape="rect" id="Node000014" href="$class_inventory_1_1_inventory.html" title=" " alt="" coords="245,416,376,442"/>
+<area shape="poly" id="edge25_Node000002_Node000014" title=" " alt="" coords="84,745,93,684,114,604,130,562,150,522,176,484,207,451,224,440,243,432,245,437,227,444,210,455,180,487,155,524,135,565,119,606,99,685,89,746"/>
+<area shape="rect" id="Node000015" href="$class_inventory_1_1_item_slot_number.html" title="Data&#45;Class only to keep track of the row and column of an inventory slot." alt="" coords="224,465,396,491"/>
+<area shape="poly" id="edge26_Node000002_Node000015" title=" " alt="" coords="86,745,98,693,121,626,156,558,180,527,207,500,224,489,227,494,210,504,184,531,161,561,126,628,104,694,91,747"/>
+<area shape="rect" id="Node000017" href="$class_manager_1_1_button_manager.html" title="Handles menu button actions: start, load, save, and exit. Sets a scene&#45;changing flag to avoid enemy d..." alt="" coords="229,515,392,540"/>
+<area shape="poly" id="edge28_Node000002_Node000017" title=" " alt="" coords="89,746,104,702,128,649,162,595,183,571,207,549,228,538,230,542,210,554,187,574,166,598,133,651,109,704,94,747"/>
+<area shape="rect" id="Node000018" href="$class_manager_1_1_camera_manager.html" title="Manages camera switching between first&#45;person and canvas views and enables the corresponding player m..." alt="" coords="225,564,396,590"/>
+<area shape="poly" id="edge29_Node000002_Node000018" title=" " alt="" coords="94,746,111,712,136,672,168,632,207,599,228,588,230,593,210,603,172,636,141,675,116,715,98,749"/>
+<area shape="rect" id="Node000019" href="$class_manager_1_1_event_manager.html" title="Manages global events for opening and closing doors, allowing other scripts to listen and respond to ..." alt="" coords="231,613,390,639"/>
+<area shape="poly" id="edge30_Node000002_Node000019" title=" " alt="" coords="101,747,145,696,175,670,207,648,232,637,234,642,210,653,178,674,149,700,105,751"/>
+<area shape="rect" id="Node000020" href="$class_manager_1_1_game_input_manager.html" title="Manages player input for movement and camera control using the Input System. Handles input locking an..." alt="" coords="216,663,404,688"/>
+<area shape="poly" id="edge31_Node000002_Node000020" title=" " alt="" coords="113,750,157,723,208,697,240,686,241,691,210,702,159,727,116,755"/>
+<area shape="rect" id="Node000021" href="$class_manager_1_1_game_manager_voronoi.html" title="Runs the core game loop for the Voronoi dungeon: generates the level, spawns the player,..." alt="" coords="209,712,412,738"/>
+<area shape="poly" id="edge32_Node000002_Node000021" title=" " alt="" coords="153,756,247,736,248,741,155,761"/>
+<area shape="rect" id="Node000024" href="$class_manager_1_1_mini_map_manager.html" title="Renders a runtime minimap of Voronoi‐generated dungeon rooms, connections, and player orientation." alt="" coords="224,761,397,787"/>
+<area shape="poly" id="edge34_Node000002_Node000024" title=" " alt="" coords="155,772,223,772,223,777,155,777"/>
+<area shape="rect" id="Node000025" href="$class_manager_1_1_object_pool_manager.html" title="Manages object pool for reusable GameObject instances (e.g., projectiles). Preloads a set of inactive..." alt="" coords="216,811,404,836"/>
+<area shape="poly" id="edge35_Node000002_Node000025" title=" " alt="" coords="155,787,248,807,247,813,153,792"/>
+<area shape="rect" id="Node000026" href="$class_manager_1_1_question_manager.html" title="Manages a list of questions, selects a random question, and checks player answers." alt="" coords="222,860,398,886"/>
+<area shape="poly" id="edge36_Node000002_Node000026" title=" " alt="" coords="116,794,159,821,210,846,241,857,240,862,208,851,157,826,113,798"/>
+<area shape="rect" id="Node000027" href="$class_manager_1_1_u_i_manager.html" title="Central UI controller for panels, overlays, and text. Handles pause, inventory, mini&#45;map,..." alt="" coords="241,909,380,935"/>
+<area shape="poly" id="edge37_Node000002_Node000027" title=" " alt="" coords="105,798,149,848,178,874,210,896,242,909,240,914,207,901,175,878,145,852,101,801"/>
+<area shape="rect" id="Node000028" href="$class_mini_game_1_1_canvas_draw.html" title="Manages the drawing canvas and texture processing for the mini&#45;game. Handles digit and glyph predicti..." alt="" coords="230,959,390,984"/>
+<area shape="poly" id="edge38_Node000002_Node000028" title=" " alt="" coords="98,800,116,834,141,873,172,912,210,945,231,956,229,961,207,950,168,916,136,876,111,836,94,802"/>
+<area shape="rect" id="Node000029" href="$class_mini_game_1_1_classifier.html" title="Classifier handles digit and glyph prediction using a Unity Sentis AI model." alt="" coords="241,1008,380,1034"/>
+<area shape="poly" id="edge39_Node000002_Node000029" title=" " alt="" coords="94,801,109,844,133,897,166,950,187,974,210,995,241,1010,239,1015,207,999,183,978,162,953,128,899,104,846,89,803"/>
+<area shape="rect" id="Node000031" href="$class_shooting_1_1_player_shooting.html" title="Handles player shooting by getting projectiles from a pool and spawning them at the shoot point." alt="" coords="228,1057,392,1083"/>
+<area shape="poly" id="edge41_Node000002_Node000031" title=" " alt="" coords="91,802,104,854,126,920,161,987,184,1018,210,1044,229,1055,226,1060,207,1048,180,1021,156,990,121,922,98,856,86,803"/>
+<area shape="rect" id="Node000032" href="$class_shooting_1_1_projectile.html" title="Handles the behavior of a projectile, including movement, lifetime management, and collision detectio..." alt="" coords="245,1107,376,1132"/>
+<area shape="poly" id="edge42_Node000002_Node000032" title=" " alt="" coords="89,802,99,863,119,942,135,984,155,1024,180,1061,210,1093,227,1104,246,1111,244,1116,224,1109,207,1098,176,1065,150,1027,130,986,114,944,93,864,84,803"/>
+<area shape="rect" id="Node000033" href="$class_stats_1_1_stats.html" title="The Stats&#45;Class is used to keep track of an objects Health, Damage and Speed (and possibly more in th..." alt="" coords="267,1156,354,1182"/>
+<area shape="poly" id="edge43_Node000002_Node000033" title=" " alt="" coords="88,802,94,872,112,964,128,1013,149,1060,176,1105,210,1143,237,1158,267,1165,265,1170,235,1163,207,1147,172,1108,144,1063,123,1015,107,965,89,873,82,803"/>
+</map>
