@@ -1,0 +1,7 @@
+<map id="Manager.QuestionManager" name="Manager.QuestionManager">
+<area shape="rect" id="Node000001" title="Manages a list of questions, selects a random question, and checks player answers." alt="" coords="34,163,208,311"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,16,106,82"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="74,95,98,162,93,164,69,96"/>
+<area shape="rect" id="Node000003" href="$class_manager_1_1_question.html" title="Represents a single question with its text and correct answer." alt="" coords="130,5,246,92"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="175,93,155,148,150,146,170,91"/>
+</map>

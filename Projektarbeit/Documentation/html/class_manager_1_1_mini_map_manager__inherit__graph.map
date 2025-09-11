@@ -1,0 +1,5 @@
+<map id="Manager.MiniMapManager" name="Manager.MiniMapManager">
+<area shape="rect" id="Node000001" title="Renders a runtime minimap of Voronoi‐generated dungeon rooms, connections, and player orientation." alt="" coords="5,120,168,532"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="36,5,137,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,87,89,120,84,120,84,87"/>
+</map>

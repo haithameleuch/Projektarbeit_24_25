@@ -1,0 +1,7 @@
+<map id="Interaction.DestroyableWallInteraction" name="Interaction.DestroyableWallInteraction">
+<area shape="rect" id="Node000001" title="Interaction for a breakable wall that can only be damaged with a pickaxe. Shows short feedback,..." alt="" coords="44,160,214,486"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,26,106,92"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,106,86,160,81,161,66,107"/>
+<area shape="rect" id="Node000003" href="$interface_interfaces_1_1_i_interactable.html" title="Interface for objects that can be interacted with (e.g., when the player is nearby)." alt="" coords="130,5,275,112"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="186,127,177,161,172,160,181,126"/>
+</map>
