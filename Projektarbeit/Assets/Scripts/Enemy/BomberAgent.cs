@@ -6,53 +6,105 @@ using System.Collections;
 
 namespace Enemy
 {
-    /*
-     * BomberAgent Structure and Behavior:
-     *
-     * This class defines an enemy agent (BomberAgent) trained using Unity ML-Agents to pursue the player
-     * and drop bombs when nearby.
-     *
-     * Agent Overview:
-     * - The BomberAgent uses continuous actions to move forward/backward and rotate left/right.
-     * - It observes the direction to the player, its own forward vector, and the angle between them.
-     * - Rewards are given for approaching and facing the player, with penalties for being stuck or hitting walls.
-     * - A coroutine (`BombDropCoroutine`) handles bomb-dropping logic based on proximity to the player.
-     * - The bomb is instantiated slightly below the agent and given downward velocity.
-     *
-     * Key Features:
-     * - Movement is physics-based using Rigidbody.
-     * - Initialization includes waiting for the player to appear in the scene.
-     * - Includes a cooldown mechanism between bomb drops.
-     * - Ends the episode with a significant reward if the agent touches the player.
-     *
-     * Enemy Type Summary:
-     * - Type: Pursuer-Bomber Enemy
-     * - Goal: Approach the player and drop bombs to simulate threat.
-     * - Behavior: Smart navigation + area-based bombing + stuck detection logic.
-     */
-    
+    /// <summary>
+    /// Defines an enemy agent (BomberAgent) trained with Unity ML-Agents.
+    ///
+    /// <para>Core Behavior:</para>
+    /// <list type="bullet">
+    /// <item>Pursues the player using continuous movement and rotation actions.</item>
+    /// <item>Drops bombs when in proximity to the player using a coroutine-based system.</item>
+    /// <item>Receives rewards for approaching and facing the player accurately.</item>
+    /// <item>Penalized for collisions with walls or being stuck.</item>
+    /// </list>
+    ///
+    /// <para>Observations:</para>
+    /// <list type="bullet">
+    /// <item>Normalized direction to the player (Vector3)</item>
+    /// <item>Agent’s forward direction (Vector3)</item>
+    /// <item>Signed angle to the player (float, normalized)</item>
+    /// </list>
+    /// <para>Total = 7 observations per step.</para>
+    ///
+    /// <para>Rewards:</para>
+    /// <list type="bullet">
+    /// <item>Positive reward for reducing distance to the player.</item>
+    /// <item>Positive reward for facing the player (alignment).</item>
+    /// <item>Large positive reward for touching the player (end of episode).</item>
+    /// <item>Negative rewards for being stuck or colliding with walls.</item>
+    /// </list>
+    ///
+    /// <para>Key Features:</para>
+    /// <list type="bullet">
+    /// <item>Rigidbody-based physics movement and rotation.</item>
+    /// <item>Coroutine-based bomb-dropping with cooldown and proximity checks.</item>
+    /// <item>Initialization waits for player spawn to ensure proper targeting.</item>
+    /// <item>Stuck detection and distance-based reward shaping.</item>
+    /// </list>
+    ///
+    /// <para>Best suited for:</para>
+    /// <list type="bullet">
+    /// <item>Pursuer-type enemies with area-of-effect attacks.</item>
+    /// <item>Training scenarios emphasizing navigation, threat generation, and reward shaping.</item>
+    /// </list>
+    /// </summary>
     public class BomberAgent : Agent
     {
-        // Reference to the player target
+        /// <summary>
+        /// Reference to the player target in the scene.
+        /// </summary>
         public GameObject target;
         
-        // Bomb prefab to instantiate
+        /// <summary>
+        /// Prefab of the bomb object to be instantiated by the agent.
+        /// </summary>
         public GameObject bombPrefab;
         
-        // Movement speed of the bomber agent
+        /// <summary>
+        /// Movement speed of the bomber agent (fetched from Stats on initialization).
+        /// </summary>
         [SerializeField] private float movementSpeed = 4f;
 
-        // Internal state variables
+        /// <summary>
+        /// Stores the agent's last recorded position to detect if it gets stuck.
+        /// </summary>
         private Vector3 _lastPosition;
+        
+        /// <summary>
+        /// Timer used to track how long the agent has been stuck in place.
+        /// </summary>
         private float _stuckTimer;
+        
+        /// <summary>
+        /// Cached Rigidbody component used for movement and physics interactions.
+        /// </summary>
         private Rigidbody _rb;
+        
+        /// <summary>
+        /// Tracks the agent’s distance to the target from the previous frame
+        /// to calculate progress-based rewards.
+        /// </summary>
         private float _prevDistance;
+        
+        /// <summary>
+        /// Flag indicating whether the agent has successfully found and initialized the player target.
+        /// </summary>
         private bool _isInitialized;
+        
+        /// <summary>
+        /// Flag controlling whether the agent is currently allowed to drop a bomb
+        /// (enforces bomb cooldown).
+        /// </summary>
         private bool _canDropBomb = true;
 
-        private readonly float _bombDropOffset = 0.5f;
+        /// <summary>
+        /// Vertical offset to spawn bombs slightly below the agent.
+        /// </summary>
+        private const float BombDropOffset = 0.5f;
 
-        // Called once when the agent is initialized
+        /// <summary>
+        /// Called once when the agent is initialized.
+        /// Sets up Rigidbody constraints and starts searching for the player.
+        /// </summary>
         public override void Initialize()
         {
             _rb = GetComponent<Rigidbody>();
@@ -66,13 +118,19 @@ namespace Enemy
             StartCoroutine(FindPlayerCoroutine());
         }
 
+        /// <summary>
+        /// Called automatically by Unity when this agent or GameObject is disabled.
+        /// Stops all running coroutines to prevent unwanted behavior or errors.
+        /// </summary>
         protected override void OnDisable()
         {
             StopAllCoroutines();
         }
 
-        // Coroutine to find the player in the scene
-        // ReSharper disable Unity.PerformanceAnalysis
+        /// <summary>
+        /// Coroutine that repeatedly searches for the player by tag until found.
+        /// Once found, initializes movement speed and starts bomb dropping.
+        /// </summary>
         private IEnumerator FindPlayerCoroutine()
         {
             while (!target)
@@ -84,11 +142,14 @@ namespace Enemy
 
             _isInitialized = true;
             movementSpeed = gameObject.GetComponent<Stats>().GetCurStats(2);
+            
             // Start bomb-dropping logic once initialized
             StartCoroutine(BombDropCoroutine());
         }
 
-        // Reset agent at the beginning of each episode
+        /// <summary>
+        /// Resets the agent at the beginning of each training episode.
+        /// </summary>
         public override void OnEpisodeBegin()
         {
             _stuckTimer = 0f;
@@ -97,7 +158,12 @@ namespace Enemy
                 _prevDistance = Vector3.Distance(transform.localPosition, target.transform.localPosition);
         }
 
-        // Collects observations for the ML model
+        /// <summary>
+        /// Collects observations from the environment to provide input for the ML model.
+        /// Observations include direction to target, agent's forward direction, and angle difference.
+        /// Number of Observations = 3 + 3 + 1 = 7
+        /// </summary>
+        /// <param name="sensor">Vector sensor used to collect numeric observations.</param>
         public override void CollectObservations(VectorSensor sensor)
         {
             if (!target)
@@ -108,17 +174,20 @@ namespace Enemy
                 return;
             }
             
-            Vector3 toTarget = target.transform.localPosition - transform.localPosition;
-            Vector3 forward = transform.forward;
+            var toTarget = target.transform.localPosition - transform.localPosition;
+            var forward = transform.forward;
 
-            sensor.AddObservation(toTarget.normalized); // Direction to target
-            sensor.AddObservation(forward);             // Agent's facing a direction
-            sensor.AddObservation(Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f); // Angle difference
-            
-            // Number of Observations = 3 + 3 +3
+            sensor.AddObservation(toTarget.normalized); // Direction to target - 3
+            sensor.AddObservation(forward);             // Agent's facing a direction - 3
+            sensor.AddObservation(Vector3.SignedAngle(forward, toTarget, Vector3.up) / 180f); // Angle difference - 1
         }
 
-        // Receives actions from the model
+        /// <summary>
+        /// Executes actions received from the ML model to control movement and rotation.
+        /// Applies movement, rotation, and calculates rewards/penalties for approaching the target,
+        /// facing the target, being stuck, or general efficiency.
+        /// </summary>
+        /// <param name="actions">Action buffers containing continuous action values.</param>
         public override void OnActionReceived(ActionBuffers actions)
         {
             if (!target) { AddReward(-0.001f); return; }
@@ -127,7 +196,7 @@ namespace Enemy
             var turnInput = actions.ContinuousActions[1];
 
             // Move and rotate the agent
-            Vector3 forwardMovement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
+            var forwardMovement = transform.forward * moveInput * movementSpeed * Time.deltaTime;
             _rb.MovePosition(_rb.position + forwardMovement);
             transform.Rotate(Vector3.up, turnInput * 180f * Time.deltaTime);
 
@@ -152,8 +221,8 @@ namespace Enemy
 
                 if (_stuckTimer > 2f)
                 {
-                    AddReward(-5f); // Penalty for being stuck
-                    EndEpisode();   // Restart the episode
+                    AddReward(-5f);
+                    EndEpisode();
                 }
             }
             else
@@ -164,21 +233,28 @@ namespace Enemy
             _lastPosition = transform.localPosition;
         }
 
-        // Trigger events for collisions
+        /// <summary>
+        /// Handles trigger collision events with other colliders.
+        /// Rewards for reaching the player, penalizes for hitting walls.
+        /// </summary>
+        /// <param name="other">Collider that the agent entered.</param>
         private void OnTriggerEnter(Collider other)
         {
             if (other.CompareTag("Player"))
             {
-                AddReward(10f); // Big reward for reaching player
+                AddReward(10f);
                 EndEpisode();
             }
             else if (other.CompareTag("Wall"))
             {
-                AddReward(-2f); // Penalty for hitting a wall
+                AddReward(-2f);
             }
         }
         
-        // Coroutine for bomb dropping logic
+        /// <summary>
+        /// Coroutine that manages bomb dropping behavior.
+        /// Drops bombs when the player is within range, with cooldown between drops.
+        /// </summary>
         private IEnumerator BombDropCoroutine()
         {
             while (true)
@@ -189,33 +265,32 @@ namespace Enemy
                     continue;
 
                 // Compare XZ distances to ignore height
-                Vector3 bomberXZ = new Vector3(transform.position.x, 0f, transform.position.z);
-                Vector3 playerXZ = new Vector3(target.transform.position.x, 0f, target.transform.position.z);
-                float distanceToPlayer = Vector3.Distance(bomberXZ, playerXZ);
+                var bomberXZ = new Vector3(transform.position.x, 0f, transform.position.z);
+                var playerXZ = new Vector3(target.transform.position.x, 0f, target.transform.position.z);
+                var distanceToPlayer = Vector3.Distance(bomberXZ, playerXZ);
 
                 // Drop bomb if close enough and allowed
-                if (distanceToPlayer < 2.5f && _canDropBomb)
-                {
-                    DropBomb();
-                    _canDropBomb = false;
+                if (!(distanceToPlayer < 2.5f) || !_canDropBomb) continue;
+                DropBomb();
+                _canDropBomb = false;
 
-                    yield return new WaitForSeconds(3f); // Cooldown between bombs
-                    _canDropBomb = true;
-                }
+                yield return new WaitForSeconds(3f); // Cooldown between bombs
+                _canDropBomb = true;
             }
-            // ReSharper disable once IteratorNeverReturns
         }
 
-        // Spawns a bomb beneath the agent
-        // ReSharper disable Unity.PerformanceAnalysis
+        /// <summary>
+        /// Instantiates a bomb prefab beneath the agent and applies downward velocity
+        /// to simulate falling.
+        /// </summary>
         private void DropBomb()
         {
             if (!bombPrefab) return;
 
-            Vector3 dropPosition = transform.position - new Vector3(0, _bombDropOffset, 0);
-            GameObject bomb = Instantiate(bombPrefab, dropPosition, Quaternion.identity);
+            var dropPosition = transform.position - new Vector3(0, BombDropOffset, 0);
+            var bomb = Instantiate(bombPrefab, dropPosition, Quaternion.identity);
 
-            Rigidbody rb = bomb.GetComponent<Rigidbody>();
+            var rb = bomb.GetComponent<Rigidbody>();
             if (rb)
             {
                 // Assign downward velocity to simulate falling
