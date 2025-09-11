@@ -1,7 +1,7 @@
 using Dungeon;
 using System;
 using Manager;
-using ItemPlacement;
+using Spawning;
 using UnityEngine;
 
 namespace Enemy

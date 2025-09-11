@@ -3,8 +3,6 @@ using Manager;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Saving;
 
 namespace MiniGame
 {
