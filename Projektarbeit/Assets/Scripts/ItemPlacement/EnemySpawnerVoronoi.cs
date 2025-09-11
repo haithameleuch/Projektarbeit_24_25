@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Dungeon;
 using UnityEngine;
 using Enemy;
+using Manager;
 
 namespace ItemPlacement
 {

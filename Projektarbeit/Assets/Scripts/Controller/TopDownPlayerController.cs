@@ -3,6 +3,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using Helper;
+using Manager;
 
 /// <summary>
 /// Controls the movement of the player from top-down perspective, handling collisions with walls and obstacles.

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Manager;
 using TMPro;
 using Unity.Cinemachine;
 using UnityEngine;
