@@ -18,73 +18,73 @@ namespace Controller
         /// <summary>
         /// vignette color for full health state
         /// </summary>
-        public Color fullHealthColor = new Color(0, 0, 0, 0);   // transparent oder dunkel
+        public Color fullHealthColor = new(0, 0, 0, 0);   // transparent oder dunkel
         
         /// <summary>
-        /// vignette color for half health state
+        /// vignette color for half-health state
         /// </summary>
-        public Color halfHealthColor = new Color(1, 0.5f, 0, 0.6f);
+        public Color halfHealthColor = new(1, 0.5f, 0, 0.6f);
         
         /// <summary>
         /// vignette color for low health state
         /// </summary>
-        public Color lowHealthColor = new Color(1, 0, 0, 0.75f); // rot, halbtransparent
+        public Color lowHealthColor = new(1, 0, 0, 0.75f); // rot, half transparent
 
         /// <summary>
         /// volume on which we will set the vignette
         /// </summary>
-        private Volume volume;
+        private Volume _volume;
         
         /// <summary>
         /// stats of the player that our vignette depends on
         /// </summary>
-        private Stats.Stats playerStats;
+        private Stats.Stats _playerStats;
         
         /// <summary>
         /// actual vignette member that will be worked with
         /// </summary>
-        private Vignette vignette;
+        private Vignette _vignette;
 
         /// <summary>
         /// start event of this monobehaviour and setting the member variables of volume & vignette
         /// </summary>
-        void Start()
+        private void Start()
         {
-            volume = GetComponent<Volume>();
-            if (volume == null)
+            _volume = GetComponent<Volume>();
+            if (_volume == null)
             {
                 Debug.LogError("Volume component not found on this GameObject!");
                 return;
             }
 
-            if (!volume.profile.TryGet(out vignette))
+            if (!_volume.profile.TryGet(out _vignette))
             {
                 Debug.LogError("Vignette not found in Volume Profile!");
                 return;
             }
         
-            vignette = volume.profile.TryGet<Vignette>(out vignette) ? vignette : null;
+            _vignette = _volume.profile.TryGet(out _vignette) ? _vignette : null;
         }
 
         /// <summary>
         /// update function that checks and updates the player stats to change the vignette style depending on the health value
         /// </summary>
-        void Update()
+        private void Update()
         {
-            if (vignette == null)
+            if (_vignette == null)
                 return;
 
-            if (playerStats == null)
+            if (_playerStats == null)
             {
-                GameObject player = GameObject.FindGameObjectWithTag("Player");
+                var player = GameObject.FindGameObjectWithTag("Player");
                 if (player == null)
                 {
                     return;
                 }
-                playerStats= player.GetComponent<Stats.Stats>();
+                _playerStats= player.GetComponent<Stats.Stats>();
             }
         
-            float normalizedHealth = Mathf.Clamp01(playerStats.GetCurStats(0) / playerStats.GetMaxStats(0));
+            var normalizedHealth = Mathf.Clamp01(_playerStats.GetCurStats(0) / _playerStats.GetMaxStats(0));
             float targetIntensity;
             Color targetColor;
             if (normalizedHealth > 0.3f && normalizedHealth <= 0.5f)
@@ -103,8 +103,8 @@ namespace Controller
                 targetColor = fullHealthColor;
             }
         
-            vignette.intensity.value = Mathf.Lerp(vignette.intensity.value, targetIntensity, Time.deltaTime * lerpSpeed);
-            vignette.color.value = Color.Lerp(vignette.color.value, targetColor, Time.deltaTime * lerpSpeed);
+            _vignette.intensity.value = Mathf.Lerp(_vignette.intensity.value, targetIntensity, Time.deltaTime * lerpSpeed);
+            _vignette.color.value = Color.Lerp(_vignette.color.value, targetColor, Time.deltaTime * lerpSpeed);
         }
     }
 }
