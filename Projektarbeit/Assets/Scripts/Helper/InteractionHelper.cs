@@ -1,94 +1,96 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
-/// <summary>
-/// Provides static helper methods for handling player interactions with objects in the game world.
-/// </summary>
-public static class InteractionHelper
+namespace Helper
 {
     /// <summary>
-    /// Handles interactions with objects detected by a raycast.
-    /// Updates the list of new interactables and performs interactions as needed.
+    /// Static helper for handling player interactions with scene objects.
+    /// Collects interactables from physics hits and triggers enter/exit calls.
     /// </summary>
-    /// <param name="hits">Array of RaycastHit results from a raycast.</param>
-    /// <param name="newInteractables">List to store objects that are interactable in the current frame.</param>
-    /// <param name="currentInteractables">List of objects that were interactable in the previous frame.</param>
-    /// <param name="player">The GameObject, passed to interaction methods.</param>
-    public static void HandleInteractions(RaycastHit[] hits, List<GameObject> newInteractables, List<GameObject> currentInteractables, GameObject player) 
+    public static class InteractionHelper
     {
-        // Create a set of IDs for all interactables that were already interacted with in the previous frame
-        HashSet<int> currentIds = new HashSet<int>();
-        foreach (var obj in currentInteractables)
+        /// <summary>
+        /// Handles interactions for the current frame.
+        /// Adds found interactables to <paramref name="newInteractables"/> and calls Interact
+        /// either once or every frame, based on ShouldRepeat().
+        /// </summary>
+        /// <param name="hits">Detected physics hits (raycast, sphere cast, etc.).</param>
+        /// <param name="newInteractables">List to fill with interactables found this frame.</param>
+        /// <param name="currentInteractables">Interactables from the previous frame.</param>
+        /// <param name="player">The player GameObject passed to interaction methods.</param>
+        public static void HandleInteractions(RaycastHit[] hits, List<GameObject> newInteractables, List<GameObject> currentInteractables, GameObject player) 
         {
-            if (obj != null)
-                currentIds.Add(obj.GetInstanceID());
-        }
-
-        // Track which interactables have already been processed this frame to avoid duplicates
-        HashSet<int> processedIds = new HashSet<int>();
-
-        // Loop through all detected hits to check if any objects are interactable
-        foreach (RaycastHit hit in hits)
-        {
-            // Always get the object that holds the IInteractable component (might not be the collider itself)
-            IInteractable interactable = hit.collider.GetComponentInParent<IInteractable>();
-            if (interactable == null) continue;
-
-            GameObject interactableObject = ((MonoBehaviour)interactable).gameObject;
-            int id = interactableObject.GetInstanceID();
-
-            // Avoid processing the same interactable multiple times per frame
-            if (processedIds.Contains(id)) continue;
-            processedIds.Add(id);
-
-            // Add the interactable object to the new list
-            newInteractables.Add(interactableObject);
-
-            if (interactable.ShouldRepeat())
+            // Create a set of IDs for all interactables that were already interacted with in the previous frame
+            var currentIds = new HashSet<int>();
+            foreach (var obj in currentInteractables)
             {
-                // Call Interact every frame if the interactable is repeatable
-                interactable.Interact(player);
-                //Debug.Log("EVERY FRAME");
+                if (obj != null)
+                    currentIds.Add(obj.GetInstanceID());
             }
-            else if (!currentIds.Contains(id))
-            {
-                // Call Interact only once if the interactable was not interacted with in the previous frame
-                interactable.Interact(player);
-                //Debug.Log("SINGLE FRAME");
-            }
-        }
-    }
 
-    /// <summary>
-    /// Handles objects that are no longer interactable, triggering exit events and updating the list of current interactables.
-    /// </summary>
-    /// <param name="newInteractables">List of objects that are interactable in the current frame.</param>
-    /// <param name="currentInteractables">List of objects that were interactable in the previous frame.</param>
-    /// <param name="player">The GameObject, passed to interaction exit methods.</param>
-    public static void HandleExits(List<GameObject> newInteractables, List<GameObject> currentInteractables, GameObject player)
-    {
-        // Loop through the current interactables in reverse to safely remove elements
-        for (int i = currentInteractables.Count - 1; i >= 0; i--)
-        {
-            GameObject obj = currentInteractables[i];
+            // Track which interactables have already been processed this frame to avoid duplicates
+            var processedIds = new HashSet<int>();
 
-            // Check, if object is null (destroyed)
-            if (obj == null)
+            // Loop through all detected hits to check if any objects are interactable
+            foreach (var hit in hits)
             {
-                currentInteractables.RemoveAt(i);
-                continue;
-            }
-            
-            // If the object is not in the new interactables list, it is no longer interactable
-            if (!newInteractables.Contains(obj))
-            {
-                IInteractable interactable = obj.GetComponent<IInteractable>();
-                if (interactable != null)
+                // Always get the object that holds the IInteractable component (might not be the collider itself)
+                var interactable = hit.collider.GetComponentInParent<IInteractable>();
+                if (interactable == null) continue;
+
+                var interactableObject = ((MonoBehaviour)interactable).gameObject;
+                var id = interactableObject.GetInstanceID();
+
+                // Avoid processing the same interactable multiple times per frame
+                if (processedIds.Contains(id)) continue;
+                processedIds.Add(id);
+
+                // Add the interactable object to the new list
+                newInteractables.Add(interactableObject);
+
+                if (interactable.ShouldRepeat())
                 {
-                    // Trigger the OnExit method for the object
-                    interactable.OnExit(player);
+                    // Call Interact every frame if the interactable is repeatable
+                    interactable.Interact(player);
                 }
-                currentInteractables.RemoveAt(i);
+                else if (!currentIds.Contains(id))
+                {
+                    // Call Interact only once if the interactable was not interacted with in the previous frame
+                    interactable.Interact(player);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles objects that are no longer interactable, triggering exit events and updating the list of current interactables.
+        /// </summary>
+        /// <param name="newInteractables">List of objects that are interactable in the current frame.</param>
+        /// <param name="currentInteractables">List of objects that were interactable in the previous frame.</param>
+        /// <param name="player">The GameObject, passed to interaction exit methods.</param>
+        public static void HandleExits(List<GameObject> newInteractables, List<GameObject> currentInteractables, GameObject player)
+        {
+            // Loop through the current interactables in reverse to safely remove elements
+            for (var i = currentInteractables.Count - 1; i >= 0; i--)
+            {
+                var obj = currentInteractables[i];
+
+                // Check, if the object is null (destroyed)
+                if (obj == null)
+                {
+                    currentInteractables.RemoveAt(i);
+                    continue;
+                }
+            
+                // If the object is not in the new interactables list, it is no longer interactable
+                if (!newInteractables.Contains(obj))
+                {
+                    var interactable = obj.GetComponent<IInteractable>();
+                    if (interactable != null)
+                    {
+                        interactable.OnExit(player);
+                    }
+                    currentInteractables.RemoveAt(i);
+                }
             }
         }
     }

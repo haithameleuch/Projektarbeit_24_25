@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Dungeon;
 using Enemy;
+using Manager;
 using UnityEngine;
 using Saving;
 
@@ -31,11 +33,11 @@ namespace ItemPlacement
             if (bossRoom == null || obstaclePrefabs == null || obstaclePrefabs.Count == 0) return;
             if (!bossCleared && (bossPrefabs == null || bossPrefabs.Count == 0)) return;
 
-            _bossRoomId = bossRoom.id;
+            _bossRoomId = bossRoom.ID;
 
             // random 1–5 Obstacles
-            var center = new Vector3(bossRoom.center.x, 0f, bossRoom.center.y);
-            var roomCircleRadius = bossRoom.getIncircleRadius();
+            var center = new Vector3(bossRoom.Center.X, 0f, bossRoom.Center.Y);
+            var roomCircleRadius = bossRoom.GetIncircleRadius();
             
             // count scaled with room size (1–5)
             var obsCount = Mathf.Clamp(Mathf.RoundToInt(roomCircleRadius * 0.8f), 1, 5);
@@ -67,7 +69,7 @@ namespace ItemPlacement
             List<GameObject> spawned = new();
             
             var count = bossPrefabs.Count;
-            var radius = Mathf.Min(bossRoom.getIncircleRadius() * 0.6f, 3f);
+            var radius = Mathf.Min(bossRoom.GetIncircleRadius() * 0.6f, 3f);
 
             for (var i = 0; i < count; i++)
             {
@@ -76,14 +78,14 @@ namespace ItemPlacement
                 Vector3 spawnPos;
                 if (count == 1)
                 {
-                    spawnPos = new Vector3(bossRoom.center.x, 0f, bossRoom.center.y);
+                    spawnPos = new Vector3(bossRoom.Center.X, 0f, bossRoom.Center.Y);
                 }
                 else
                 {
                     var angle = i * (360f / count) * Mathf.Deg2Rad;
                     var x = Mathf.Cos(angle) * radius;
                     var z = Mathf.Sin(angle) * radius;
-                    spawnPos = new Vector3(bossRoom.center.x + x, 0f, bossRoom.center.y + z);
+                    spawnPos = new Vector3(bossRoom.Center.X + x, 0f, bossRoom.Center.Y + z);
                 }
 
                 var rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
@@ -96,19 +98,19 @@ namespace ItemPlacement
 
                 // Report death
                 var reporter = boss.AddComponent<EnemyDeathReporter>();
-                reporter.Init(bossRoom.id, OnBossEnemyDied);
+                reporter.Init(bossRoom.ID, OnBossEnemyDied);
 
                 spawned.Add(boss);
             }
 
-            _bossInstancesPerRoom[bossRoom.id] = spawned;
-            _alivePerRoom[bossRoom.id] = spawned.Count;
+            _bossInstancesPerRoom[bossRoom.ID] = spawned;
+            _alivePerRoom[bossRoom.ID] = spawned.Count;
         }
         
         public void ActivateBossInRoom(Room room)
         {
-            if (room == null || room.id != _bossRoomId) return;
-            if (!_bossInstancesPerRoom.TryGetValue(room.id, out var bosses)) return;
+            if (room == null || room.ID != _bossRoomId) return;
+            if (!_bossInstancesPerRoom.TryGetValue(room.ID, out var bosses)) return;
 
             foreach (var b in bosses)
             {
@@ -138,7 +140,7 @@ namespace ItemPlacement
         {
             if (_bossRoomRef == null || _levelExitPrefab == null) return;
 
-            var pos = new Vector3(_bossRoomRef.center.x + 0.75f, 0f, _bossRoomRef.center.y);
+            var pos = new Vector3(_bossRoomRef.Center.X + 0.75f, 0f, _bossRoomRef.Center.Y);
             var rot = Quaternion.identity;
 
             Transform safeParent = null;

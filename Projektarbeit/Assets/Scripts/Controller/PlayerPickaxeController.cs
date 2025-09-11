@@ -1,4 +1,5 @@
 using System.Collections;
+using Shooting;
 using UnityEngine;
 
 namespace Controller
@@ -95,7 +96,7 @@ namespace Controller
         }
 
         /// <summary>
-        /// Instantiates the pickaxe prefab under the left-hand holder and hides it until swing.
+        /// Instantiates the pickaxe under the left-hand holder and sets default local transform.
         /// </summary>
         private void EquipPickaxe()
         {
@@ -136,7 +137,7 @@ namespace Controller
             if (_firstPersonController is not null)     _firstPersonController.enabled = false;
             if (_playerShooting is not null) _playerShooting.enabled = false;
             
-            Vector3 targetEuler = _holderStartEuler + new Vector3(swingAngle, 0f, 0f);
+            var targetEuler = _holderStartEuler + new Vector3(swingAngle, 0f, 0f);
 
             var halfDuration = swingDuration;
             var elapsedTime = 0f;
