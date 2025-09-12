@@ -706,7 +706,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 211c621fe0964604197f4aaf39effab6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 31782d29639d74bb7ab73b1c4b1ddb03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1411,7 +1411,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 211c621fe0964604197f4aaf39effab6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 31782d29639d74bb7ab73b1c4b1ddb03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1918,7 +1918,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 211c621fe0964604197f4aaf39effab6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 31782d29639d74bb7ab73b1c4b1ddb03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -1944,6 +1944,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1244757858079494239, guid: edcefd7a10d34659c8b8b71ec1ee20bb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 31782d29639d74bb7ab73b1c4b1ddb03, type: 3}
     - target: {fileID: 2511656702798940607, guid: edcefd7a10d34659c8b8b71ec1ee20bb, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -2024,6 +2028,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7657738872296828608, guid: edcefd7a10d34659c8b8b71ec1ee20bb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 31782d29639d74bb7ab73b1c4b1ddb03, type: 3}
+    - target: {fileID: 8239499577036019408, guid: edcefd7a10d34659c8b8b71ec1ee20bb, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 31782d29639d74bb7ab73b1c4b1ddb03, type: 3}
     - target: {fileID: 8470843299888050080, guid: edcefd7a10d34659c8b8b71ec1ee20bb, type: 3}
       propertyPath: m_Name
       value: HealthBar
@@ -2692,7 +2704,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 211c621fe0964604197f4aaf39effab6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 31782d29639d74bb7ab73b1c4b1ddb03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2895,7 +2907,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 211c621fe0964604197f4aaf39effab6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 31782d29639d74bb7ab73b1c4b1ddb03, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -4413,6 +4425,10 @@ PrefabInstance:
       propertyPath: voronoiGenerator
       value: 
       objectReference: {fileID: 1621557366}
+    - target: {fileID: 3322476805417291694, guid: 3059ceea469ed6e48ae0fff514beca5b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: fc56d29aa7f594860b9beeac23c7ae09, type: 3}
     - target: {fileID: 4331404865492239968, guid: 3059ceea469ed6e48ae0fff514beca5b, type: 3}
       propertyPath: m_Pivot.x
       value: 0
