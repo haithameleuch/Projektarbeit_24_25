@@ -1,0 +1,5 @@
+<map id="Manager.EventManager" name="Manager.EventManager">
+<area shape="rect" id="Node000001" title="Manages global events for opening and closing doors, allowing other scripts to listen and respond to ..." alt="" coords="5,120,176,308"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="40,5,141,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,87,94,120,88,120,88,87"/>
+</map>

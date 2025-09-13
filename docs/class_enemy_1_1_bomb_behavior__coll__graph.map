@@ -1,0 +1,5 @@
+<map id="Enemy.BombBehavior" name="Enemy.BombBehavior">
+<area shape="rect" id="Node000001" title="Controls the behavior of a bomb object in the scene. The bomb explodes when it collides with the grou..." alt="" coords="5,120,153,206"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="29,5,130,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="82,86,82,120,77,120,77,86"/>
+</map>

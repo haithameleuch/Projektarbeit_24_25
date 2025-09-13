@@ -1,0 +1,17 @@
+<map id="Controller.PlayerPickaxeController" name="Controller.PlayerPickaxeController">
+<area shape="rect" id="Node000001" title="Controls the instantiation and simple swing animation of the pickaxe in first&#45;person view...." alt="" coords="95,858,266,1224"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="187,5,288,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,58,123,83,101,100,83,122,60,165,41,210,27,257,17,304,9,402,13,500,26,598,47,691,73,779,101,857,96,859,68,780,42,693,21,599,7,501,3,402,12,303,22,255,36,208,55,163,78,120,97,97,120,78,172,53"/>
+<area shape="rect" id="Node000003" href="$class_controller_1_1_first_person_player_controller.html" title="First&#45;person player controller for movement, looking, and basic interaction checks...." alt="" coords="94,360,267,787"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="176,68,144,92,119,122,97,178,89,238,91,299,101,360,96,360,86,300,84,238,92,177,114,120,140,88,173,64"/>
+<area shape="rect" id="Node000004" href="$class_manager_1_1_game_input_manager.html" title="Manages player input for movement and camera control using the Input System. Handles input locking an..." alt="" coords="129,121,347,289"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="240,86,240,121,235,121,235,86"/>
+<area shape="rect" id="Node000005" href="$class_shooting_1_1_player_shooting.html" title="Handles player shooting by getting projectiles from a pool and spawning them at the shoot point." alt="" coords="308,520,461,627"/>
+<area shape="poly" id="edge7_Node000005_Node000002" title=" " alt="" coords="302,65,335,88,361,120,385,170,400,224,410,280,413,335,410,439,398,521,393,520,404,438,408,336,404,281,395,226,380,172,357,122,331,92,299,69"/>
+<area shape="rect" id="Node000006" href="$class_manager_1_1_object_pool_manager.html" title="Manages object pool for reusable GameObject instances (e.g., projectiles). Preloads a set of inactive..." alt="" coords="422,131,600,279"/>
+<area shape="poly" id="edge9_Node000006_Node000002" title=" " alt="" coords="303,52,354,69,404,93,450,129,447,134,402,98,352,74,301,57"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="183,787,183,841,178,841,178,787"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="227,289,219,344,214,343,222,288"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="381,627,361,726,346,781,325,835,303,878,278,920,273,917,299,876,321,833,341,780,356,724,375,626"/>
+<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="489,279,411,505,406,503,484,278"/>
+</map>
