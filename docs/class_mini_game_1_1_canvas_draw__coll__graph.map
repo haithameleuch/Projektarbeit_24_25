@@ -1,0 +1,13 @@
+<map id="MiniGame.CanvasDraw" name="MiniGame.CanvasDraw">
+<area shape="rect" id="Node000001" title="Manages the drawing canvas and texture processing for the mini&#45;game. Handles digit and glyph predicti..." alt="" coords="193,544,377,1465"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="235,16,336,82"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="335,91,362,124,382,162,403,232,416,304,422,378,422,452,416,525,407,597,380,731,375,729,402,596,411,524,416,452,416,378,411,305,398,233,377,164,357,126,331,94"/>
+<area shape="rect" id="Node000003" href="$class_manager_1_1_question_manager.html" title="Manages a list of questions, selects a random question, and checks player answers." alt="" coords="5,244,178,392"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="249,95,193,165,138,246,133,243,188,161,245,92"/>
+<area shape="rect" id="Node000005" href="$class_mini_game_1_1_classifier.html" title="Classifier handles digit and glyph prediction using a Unity Sentis AI model." alt="" coords="203,163,368,473"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="288,97,288,163,282,163,282,97"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="115,391,191,661,186,662,110,392"/>
+<area shape="rect" id="Node000004" href="$class_manager_1_1_question.html" title="Represents a single question with its text and correct answer." alt="" coords="34,5,150,92"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="94,92,94,228,89,228,89,92"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="288,473,288,527,282,527,282,473"/>
+</map>

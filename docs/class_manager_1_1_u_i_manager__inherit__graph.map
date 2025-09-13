@@ -1,0 +1,5 @@
+<map id="Manager.UIManager" name="Manager.UIManager">
+<area shape="rect" id="Node000001" title="Central UI controller for panels, overlays, and text. Handles pause, inventory, mini&#45;map,..." alt="" coords="5,120,237,837"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="71,5,172,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="124,87,124,120,119,120,119,87"/>
+</map>

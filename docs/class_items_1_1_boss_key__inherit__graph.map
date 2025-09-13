@@ -1,0 +1,7 @@
+<map id="Items.BossKey" name="Items.BossKey">
+<area shape="rect" id="Node000001" title="The class is used to create the Boss&#45;Room&#45;Key and to be able to open the doors of the boss room on th..." alt="" coords="14,315,115,382"/>
+<area shape="rect" id="Node000002" href="$class_items_1_1_item.html" title="Abstract Data&#45;Class, which shares all commonalities between different types of Items." alt="" coords="5,120,124,267"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="68,282,68,316,62,316,62,282"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="12,5,118,72"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="68,87,68,120,62,120,62,87"/>
+</map>

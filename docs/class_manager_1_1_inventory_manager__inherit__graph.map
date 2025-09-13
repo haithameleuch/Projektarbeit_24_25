@@ -1,0 +1,7 @@
+<map id="Manager.InventoryManager" name="Manager.InventoryManager">
+<area shape="rect" id="Node000001" title="Manages the inventory UI and logic, including displaying and updating item slots, handling user inter..." alt="" coords="41,120,209,491"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,5,106,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="70,85,79,119,74,120,65,86"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="130,5,261,72"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="186,86,177,120,172,119,181,85"/>
+</map>

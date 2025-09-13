@@ -1,0 +1,11 @@
+<map id="Manager.CameraManager" name="Manager.CameraManager">
+<area shape="rect" id="Node000001" title="Manages camera switching between first&#45;person and canvas views and enables the corresponding player m..." alt="" coords="5,858,165,1209"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="64,5,165,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="112,87,101,210,92,360,86,622,85,858,80,858,80,622,87,360,96,210,107,86"/>
+<area shape="rect" id="Node000003" href="$class_controller_1_1_first_person_player_controller.html" title="First&#45;person player controller for movement, looking, and basic interaction checks...." alt="" coords="101,360,275,787"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="121,86,142,289,153,360,148,361,137,289,116,87"/>
+<area shape="rect" id="Node000004" href="$class_manager_1_1_game_input_manager.html" title="Manages player input for movement and camera control using the Input System. Handles input locking an..." alt="" coords="152,121,370,289"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="155,81,189,119,185,123,151,85"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="143,787,131,842,125,841,138,786"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="247,289,236,344,231,343,242,288"/>
+</map>
