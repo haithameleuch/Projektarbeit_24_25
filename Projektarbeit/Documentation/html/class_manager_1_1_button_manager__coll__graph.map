@@ -1,0 +1,5 @@
+<map id="Manager.ButtonManager" name="Manager.ButtonManager">
+<area shape="rect" id="Node000001" title="Handles menu button actions: start, load, save, and exit. Sets a scene&#45;changing flag to avoid enemy d..." alt="" coords="5,120,157,247"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="31,5,132,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="84,86,84,120,78,120,78,86"/>
+</map>

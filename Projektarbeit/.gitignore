@@ -46,6 +46,8 @@ ExportedObj/
 *.mdb
 *.opendb
 *.VC.db
+*.idea
+*.vscode
 
 # Unity3D generated meta files
 *.pidb.meta
@@ -71,6 +73,10 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
+# Unity specific asset plugins
+/[Aa]ssets/ML-Agents/*
+/[Aa]ssets/TextMesh Pro/*
+
 # OS-specific files
 # macOS
 .DS_Store
@@ -78,7 +84,6 @@ crashlytics-build.properties
 ._*
 .Spotlight-V100
 .Trashes
-Icon?
 */.Trashes
 */.fseventsd
 

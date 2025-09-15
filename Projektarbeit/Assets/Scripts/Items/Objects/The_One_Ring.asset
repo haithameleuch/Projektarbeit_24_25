@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dacf1f69a8aa40c4f9905b31f9e94ed6, type: 3}
+  m_Name: The_One_Ring
+  m_EditorClassIdentifier: 
+  _name: The One Ring
+  _model: {fileID: 5858338320085958206, guid: 6efce455ba14d37499b4577bcfacfa4f, type: 3}
+  rarity: 60
+  item_icon: {fileID: 21300000, guid: 7d590572748c03e45bea7f1fd7037a2b, type: 3}
+  equip_slot: 5
+  stat_increases: 640000001e00000002000000
+  toolType: 0
