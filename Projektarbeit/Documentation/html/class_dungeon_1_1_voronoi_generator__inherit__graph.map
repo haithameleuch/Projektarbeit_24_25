@@ -1,0 +1,5 @@
+<map id="Dungeon.VoronoiGenerator" name="Dungeon.VoronoiGenerator">
+<area shape="rect" id="Node000001" title="Generates a procedural dungeon using Voronoi/Delaunay and builds the scene (floors,..." alt="" coords="5,120,189,715"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="47,5,148,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="100,86,100,120,95,120,95,86"/>
+</map>

@@ -60,21 +60,21 @@ namespace Manager
         }
 
         /// <summary>
-        /// Monitors player input to trigger the door-related events.
+        /// Monitors player input to trigger the door-related events. (only for debugging)
         /// </summary>
         private void Update()
         {
-            // Trigger the "OpenDoors" event when the left mouse button is clicked
-            if (Input.GetMouseButtonDown(0))
+            // Trigger the "OpenDoors" event when the left mouse button is clicked (only for debugging)
+            /*if (Input.GetMouseButtonDown(0))
             {
                 OnOpenDoors?.Invoke(); // Safely invoke the event if there are subscribers
             }
 
-            // Trigger the "CloseDoors" event when the right mouse button is clicked
+            // Trigger the "CloseDoors" event when the right mouse button is clicked (only for debugging)
             if (Input.GetMouseButtonDown(1))
             {
                 OnCloseDoors?.Invoke(); // Safely invoke the event if there are subscribers
-            }
+            }*/
         
             //  Press K to Open Boss a door (only for debugging)
             /*if (Input.GetKeyDown(KeyCode.K))

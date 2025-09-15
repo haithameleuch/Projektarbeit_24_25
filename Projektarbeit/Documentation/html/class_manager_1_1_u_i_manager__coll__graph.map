@@ -1,0 +1,32 @@
+<map id="Manager.UIManager" name="Manager.UIManager">
+<area shape="rect" id="Node000001" title="Central UI controller for panels, overlays, and text. Handles pause, inventory, mini&#45;map,..." alt="" coords="136,1438,368,2094"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="286,370,386,436"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="272,414,204,428,131,455,96,474,66,497,41,526,22,559,15,587,11,626,8,730,13,857,22,994,46,1243,63,1366,96,1465,138,1560,134,1562,91,1467,57,1367,41,1243,17,994,8,857,3,730,6,625,10,586,18,557,36,523,62,493,93,469,128,450,202,423,270,409"/>
+<area shape="rect" id="Node000003" href="$class_controller_1_1_first_person_player_controller.html" title="First&#45;person player controller for movement, looking, and basic interaction checks...." alt="" coords="72,940,246,1367"/>
+<area shape="poly" id="edge3_Node000003_Node000002" title=" " alt="" coords="273,424,220,443,163,472,111,510,89,533,70,560,48,607,35,658,29,710,29,763,35,816,45,868,75,966,69,968,40,869,30,817,24,763,23,709,29,657,43,605,66,557,85,530,107,506,161,467,218,438,271,419"/>
+<area shape="rect" id="Node000004" href="$class_manager_1_1_game_input_manager.html" title="Manages player input for movement and camera control using the Input System. Handles input locking an..." alt="" coords="80,630,298,798"/>
+<area shape="poly" id="edge5_Node000004_Node000002" title=" " alt="" coords="317,451,231,631,226,629,312,449"/>
+<area shape="rect" id="Node000005" href="$class_shooting_1_1_player_shooting.html" title="Handles player shooting by getting projectiles from a pool and spawning them at the shoot point." alt="" coords="270,1100,424,1207"/>
+<area shape="poly" id="edge7_Node000005_Node000002" title=" " alt="" coords="339,452,349,1100,343,1100,334,452"/>
+<area shape="rect" id="Node000006" href="$class_manager_1_1_object_pool_manager.html" title="Manages object pool for reusable GameObject instances (e.g., projectiles). Preloads a set of inactive..." alt="" coords="374,640,552,787"/>
+<area shape="poly" id="edge9_Node000006_Node000002" title=" " alt="" coords="357,449,435,639,431,641,352,451"/>
+<area shape="rect" id="Node000007" href="$class_manager_1_1_inventory_manager.html" title="Manages the inventory UI and logic, including displaying and updating item slots, handling user inter..." alt="" coords="608,968,776,1339"/>
+<area shape="poly" id="edge11_Node000007_Node000002" title=" " alt="" coords="401,428,444,450,489,479,531,514,566,557,589,599,602,637,608,672,609,706,607,779,610,821,617,868,641,967,636,968,612,869,604,821,602,779,604,706,603,672,597,638,584,601,562,560,527,518,486,483,441,455,399,433"/>
+<area shape="rect" id="Node000012" href="$class_inventory_1_1_inventory.html" title=" " alt="" coords="627,558,757,869"/>
+<area shape="poly" id="edge17_Node000012_Node000002" title=" " alt="" coords="402,407,452,415,507,431,562,455,610,489,637,521,657,558,652,560,632,524,606,493,559,459,505,436,451,421,401,412"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="194,1366,202,1421,197,1421,188,1367"/>
+<area shape="poly" id="edge4_Node000003_Node000004" title=" " alt="" coords="186,797,177,923,172,923,181,797"/>
+<area shape="poly" id="edge6_Node000001_Node000005" title=" " alt="" coords="341,1207,308,1421,303,1421,336,1206"/>
+<area shape="poly" id="edge8_Node000005_Node000006" title=" " alt="" coords="446,788,367,1084,362,1083,441,786"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="610,1272,380,1592,376,1589,606,1269"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="781,680,912,747"/>
+<area shape="poly" id="edge12_Node000007_Node000008" title=" " alt="" coords="833,762,760,968,755,967,828,760"/>
+<area shape="rect" id="Node000009" href="$class_inventory_1_1_item_instance.html" title="Data&#45;Class representing an item stack by containing an reference to a scriptable object(item) and the..." alt="" coords="782,340,925,467"/>
+<area shape="poly" id="edge13_Node000007_Node000009" title=" " alt="" coords="892,466,912,510,927,558,946,645,955,715,955,749,950,785,927,870,901,926,867,979,829,1027,790,1069,786,1066,825,1024,863,976,896,923,921,868,945,784,950,749,950,715,940,646,921,559,907,512,887,468"/>
+<area shape="poly" id="edge18_Node000012_Node000009" title=" " alt="" coords="821,468,772,560,767,568,762,566,767,557,816,466"/>
+<area shape="rect" id="Node000010" href="$class_items_1_1_item.html" title="Abstract Data&#45;Class, which shares all commonalities between different types of Items." alt="" coords="794,121,913,269"/>
+<area shape="poly" id="edge14_Node000009_Node000010" title=" " alt="" coords="856,268,856,323,851,323,851,268"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="800,5,907,72"/>
+<area shape="poly" id="edge15_Node000010_Node000011" title=" " alt="" coords="856,87,856,121,851,121,851,87"/>
+<area shape="poly" id="edge16_Node000007_Node000012" title=" " alt="" coords="695,868,695,950,689,950,689,868"/>
+</map>

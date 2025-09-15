@@ -1,0 +1,7 @@
+<map id="Interfaces.ISpawnerVoronoi" name="Interfaces.ISpawnerVoronoi">
+<area shape="rect" id="Node000001" title="Interface for object spawners in a room in the Voronoi Dungeon. Allows flexibility for spawning diffe..." alt="" coords="122,5,294,72"/>
+<area shape="rect" id="Node000002" href="$class_spawning_1_1_item_spawner_voronoi.html" title="Handles the spawning of items in rooms, implementing the ISpawner interface. Items are spawned at ran..." alt="" coords="5,127,198,275"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="181,85,152,129,147,126,177,82"/>
+<area shape="rect" id="Node000003" href="$class_spawning_1_1_mini_game_spawner_voronoi.html" title="Spawns minigame prefabs into specified rooms in a Voronoi dungeon. A random prefab is placed in each ..." alt="" coords="222,120,408,282"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="240,82,264,118,259,121,236,85"/>
+</map>

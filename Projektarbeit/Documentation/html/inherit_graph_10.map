@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" href="$interface_interfaces_1_1_i_spawner_voronoi.html" title="Interface for object spawners in a room in the Voronoi Dungeon. Allows flexibility for spawning diffe..." alt="" coords="5,35,188,60"/>
+<area shape="rect" id="Node000001" href="$class_spawning_1_1_item_spawner_voronoi.html" title="Handles the spawning of items in rooms, implementing the ISpawner interface. Items are spawned at ran..." alt="" coords="236,5,439,31"/>
+<area shape="poly" id="edge44_Node000000_Node000001" title=" " alt="" coords="203,32,235,28,236,33,204,37"/>
+<area shape="rect" id="Node000002" href="$class_spawning_1_1_mini_game_spawner_voronoi.html" title="Spawns minigame prefabs into specified rooms in a Voronoi dungeon. A random prefab is placed in each ..." alt="" coords="241,55,434,96"/>
+<area shape="poly" id="edge45_Node000000_Node000002" title=" " alt="" coords="204,57,241,62,240,67,203,63"/>
+</map>

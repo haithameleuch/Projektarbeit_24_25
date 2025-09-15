@@ -1,0 +1,13 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,80,123,106"/>
+<area shape="rect" id="Node000001" href="$class_items_1_1_item.html" title="Abstract Data&#45;Class, which shares all commonalities between different types of Items." alt="" coords="171,80,255,106"/>
+<area shape="poly" id="edge46_Node000000_Node000001" title=" " alt="" coords="138,90,170,90,170,96,138,96"/>
+<area shape="rect" id="Node000002" href="$class_items_1_1_boss_key.html" title="The class is used to create the Boss&#45;Room&#45;Key and to be able to open the doors of the boss room on th..." alt="" coords="313,5,424,31"/>
+<area shape="poly" id="edge47_Node000001_Node000002" title=" " alt="" coords="247,69,302,40,327,29,329,34,304,45,249,74"/>
+<area shape="rect" id="Node000003" href="$class_items_1_1_consumable.html" title="Consumable&#45;Class is used to handle all items that increase a players current stats...." alt="" coords="303,55,434,80"/>
+<area shape="poly" id="edge48_Node000001_Node000003" title=" " alt="" coords="270,81,302,76,303,81,271,86"/>
+<area shape="rect" id="Node000004" href="$class_items_1_1_equipment.html" title="The Equipment&#45;Class is used for making items usable for wearing by the player (enemies should work to..." alt="" coords="308,104,429,130"/>
+<area shape="poly" id="edge49_Node000001_Node000004" title=" " alt="" coords="271,99,308,105,308,110,270,104"/>
+<area shape="rect" id="Node000005" href="$class_items_1_1_glyphs.html" title="The Glyphs&#45;Class is only used to create items with the glyphs icon so the player knows how the glyphs..." alt="" coords="319,153,418,179"/>
+<area shape="poly" id="edge50_Node000001_Node000005" title=" " alt="" coords="250,111,304,140,330,150,327,155,302,145,248,116"/>
+</map>

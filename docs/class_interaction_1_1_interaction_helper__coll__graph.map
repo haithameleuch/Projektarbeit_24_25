@@ -1,0 +1,3 @@
+<map id="Interaction.InteractionHelper" name="Interaction.InteractionHelper">
+<area shape="rect" id="Node000001" title="Static helper for handling player interactions with scene objects. Collects interactables from physic..." alt="" coords="5,5,180,92"/>
+</map>
