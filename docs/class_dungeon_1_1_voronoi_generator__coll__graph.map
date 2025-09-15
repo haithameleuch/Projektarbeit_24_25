@@ -1,0 +1,9 @@
+<map id="Dungeon.VoronoiGenerator" name="Dungeon.VoronoiGenerator">
+<area shape="rect" id="Node000001" title="Generates a procedural dungeon using Voronoi/Delaunay and builds the scene (floors,..." alt="" coords="138,483,322,1078"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,176,106,242"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="72,255,142,482,137,484,67,257"/>
+<area shape="rect" id="Node000003" href="$class_dungeon_1_1_dungeon_graph.html" title="Represents the graph structure of all rooms and their connections in the dungeon." alt="" coords="130,5,330,412"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="233,412,233,466,228,466,228,412"/>
+<area shape="rect" id="Node000004" href="$class_dungeon_1_1_triangle.html" title="Simple triangle helper built from three points. Stores its edges/points and provides circle/intersect..." alt="" coords="355,104,482,313"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="388,313,341,460,330,492,325,491,336,458,383,312"/>
+</map>

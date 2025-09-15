@@ -1,0 +1,5 @@
+<map id="Inventory.ItemSlotNumber" name="Inventory.ItemSlotNumber">
+<area shape="rect" id="Node000001" title="Data&#45;Class only to keep track of the row and column of an inventory slot." alt="" coords="5,120,167,206"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="36,5,136,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="89,86,89,120,84,120,84,86"/>
+</map>

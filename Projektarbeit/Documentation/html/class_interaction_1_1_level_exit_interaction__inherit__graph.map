@@ -1,0 +1,7 @@
+<map id="Interaction.LevelExitInteraction" name="Interaction.LevelExitInteraction">
+<area shape="rect" id="Node000001" title="Handles player interaction with the level exit. When the player interacts, the level is advanced,..." alt="" coords="34,160,224,267"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,26,106,92"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="80,104,106,159,102,162,75,106"/>
+<area shape="rect" id="Node000003" href="$interface_interfaces_1_1_i_interactable.html" title="Interface for objects that can be interacted with (e.g., when the player is nearby)." alt="" coords="130,5,275,112"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="173,127,156,162,152,160,168,125"/>
+</map>

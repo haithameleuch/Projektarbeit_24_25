@@ -1,0 +1,5 @@
+<map id="Enemy.HunterAgent" name="Enemy.HunterAgent">
+<area shape="rect" id="Node000001" title="Defines a pursuit&#45;type enemy agent (HunterAgent) trained with Unity ML&#45;Agents." alt="" coords="5,120,155,410"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="58,5,103,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="83,87,83,120,78,120,78,87"/>
+</map>

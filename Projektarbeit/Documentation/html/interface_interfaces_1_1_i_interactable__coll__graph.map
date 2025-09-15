@@ -1,0 +1,3 @@
+<map id="Interfaces.IInteractable" name="Interfaces.IInteractable">
+<area shape="rect" id="Node000001" title="Interface for objects that can be interacted with (e.g., when the player is nearby)." alt="" coords="5,5,150,112"/>
+</map>

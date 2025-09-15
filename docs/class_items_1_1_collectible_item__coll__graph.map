@@ -1,0 +1,11 @@
+<map id="Items.CollectibleItem" name="Items.CollectibleItem">
+<area shape="rect" id="Node000001" title="This class implements the IInteractable interface and is used for the ability to collect items of the..." alt="" coords="135,340,270,487"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,162,106,228"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="88,239,156,339,151,342,83,242"/>
+<area shape="rect" id="Node000003" href="$interface_interfaces_1_1_i_interactable.html" title="Interface for objects that can be interacted with (e.g., when the player is nearby)." alt="" coords="130,141,275,248"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="205,263,205,340,200,340,200,263"/>
+<area shape="rect" id="Node000004" href="$class_items_1_1_item.html" title="Abstract Data&#45;Class, which shares all commonalities between different types of Items." alt="" coords="299,121,418,269"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="309,270,267,328,262,324,304,267"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="305,5,412,72"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="361,87,361,121,356,121,356,87"/>
+</map>

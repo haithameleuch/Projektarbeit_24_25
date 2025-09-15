@@ -1,0 +1,5 @@
+<map id="Controller.PlayerPickaxeController" name="Controller.PlayerPickaxeController">
+<area shape="rect" id="Node000001" title="Controls the instantiation and simple swing animation of the pickaxe in first&#45;person view...." alt="" coords="5,120,176,526"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="40,5,141,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="94,87,94,120,88,120,88,87"/>
+</map>

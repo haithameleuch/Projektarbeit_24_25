@@ -1,0 +1,28 @@
+var class_manager_1_1_inventory_manager =
+[
+    [ "OnEnable", "class_manager_1_1_inventory_manager.html#a04c59588024b6b4168a68934414c9998", null ],
+    [ "OnPointerClick", "class_manager_1_1_inventory_manager.html#aaca8183dde591e0f4640ad52a08de458", null ],
+    [ "SetPlayer", "class_manager_1_1_inventory_manager.html#a7f47c970f1bc4924e77112f58a163991", null ],
+    [ "SetupUI", "class_manager_1_1_inventory_manager.html#adc47b5a3950db894473aa0e46658817d", null ],
+    [ "Update", "class_manager_1_1_inventory_manager.html#a10aa582d7077ff824e24c96ff86edc4b", null ],
+    [ "UpdateUI", "class_manager_1_1_inventory_manager.html#ab8802c372041436a642d73af25ac5f33", null ],
+    [ "_dummies", "class_manager_1_1_inventory_manager.html#a84ef836e666e69c6e703bcb77be50aaf", null ],
+    [ "_inventory", "class_manager_1_1_inventory_manager.html#a014125d97bc65c42b1f36197e9c89035", null ],
+    [ "_isSetup", "class_manager_1_1_inventory_manager.html#a877551dbd60e6429b74e8ffa306ab514", null ],
+    [ "_player", "class_manager_1_1_inventory_manager.html#a039b67df74b687d63fac0db79e37df27", null ],
+    [ "_playerEquipment", "class_manager_1_1_inventory_manager.html#a5c7349192f5df7c770bdb3f8764a744d", null ],
+    [ "_playerInventory", "class_manager_1_1_inventory_manager.html#a9a3265ee3fa22d11746a8f71dfec578f", null ],
+    [ "_selectedSlot", "class_manager_1_1_inventory_manager.html#aecad879d5dd56db9a2f02b3c59a5a569", null ],
+    [ "body", "class_manager_1_1_inventory_manager.html#a6774e27fe8d4e086f43ea2810f48402a", null ],
+    [ "boots", "class_manager_1_1_inventory_manager.html#a721ac351463ba9bc012b575f590b003a", null ],
+    [ "equipUI", "class_manager_1_1_inventory_manager.html#a15ff539bf1a1776e98563e6a876500b0", null ],
+    [ "helmet", "class_manager_1_1_inventory_manager.html#a5e02f7e04c75275b7e55ccd392e90935", null ],
+    [ "int", "class_manager_1_1_inventory_manager.html#a2048fccb176bcf39b095c2161452adbe", null ],
+    [ "itemUI", "class_manager_1_1_inventory_manager.html#aac1dd3a16b21c3907e040e36b1965f23", null ],
+    [ "leftHand", "class_manager_1_1_inventory_manager.html#afb608eed2ceb0bf75104b34ac9d808ce", null ],
+    [ "legs", "class_manager_1_1_inventory_manager.html#aae8155a72c7bc7aafe5e668597037aaf", null ],
+    [ "rightHand", "class_manager_1_1_inventory_manager.html#ae0d3335f19dad76b3b9d2c4c8cfd2891", null ],
+    [ "rowPrefab", "class_manager_1_1_inventory_manager.html#a5d434918765cbb067ef1c10c318a61c2", null ],
+    [ "slotPrefab", "class_manager_1_1_inventory_manager.html#a08120c0aa2ef33413d6c60c67ac07e40", null ],
+    [ "statText", "class_manager_1_1_inventory_manager.html#a175f8b9bf02a9a0e2930898c5fe9fe07", null ]
+];

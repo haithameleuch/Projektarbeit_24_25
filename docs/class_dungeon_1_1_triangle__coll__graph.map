@@ -1,0 +1,3 @@
+<map id="Dungeon.Triangle" name="Dungeon.Triangle">
+<area shape="rect" id="Node000001" title="Simple triangle helper built from three points. Stores its edges/points and provides circle/intersect..." alt="" coords="5,5,132,214"/>
+</map>

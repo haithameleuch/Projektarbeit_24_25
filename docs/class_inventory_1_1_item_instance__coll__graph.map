@@ -1,0 +1,7 @@
+<map id="Inventory.ItemInstance" name="Inventory.ItemInstance">
+<area shape="rect" id="Node000001" title="Data&#45;Class representing an item stack by containing an reference to a scriptable object(item) and the..." alt="" coords="5,340,148,467"/>
+<area shape="rect" id="Node000002" href="$class_items_1_1_item.html" title="Abstract Data&#45;Class, which shares all commonalities between different types of Items." alt="" coords="17,121,136,269"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="79,268,79,323,74,323,74,268"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="23,5,130,72"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="79,87,79,121,74,121,74,87"/>
+</map>

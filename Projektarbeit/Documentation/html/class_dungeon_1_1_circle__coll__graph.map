@@ -1,0 +1,5 @@
+<map id="Dungeon.Circle" name="Dungeon.Circle">
+<area shape="rect" id="Node000001" title="Circle with a center point and radius." alt="" coords="8,244,108,311"/>
+<area shape="rect" id="Node000002" href="$class_dungeon_1_1_point.html" title="2D point with X and Y values plus small helpers." alt="" coords="5,5,110,173"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="60,173,60,228,55,228,55,173"/>
+</map>

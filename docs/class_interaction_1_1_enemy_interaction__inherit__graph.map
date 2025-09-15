@@ -1,0 +1,7 @@
+<map id="Interaction.EnemyInteraction" name="Interaction.EnemyInteraction">
+<area shape="rect" id="Node000001" title="Handles interactions between the player and an enemy, including applying damage over time when in con..." alt="" coords="40,160,218,328"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,26,106,92"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="76,104,98,160,93,162,71,106"/>
+<area shape="rect" id="Node000003" href="$interface_interfaces_1_1_i_interactable.html" title="Interface for objects that can be interacted with (e.g., when the player is nearby)." alt="" coords="130,5,275,112"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="178,127,165,162,160,160,173,125"/>
+</map>

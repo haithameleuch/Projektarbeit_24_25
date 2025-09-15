@@ -1,0 +1,5 @@
+<map id="Dungeon.OpenDoor" name="Dungeon.OpenDoor">
+<area shape="rect" id="Node000001" title="Listens for open and close events from the EventManager and toggles the door&#39;s state accordingly." alt="" coords="5,120,131,288"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="18,5,118,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="71,87,71,120,66,120,66,87"/>
+</map>
