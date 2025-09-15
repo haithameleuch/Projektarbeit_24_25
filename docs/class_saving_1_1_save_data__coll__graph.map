@@ -1,0 +1,9 @@
+<map id="Saving.SaveData" name="Saving.SaveData">
+<area shape="rect" id="Node000001" title="Serializable save container for global state, dungeon state, player state, and inventory." alt="" coords="5,558,169,828"/>
+<area shape="rect" id="Node000002" href="$class_inventory_1_1_item_instance.html" title="Data&#45;Class representing an item stack by containing an reference to a scriptable object(item) and the..." alt="" coords="16,340,159,467"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="90,467,90,542,85,542,85,467"/>
+<area shape="rect" id="Node000003" href="$class_items_1_1_item.html" title="Abstract Data&#45;Class, which shares all commonalities between different types of Items." alt="" coords="28,121,147,269"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="90,268,90,323,85,323,85,268"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="34,5,141,72"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="90,87,90,121,85,121,85,87"/>
+</map>

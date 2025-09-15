@@ -1,0 +1,3 @@
+<map id="Dungeon.DungeonGraph" name="Dungeon.DungeonGraph">
+<area shape="rect" id="Node000001" title="Represents the graph structure of all rooms and their connections in the dungeon." alt="" coords="5,5,205,412"/>
+</map>

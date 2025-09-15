@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b95bc0e29cbec944997eb2283a033f22, type: 3}
+  m_Name: Glyph_Power
+  m_EditorClassIdentifier: 
+  _name: Power
+  _model: {fileID: 1128100638241418450, guid: fdc135cd38316b44688946de2bd3d23e, type: 3}
+  rarity: 80
+  item_icon: {fileID: 21300000, guid: 8f1a15eb1d3fb964c88708ce5e21c8f3, type: 3}

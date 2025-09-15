@@ -1,0 +1,5 @@
+<map id="MiniGame.Classifier" name="MiniGame.Classifier">
+<area shape="rect" id="Node000001" title="Classifier handles digit and glyph prediction using a Unity Sentis AI model." alt="" coords="5,120,170,430"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="38,5,138,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="90,86,90,120,85,120,85,86"/>
+</map>

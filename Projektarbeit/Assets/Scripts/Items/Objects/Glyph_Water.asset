@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b95bc0e29cbec944997eb2283a033f22, type: 3}
+  m_Name: Glyph_Water
+  m_EditorClassIdentifier: 
+  _name: Water
+  _model: {fileID: 3765091450262246017, guid: be6c03fa7ea47ce45ba5df975352130a, type: 3}
+  rarity: 100
+  item_icon: {fileID: 21300000, guid: d0c81b0019d1dbd41938930b4314f372, type: 3}

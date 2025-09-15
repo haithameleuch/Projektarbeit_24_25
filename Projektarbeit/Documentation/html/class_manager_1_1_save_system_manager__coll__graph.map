@@ -1,0 +1,3 @@
+<map id="Manager.SaveSystemManager" name="Manager.SaveSystemManager">
+<area shape="rect" id="Node000001" title="Manages saving and loading of game data and exposes helpers to read and update the current save." alt="" coords="5,5,194,336"/>
+</map>

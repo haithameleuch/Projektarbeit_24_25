@@ -1,0 +1,5 @@
+<map id="Inventory.Inventory" name="Inventory.Inventory">
+<area shape="rect" id="Node000001" title=" " alt="" coords="5,120,135,471"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="20,5,121,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="73,87,73,120,68,120,68,87"/>
+</map>

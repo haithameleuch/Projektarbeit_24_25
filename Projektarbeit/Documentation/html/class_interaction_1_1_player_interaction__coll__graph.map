@@ -1,0 +1,5 @@
+<map id="Interaction.PlayerInteraction" name="Interaction.PlayerInteraction">
+<area shape="rect" id="Node000001" title="Handles interaction logic for the player, including reactions to collisions with projectiles and impl..." alt="" coords="5,120,179,206"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="42,5,142,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,86,95,120,90,120,90,86"/>
+</map>

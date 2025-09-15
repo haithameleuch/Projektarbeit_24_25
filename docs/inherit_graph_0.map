@@ -1,0 +1,15 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="Node000000" title=" " alt="" coords="5,129,61,155"/>
+<area shape="rect" id="Node000001" href="$class_enemy_1_1_agent_shooting.html" title=" " alt="" coords="129,5,278,31"/>
+<area shape="poly" id="edge1_Node000000_Node000001" title=" " alt="" coords="45,114,70,76,87,56,107,40,128,29,130,34,110,44,91,60,75,79,50,117"/>
+<area shape="rect" id="Node000002" href="$class_enemy_1_1_bomber_agent.html" title="Defines an enemy agent (BomberAgent) trained with Unity ML&#45;Agents." alt="" coords="132,55,275,80"/>
+<area shape="poly" id="edge2_Node000000_Node000002" title=" " alt="" coords="61,117,108,89,137,78,139,83,110,94,64,122"/>
+<area shape="rect" id="Node000003" href="$class_enemy_1_1_ghost.html" title="Defines a stealthy and agile enemy agent (GhostAgent) trained with Unity ML&#45;Agents." alt="" coords="154,104,253,130"/>
+<area shape="poly" id="edge3_Node000000_Node000003" title=" " alt="" coords="76,133,153,122,154,127,77,138"/>
+<area shape="rect" id="Node000004" href="$class_enemy_1_1_hunter_agent.html" title="Defines a pursuit&#45;type enemy agent (HunterAgent) trained with Unity ML&#45;Agents." alt="" coords="135,153,272,179"/>
+<area shape="poly" id="edge4_Node000000_Node000004" title=" " alt="" coords="77,146,135,154,134,159,76,151"/>
+<area shape="rect" id="Node000005" href="$class_enemy_1_1_hunter_agent_obstacle.html" title="Defines a navigation&#45;focused enemy agent (HunterAgentObstacle) trained with Unity ML&#45;Agents." alt="" coords="109,203,298,228"/>
+<area shape="poly" id="edge5_Node000000_Node000005" title=" " alt="" coords="64,162,110,189,139,200,137,205,108,194,61,167"/>
+<area shape="rect" id="Node000006" href="$class_enemy_1_1_spawnling.html" title="Defines a summoner&#45;type enemy agent (Spawnling) trained with Unity ML&#45;Agents." alt="" coords="141,252,266,278"/>
+<area shape="poly" id="edge6_Node000000_Node000006" title=" " alt="" coords="50,167,75,205,91,223,110,239,142,253,140,258,107,243,88,227,71,208,46,170"/>
+</map>

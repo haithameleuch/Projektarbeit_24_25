@@ -1,0 +1,13 @@
+<map id="Interfaces.IInteractable" name="Interfaces.IInteractable">
+<area shape="rect" id="Node000001" title="Interface for objects that can be interacted with (e.g., when the player is nearby)." alt="" coords="425,5,570,112"/>
+<area shape="rect" id="Node000002" href="$class_interaction_1_1_destroyable_wall_interaction.html" title="Interaction for a breakable wall that can only be damaged with a pickaxe. Shows short feedback,..." alt="" coords="5,160,176,486"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="411,74,357,86,299,104,242,129,190,162,177,173,174,169,186,158,239,124,297,99,356,81,410,69"/>
+<area shape="rect" id="Node000003" href="$class_interaction_1_1_enemy_interaction.html" title="Handles interactions between the player and an enemy, including applying damage over time when in con..." alt="" coords="200,239,378,407"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="427,124,391,162,337,241,332,238,387,159,423,121"/>
+<area shape="rect" id="Node000004" href="$class_interaction_1_1_level_exit_interaction.html" title="Handles player interaction with the level exit. When the player interacts, the level is advanced,..." alt="" coords="402,270,593,376"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="500,127,500,270,495,270,495,127"/>
+<area shape="rect" id="Node000005" href="$class_items_1_1_collectible_item.html" title="This class implements the IInteractable interface and is used for the ability to collect items of the..." alt="" coords="617,239,751,407"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="574,121,607,159,632,197,653,238,649,240,628,200,603,162,570,125"/>
+<area shape="rect" id="Node000006" href="$class_mini_game_1_1_drawing_trigger.html" title="Handles player interaction with a drawing canvas. Displays instructions, activates the camera for dra..." alt="" coords="775,270,937,376"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="585,74,630,87,677,105,724,129,766,158,790,183,810,211,840,268,835,271,806,214,786,186,762,162,721,133,675,110,628,92,583,79"/>
+</map>

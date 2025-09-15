@@ -1,0 +1,5 @@
+<map id="Manager.GameManagerVoronoi" name="Manager.GameManagerVoronoi">
+<area shape="rect" id="Node000001" title="Runs the core game loop for the Voronoi dungeon: generates the level, spawns the player,..." alt="" coords="5,120,198,750"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="52,5,152,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="104,86,104,120,99,120,99,86"/>
+</map>

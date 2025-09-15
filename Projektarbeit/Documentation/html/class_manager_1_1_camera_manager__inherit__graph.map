@@ -1,0 +1,5 @@
+<map id="Manager.CameraManager" name="Manager.CameraManager">
+<area shape="rect" id="Node000001" title="Manages camera switching between first&#45;person and canvas views and enables the corresponding player m..." alt="" coords="5,120,192,491"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="48,5,149,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="102,86,102,120,96,120,96,86"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="Enemy.EnemyDeathReporter" name="Enemy.EnemyDeathReporter">
+<area shape="rect" id="Node000001" title="Reports the death of an enemy to a callback when destroyed. Prevents duplicate reports and avoids rep..." alt="" coords="5,120,185,308"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="45,5,146,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,87,98,120,92,120,92,87"/>
+</map>

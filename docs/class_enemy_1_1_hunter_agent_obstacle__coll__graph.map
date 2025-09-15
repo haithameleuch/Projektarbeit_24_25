@@ -1,0 +1,5 @@
+<map id="Enemy.HunterAgentObstacle" name="Enemy.HunterAgentObstacle">
+<area shape="rect" id="Node000001" title="Defines a navigation&#45;focused enemy agent (HunterAgentObstacle) trained with Unity ML&#45;Agents." alt="" coords="5,120,184,471"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="72,5,117,72"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="97,87,97,120,92,120,92,87"/>
+</map>
