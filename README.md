@@ -1,80 +1,11 @@
-# Projektarbeit_24_25
+# Projektarbeit 24/25
 
-Willkommen zur Projektarbeit 2024/25! Dieses Projekt ist inspiriert von *The Binding of Isaac* und kombiniert 3D-Objekte mit 2D-Spielmechaniken in einem sogenannten 2.5D-Stil. Der Spieler bewegt sich ausschließlich auf einer Ebene (ohne Sprünge) und interagiert mit einer dynamisch generierten Dungeon-Umgebung.
+Herzlich willkommen zu unserem Projekt. Dieses Spiel ist inspiriert von *The Binding of Isaac* und kombiniert 3D-Objekte mit 2D-Spielmechaniken in einem 2.5D-Stil. Der Spieler bewegt sich auf einer Ebene ohne Sprünge und interagiert mit einer dynamisch generierten Dungeonumgebung. Entwickelt wurde das Projekt mit **Unity 6**.
 
-## Gruppenmitglieder
-- Haitham El Euch
-- Thorben Meiswinkel
-- Arman Niaruhi
-- Peter Kletschka
-- Kai Schnieber
+Hier findet ihr unseren Projektbericht, wahlweise in der [Wiki](https://github.com/haithameleuch/Projektarbeit_24_25/wiki) oder als [PDF](https://example.com/projektbericht.pdf). Beide Varianten geben einen Überblick über das Spiel und unsere Entwicklung. Details zur Implementierung sind in der [Dokumentation](https://haithameleuch.github.io/Projektarbeit_24_25/) festgehalten.
 
-## Features
-- Dungeon-Generierung.
-- Charakter-Controller (First-Person- und Top-Down-Ansicht).
-- Kamerawechsel (First-Person- und Top-Down-Ansicht).
-- Öffnen und Schließen aller Türen.
-- Schießen mit Projektilen.
+## Downloads
 
-## Verwendete Assets und Pakete
-- **Cinemachine**: Für Kamerabewegung und Perspektivenwechsel.
-- **Dungeon-Assets**: Objekte zur Raumerstellung.
+Aktuelle Builds für Windows, macOS und Linux sowie der Quellcode stehen auf der [Releases-Seite](https://github.com/haithameleuch/Projektarbeit_24_25/releases) bereit.  
 
-## Projektstruktur
-```markdown
-Assets
-├── AssetsDungeon
-├── Materials
-│   └── ProjectileColor
-├── Prefabs
-│   ├── Projectile
-│   └── Room
-├── Scenes
-│   └── SampleScene
-└── Scripts
-    ├── Camera
-    │   └── CameraController
-    ├── Controller
-    │   ├── FirstPersonPlayerController
-    │   └── TopDownPlayerController
-    ├── Dungeon
-    │   ├── DungeonGenerator
-    │   ├── OpenDoor
-    │   ├── RoomBehaviour
-    │   └── WallCollision
-    ├── Manager
-    │   ├── CameraManager
-    │   ├── EventManager
-    │   ├── GameInputManager
-    │   └── ObjectPoolManager
-    └── Shooting
-        ├── PlayerShooting
-        └── Projectile
-```
-
-## Anleitung
-
-| Aktion               | Taste                 |
-|-----------------------|-----------------------|
-| Bewegung             | `W`, `A`, `S`, `D`   |
-| Schießen (First-Person) | `Spacebar`        |
-| Schießen (Top-Down)  | Pfeiltasten (`↑`, `↓`, `←`, `→`) |
-| Ansicht wechseln     | `Tab`                |
-| Türen öffnen         | Linksklick (`LMB`)   |
-| Türen schließen      | Rechtsklick (`RMB`)  |
-| Kamera steuern       | Mausbewegung (nur First-Person) |
-
-## Installation und Start
-1. **Unity-Version**: Stelle sicher, dass die richtige Unity-Version installiert ist. Diese Version wird für das gesamte Projekt verwendet.
-   ```bash
-   6000.0.27f1 LTS
-   ```
-3. **Projekt klonen**:
-   ```bash
-   git clone git@github.com:haithameleuch/Projektarbeit_24_25.git
-   ```
-4. **Branch wechseln**:
-   ```bash
-   git checkout base-functionality
-   ```
-3. **Projekt öffnen**: Spiel starten.
+> **Hinweis für macOS:** Falls die Meldung erscheint, dass die App nicht verifiziert werden kann, die App in den Systemeinstellungen unter „Sicherheit" erlauben und anschließend erneut starten.
