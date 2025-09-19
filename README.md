@@ -8,4 +8,6 @@ Hier findet ihr unseren Projektbericht, wahlweise in der [Wiki](https://github.c
 
 Aktuelle Builds für Windows, macOS und Linux sowie der Quellcode stehen auf der [Releases-Seite](https://github.com/haithameleuch/Projektarbeit_24_25/releases) bereit.  
 
-> **Hinweis für macOS:** Falls die Meldung erscheint, dass die App nicht verifiziert werden kann, die App in den Systemeinstellungen unter „Sicherheit" erlauben und anschließend erneut starten.
+> **Hinweis für macOS-Nutzer:** Beim ersten Start kann es passieren, dass die App blockiert wird.  
+> In diesem Fall unter **Systemeinstellungen → Datenschutz & Sicherheit** auf **Dennoch öffnen** klicken.  
+> Ab dem zweiten Start öffnet die App normal.
