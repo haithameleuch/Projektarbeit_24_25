@@ -11,3 +11,8 @@ Aktuelle Builds für Windows, macOS und Linux sowie der Quellcode stehen auf der
 > **Hinweis für macOS-Nutzer:** Beim ersten Start kann es passieren, dass die App blockiert wird.  
 > In diesem Fall unter **Systemeinstellungen → Datenschutz & Sicherheit** auf **Dennoch öffnen** klicken.  
 > Ab dem zweiten Start öffnet die App normal.
+
+
+> **Hinweis für Linux-Nutzer:** Nach dem Herunterladen des Spiels entpacken Sie die .tar-Datei. Danach finden Sie die Datei Projektarbeit-Linux-1.0.x86_64.
+> Um das Spiel zu starten, müssen Sie diese ausführbar machen. Verwenden Sie dazu folgenden Befehl: chmod +x Projektarbeit-Linux-1.0.x86_64
+> Bitte beachten Sie, dass dieser Dateiname nur als Beispiel für die erste Release-Version dient. Bei zukünftigen Releases muss der Dateiname entsprechend angepasst werden.
